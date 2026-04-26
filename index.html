@@ -3,107 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أكاديمية الصوتيات - أولى تربية</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>تعلم الصوتيات - Phonetics</title>
     <style>
-        :root { --primary: #1a5276; --secondary: #e67e22; --bg: #f4f7f6; --text: #2c3e50; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--bg); color: var(--text); }
-       .sidebar { width: 260px; background: var(--primary); color: white; height: 100vh; position: fixed; right: 0; padding: 20px 10px; overflow-y: auto; box-sizing: border-box; }
-       .sidebar h2 { font-size: 1.1rem; text-align: center; border-bottom: 1px solid #34495e; padding-bottom: 10px; }
-       .nav-link { color: #bdc3c7; text-decoration: none; display: flex; align-items: center; padding: 12px; border-radius: 5px; margin: 5px 0; transition: 0.3s; font-size: 0.9rem; cursor: pointer; }
-       .nav-link:hover,.nav-link.active { background: var(--secondary); color: white; }
-       .content { margin-right: 260px; padding: 30px; width: 100%; box-sizing: border-box; }
-       .section { display: none; }
-       .section.active { display: block; animation: fadeIn 0.5s; }
-       .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; border-right: 5px solid var(--secondary); }
-       .term-box { background: #fff3e0; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid var(--secondary); }
-       .eng { font-weight: bold; color: var(--primary); font-family: 'Courier New', monospace; }
-       .ipa { font-size: 1.2rem; color: #c0392b; font-family: "Arial Unicode MS"; background: #eee; padding: 2px 6px; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        th { background: var(--primary); color: white; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @media (max-width: 768px) {.sidebar { width: 100%; height: auto; position: relative; }.content { margin-right: 0; } body { flex-direction: column; } }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-right: 5px solid var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .lesson-card h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .lesson-card ul {
+            padding-right: 20px;
+        }
+
+        .lesson-card li {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>القائمة الرئيسية</h2>
-    <div class="nav-link active" onclick="show('intro')"><i class="fas fa-book"></i> Definitions</div>
-    <div class="nav-link" onclick="show('organs')"><i class="fas fa-lungs"></i> Organs of Speech</div>
-    <div class="nav-link" onclick="show('consonants')"><i class="fas fa-comment"></i> Consonants (24)</div>
-    <div class="nav-link" onclick="show('vowels')"><i class="fas fa-music"></i> Vowel Sounds (20)</div>
-    <div class="nav-link" onclick="show('exam')"><i class="fas fa-tasks"></i> Question Bank (50)</div>
-</div>
+    <header>
+        <h1>دليل شامل لعلم الصوتيات الإنجليزية</h1>
+        <p>تعلم نطق اللغة الإنجليزية وفهم اللغويات ببساطة</p>
+    </header>
 
-<div class="content">
-    <div id="intro" class="section active">
-        <div class="card">
-            <h1>Linguistics Definitions</h1>
-            <div class="term-box"><span class="eng">Linguistics:</span> The scientific study of language and its structure.</div>
-            <div class="term-box"><span class="eng">Phonetics:</span> The study of the physical sounds of human speech.</div>
-            <div class="term-box"><span class="eng">Phonology:</span> How sounds function and pattern within a language.</div>
-            <div class="term-box"><span class="eng">Morphology:</span> The study of word formation (e.g., un-happi-ness).</div>
+    <div class="container">
+        <div class="lesson-card">
+            <h2>1. مقدمة في اللغويات (Linguistics)</h2>
+            <p>اللغويات هي الدراسة العلمية للغة. في هذا القسم نتعرف على الفروع الأساسية:</p>
+            <ul>
+                <li><strong>Phonetics:</strong> دراسة الخصائص الفيزيائية للأصوات.</li>
+                <li><strong>Phonology:</strong> دراسة أنظمة الصوت في لغة معينة.</li>
+                <li><strong>Morphology:</strong> دراسة بناء وتشكيل الكلمات.</li>
+            </ul>
+        </div>
+
+        <div class="lesson-card">
+            <h2>2. أصوات اللغة الإنجليزية والـ 44 Phonemes</h2>
+            <p>تتكون اللغة الإنجليزية من 44 صوتاً أساسياً مقسمين كالتالي:</p>
+            <ul>
+                <li><strong>20 صوتاً متحركاً (Vowels):</strong> تخرج بدون إعاقة للهواء.</li>
+                <li><strong>24 صوتاً ساكناً (Consonants):</strong> تخرج بوجود إعاقة جزئية أو كلية للهواء في الفم.</li>
+            </ul>
+        </div>
+
+        <div class="lesson-card">
+            <h2>3. أعضاء النطق (Organs of Speech)</h2>
+            <p>كيف يعمل جسمك لإنتاج الكلام؟</p>
+            <ul>
+                <li><strong>الرئتين (Lungs):</strong> مضخة الهواء الأساسية.</li>
+                <li><strong>الحنجرة (Larynx):</strong> تحتوي على الأحبال الصوتية المسؤولة عن الاهتزاز.</li>
+                <li><strong>اللسان والشفايف (Tongue & Lips):</strong> لتشكيل الحروف بدقة.</li>
+            </ul>
+        </div>
+
+        <div class="lesson-card">
+            <h2>4. الكتابة الصوتية (Transcription)</h2>
+            <p>تعلم كيف تكتب الكلمة كما تنطقها تماماً باستخدام الأبجدية الصوتية الدولية (IPA).</p>
+            <a href="#" class="btn">اقرأ الدرس كاملاً في المدونة</a>
         </div>
     </div>
 
-    <div id="organs" class="section">
-        <div class="card">
-            <h2>Organs of Speech</h2>
-            <table>
-                <tr><th>Organ</th><th>Function</th></tr>
-                <tr><td>Lungs</td><td>Provide airflow for speech.</td></tr>
-                <tr><td>Larynx</td><td>Contains vocal cords (Voice Box).</td></tr>
-                <tr><td>Velum</td><td>Controls oral/nasal airflow.</td></tr>
-            </table>
-        </div>
-    </div>
-
-    <div id="consonants" class="section">
-        <div class="card">
-            <h2>The 24 Consonants</h2>
-            <p>انقر على الرابط لسماع الصوت:</p>
-            <table>
-                <tr><th>Sound</th><th>Example</th><th>Listen</th></tr>
-                <tr><td class="ipa">/p/</td><td>Pen</td><td><audio controls src="https://upload.wikimedia.org/wikipedia/commons/5/51/Voiceless_bilabial_plosive.ogg"></audio></td></tr>
-                <tr><td class="ipa">/b/</td><td>Boy</td><td><audio controls src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Voiced_bilabial_plosive.ogg"></audio></td></tr>
-                <tr><td class="ipa">/θ/</td><td>Think</td><td><audio controls src="https://upload.wikimedia.org/wikipedia/commons/8/80/Voiceless_dental_fricative.ogg"></audio></td></tr>
-            </table>
-        </div>
-    </div>
-
-    <div id="exam" class="section">
-        <div class="card">
-            <h2>Question Bank (Sample of 50)</h2>
-            <div class="term-box">
-                <p>1. Which branch studies physical speech sounds?</p>
-                <input type="radio"> Phonetics <br> <input type="radio"> Syntax
-            </div>
-            <div class="term-box">
-                <p>2. How many phonemes are in English?</p>
-                <input type="radio"> 44 <br> <input type="radio"> 26
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // رسالة صلي على النبي عند أول زيارة
-    window.onload = function() {
-        if (!localStorage.getItem('firstVisit')) {
-            alert("صلي على النبي");
-            localStorage.setItem('firstVisit', 'done');
-        }
-    };
-
-    function show(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-    }
-</script>
+    <footer>
+        <p>تم تصميم هذا الموقع كجزء من مشروع تعليمي لتبسيط اللغويات</p>
+    </footer>
 
 </body>
 </html>
