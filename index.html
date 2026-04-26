@@ -1,666 +1,1143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Phonetics | تعلم الصوتيات ببساطة</title>
-    <style>
-        /* CSS Styles */
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --bg-color: #f4f7f6;
-            --text-color: #333;
-            --card-bg: #fff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhonEd — English Phonetics</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2430;
+    --border: #30363d;
+    --accent: #e6a817;
+    --accent2: #3fb68b;
+    --accent3: #7c6df0;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #586069;
+    --red: #e05c5c;
+    --card-hover: #1f2937;
+  }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-        header {
-            background-color: var(--primary);
-            color: #fff;
-            padding: 2rem 1rem;
-            text-align: center;
-        }
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13, 17, 23, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
 
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--text); }
 
-        header p {
-            font-size: 1.2rem;
-            color: #bdc3c7;
-        }
+  nav {
+    display: flex;
+    gap: 0.25rem;
+  }
 
-        nav {
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+  nav button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
 
-        nav button {
-            background: none;
-            border: none;
-            padding: 1rem 1.5rem;
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
+  nav button:hover { background: var(--surface); color: var(--text); }
 
-        nav button:hover {
-            color: var(--secondary);
-        }
+  nav button.active {
+    background: var(--accent);
+    color: #0d1117;
+    font-weight: 600;
+  }
 
-        nav button.active {
-            color: var(--secondary);
-            border-bottom: 3px solid var(--secondary);
-        }
+  /* ── SECTIONS ── */
+  section { display: none; padding: 3rem 2rem; max-width: 1100px; margin: 0 auto; }
+  section.visible { display: block; animation: fadeIn 0.35s ease; }
 
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-        section {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
-        }
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem;
+    position: relative;
+  }
 
-        section.active {
-            display: block;
-        }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(230,168,23,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(230,168,23,0.12);
+    border: 1px solid rgba(230,168,23,0.3);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.35rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
 
-        h2 {
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-            font-size: 2rem;
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 0.5rem;
-            display: inline-block;
-        }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+    color: var(--text);
+  }
 
-        h3 {
-            color: var(--secondary);
-            margin: 1.5rem 0 1rem;
-            font-size: 1.5rem;
-        }
+  .hero h1 em {
+    color: var(--accent);
+    font-style: normal;
+  }
 
-        p {
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
 
-        ul {
-            margin-left: 2rem;
-            margin-bottom: 1.5rem;
-        }
+  .hero-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
 
-        li {
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
+  .hero-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
+  .hero-stat:hover { border-color: var(--accent); }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--secondary);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+  .hero-stat .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-        }
+  .hero-stat p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
+  /* ── PAGE TITLES ── */
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
 
-        .phoneme {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-            background: #ecf0f1;
-            padding: 0.2rem 0.8rem;
-            border-radius: 4px;
-        }
+  .page-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
 
-        .audio-btn {
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            transition: background-color 0.3s ease;
-        }
+  .accent-line {
+    width: 48px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    margin-bottom: 2rem;
+  }
 
-        .audio-btn:hover {
-            background-color: #2980b9;
-        }
+  /* ── DEFINITION CARDS ── */
+  .def-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
 
-        .card p {
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
+  .def-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
 
-        .example-word {
-            font-style: italic;
-            color: var(--accent);
-            font-weight: bold;
-        }
+  .def-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 3px 0 0 3px;
+  }
 
-        /* Quiz Styles */
-        .quiz-question {
-            background-color: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+  .def-card:hover {
+    border-color: var(--accent);
+    background: var(--card-hover);
+    transform: translateY(-2px);
+  }
 
-        .quiz-question p {
-            font-weight: bold;
-            color: var(--primary);
-        }
+  .def-card h3 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.04em;
+  }
 
-        .options-group label {
-            display: block;
-            margin: 0.8rem 0;
-            padding: 0.8rem;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
+  .def-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
 
-        .options-group label:hover {
-            background-color: #e9ecef;
-        }
+  /* ── MANNER SECTION ── */
+  .manner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
 
-        .options-group input {
-            margin-right: 10px;
-        }
+  .manner-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    transition: all 0.2s;
+  }
 
-        .submit-btn {
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
-            border-radius: 5px;
-            cursor: pointer;
-            display: block;
-            width: 100%;
-            max-width: 300px;
-            margin: 2rem auto;
-            transition: background-color 0.3s ease;
-        }
+  .manner-card:hover { border-color: var(--accent2); transform: translateY(-2px); }
 
-        .submit-btn:hover {
-            background-color: #2980b9;
-        }
+  .manner-card h4 {
+    font-family: 'DM Mono', monospace;
+    color: var(--accent2);
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.04em;
+  }
 
-        #quiz-feedback {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 8px;
-            display: none;
-        }
+  .manner-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; }
 
-        .success { background-color: #d4edda; color: #155724; }
-        .warning { background-color: #fff3cd; color: #856404; }
-        .danger { background-color: #f8d7da; color: #721c24; }
+  /* ── TYPES ── */
+  .types-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
 
-        /* Transcription Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+  .type-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s;
+  }
 
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+  .type-card:hover { border-color: var(--accent3); transform: translateY(-2px); }
 
-        th {
-            background-color: var(--primary);
-            color: white;
-        }
+  .type-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin: 0 auto 1rem;
+  }
 
-        tr:hover {
-            background-color: #f5f5f5;
-        }
+  .type-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .type-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; }
 
-    </style>
+  /* ── PLACE TABLE ── */
+  .place-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.9rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .place-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: all 0.2s;
+  }
+
+  .place-card:hover { border-color: var(--accent3); background: var(--card-hover); }
+
+  .place-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--accent3);
+    min-width: 2rem;
+  }
+
+  .place-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .place-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── PHONEME TABLES ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    margin-top: 2rem;
+  }
+
+  .phoneme-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  thead th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  tbody td {
+    padding: 0.7rem 1rem;
+    color: var(--text-muted);
+    vertical-align: middle;
+  }
+
+  .phoneme-symbol {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(230,168,23,0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .phoneme-symbol.vowel { color: var(--accent2); background: rgba(63,182,139,0.1); }
+  .phoneme-symbol.diph { color: var(--accent3); background: rgba(124,109,240,0.1); }
+
+  .example-word {
+    font-style: italic;
+    color: var(--text);
+  }
+
+  /* ── TRANSCRIPTION ── */
+  .transcription-intro {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .transcription-intro p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+
+  .trans-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .trans-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.3rem 1.5rem;
+    transition: all 0.2s;
+  }
+
+  .trans-card:hover { border-color: var(--accent); }
+
+  .trans-card .word {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .trans-card .ipa {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .trans-card .desc { font-size: 0.82rem; color: var(--text-muted); }
+
+  .key-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.6rem;
+    margin-top: 2rem;
+  }
+
+  .key-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem;
+    text-align: center;
+  }
+
+  .key-item .sym {
+    font-family: 'DM Mono', monospace;
+    color: var(--accent);
+    font-size: 1rem;
+    display: block;
+  }
+
+  .key-item .desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  /* ── QUIZ ── */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .quiz-progress {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.2s;
+  }
+
+  .quiz-card.answered-correct { border-color: var(--accent2); }
+  .quiz-card.answered-wrong   { border-color: var(--red); }
+
+  .q-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+  }
+
+  .q-options {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .q-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .q-option:hover:not(:disabled) { background: var(--card-hover); border-color: var(--accent); color: var(--text); }
+  .q-option:disabled { cursor: default; }
+  .q-option.correct { background: rgba(63,182,139,0.15); border-color: var(--accent2); color: var(--accent2); }
+  .q-option.wrong   { background: rgba(224,92,92,0.12);  border-color: var(--red); color: var(--red); }
+
+  .q-feedback {
+    margin-top: 0.8rem;
+    font-size: 0.82rem;
+    font-style: italic;
+    color: var(--text-muted);
+    display: none;
+  }
+  .q-feedback.show { display: block; }
+
+  .quiz-submit-btn {
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 10px;
+    padding: 0.9rem 2.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: all 0.2s;
+    display: block;
+  }
+
+  .quiz-submit-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  .score-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    text-align: center;
+    display: none;
+  }
+
+  .score-box.visible { display: block; }
+
+  .score-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--accent);
+  }
+
+  .score-box p { color: var(--text-muted); margin-top: 0.5rem; font-size: 1rem; }
+  .score-box .grade { font-size: 1.3rem; font-weight: 600; margin-top: 0.8rem; }
+
+  .retry-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 1.2rem;
+    transition: all 0.2s;
+  }
+
+  .retry-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    header { padding: 0 1rem; }
+    nav button { padding: 0.4rem 0.55rem; font-size: 0.78rem; }
+    section { padding: 2rem 1rem; }
+    .types-grid { grid-template-columns: 1fr; }
+    .logo { font-size: 1.2rem; }
+  }
+</style>
 </head>
 <body>
 
-    <header>
-        <h1>English Phonetics Masterclass</h1>
-        <p>أهلاً بيك يا بطل! يلا نتعلم الصوتيات الإنجليزية بطريقة سهلة وممتعة.</p>
-    </header>
+<header>
+  <div class="logo">Phon<span>Ed</span></div>
+  <nav>
+    <button class="active" onclick="show('home', this)">Home</button>
+    <button onclick="show('definitions', this)">Definitions</button>
+    <button onclick="show('consonants', this)">Consonants</button>
+    <button onclick="show('vowels', this)">Vowels</button>
+    <button onclick="show('transcription', this)">Transcription</button>
+    <button onclick="show('quiz', this)">Quiz</button>
+  </nav>
+</header>
 
-    <nav id="navbar">
-        <button class="active" onclick="switchSection('home')">Home</button>
-        <button onclick="switchSection('consonants')">Consonants</button>
-        <button onclick="switchSection('vowels')">Vowels</button>
-        <button onclick="switchSection('transcription')">Transcription</button>
-        <button onclick="switchSection('quiz')">Quiz</button>
-    </nav>
+<!-- ══════════════ HOME ══════════════ -->
+<section id="home" class="visible">
+  <div class="hero">
+    <div class="hero-badge">First Year — Basic Education</div>
+    <h1>Master English<br><em>Phonetics</em></h1>
+    <p>A complete, interactive guide to speech sounds, articulation, and the 44 phonemes of the English language.</p>
+    <div class="hero-cards">
+      <div class="hero-stat"><div class="num">44</div><p>English Phonemes</p></div>
+      <div class="hero-stat"><div class="num">24</div><p>Consonant Sounds</p></div>
+      <div class="hero-stat"><div class="num">20</div><p>Vowel Sounds</p></div>
+      <div class="hero-stat"><div class="num">3</div><p>Branches of Phonetics</p></div>
+    </div>
+  </div>
+</section>
 
-    <div class="container">
-        
-        <section id="home" class="active">
-            <h2>Welcome to Phonetics!</h2>
-            <p>Phonetics is the scientific study of speech sounds. It helps us understand how sounds are physically produced by our mouth, vocal cords, and breath.</p>
-            <p>في القسم ده، هنبسط كل حاجة عشان تفهم الإنجليزي صح وتتكلم بثقة.</p>
-            
-            <h3>Why learn Phonetics?</h3>
-            <ul>
-                <li><strong>Better Pronunciation:</strong> You will learn exactly how to move your mouth to sound natural.</li>
-                <li><strong>Clearer Listening:</strong> Understanding sounds helps you catch fast speech easily.</li>
-                <li><strong>Reading Transcriptions:</strong> You can read any dictionary to know how a word is pronounced without hearing it!</li>
-            </ul>
+<!-- ══════════════ DEFINITIONS ══════════════ -->
+<section id="definitions">
+  <div class="page-title">Core Definitions</div>
+  <div class="page-subtitle">Foundational terminology for the scientific study of language and speech sounds.</div>
+  <div class="accent-line"></div>
 
-            <h3>The Organs of Speech</h3>
-            <p>To produce English sounds, we use different parts of our vocal tract. The main ones include:</p>
-            <ul>
-                <li><strong>Lungs:</strong> Provide the airflow.</li>
-                <li><strong>Vocal Cords (Larynx):</strong> Vibrate to make voiced sounds.</li>
-                <li><strong>Tongue & Lips:</strong> Shape the air to create different vowels and consonants.</li>
-                <li><strong>Alveolar Ridge:</strong> The bumpy part just behind your upper teeth.</li>
-            </ul>
-        </section>
+  <div class="def-grid">
+    <div class="def-card"><h3>Linguistics</h3><p>The scientific study of language.</p></div>
+    <div class="def-card"><h3>Phonetics</h3><p>The scientific study of speech sounds in all languages.</p></div>
+    <div class="def-card"><h3>Phonology</h3><p>The study of sound systems in a specific language.</p></div>
+    <div class="def-card"><h3>Phoneme</h3><p>The smallest unit of sound that can change meaning.</p></div>
+    <div class="def-card"><h3>Consonant</h3><p>A sound produced with some obstruction of the airflow.</p></div>
+    <div class="def-card"><h3>Vowel</h3><p>A sound produced with no obstruction of the airflow.</p></div>
+    <div class="def-card"><h3>Place of Articulation</h3><p>The place where the obstruction of airflow occurs.</p></div>
+    <div class="def-card"><h3>Manner of Articulation</h3><p>The way in which the airflow is obstructed.</p></div>
+    <div class="def-card"><h3>Voicing</h3><p>The vibration of the vocal cords during the production of sounds.</p></div>
+  </div>
 
-        <section id="consonants">
-            <h2>English Consonants</h2>
-            <p>Consonants are sounds produced by blocking the air as it leaves your mouth. We classify them using three main features:</p>
-            <ul>
-                <li><strong>Place of Articulation:</strong> WHERE the sound is made (e.g., Lips, Teeth).</li>
-                <li><strong>Manner of Articulation:</strong> HOW the air is blocked (e.g., Stopped completely, or pushed through a narrow gap).</li>
-                <li><strong>Voicing:</strong> Are the vocal cords vibrating (Voiced) or not (Voiceless)?</li>
-            </ul>
+  <!-- Types of Phonetics -->
+  <div class="page-title" style="margin-top:3rem">Types of Phonetics</div>
+  <div class="page-subtitle">Three branches that study different aspects of speech sounds.</div>
+  <div class="accent-line"></div>
+  <div class="types-grid">
+    <div class="type-card">
+      <div class="type-icon" style="background:rgba(230,168,23,0.12)">🗣️</div>
+      <h4>Articulatory</h4>
+      <p>The study of how speech sounds are produced by the organs of speech (lips, tongue, teeth, etc.).</p>
+    </div>
+    <div class="type-card">
+      <div class="type-icon" style="background:rgba(124,109,240,0.12)">🌊</div>
+      <h4>Acoustic</h4>
+      <p>The study of the transmission of speech sounds through the air as sound waves.</p>
+    </div>
+    <div class="type-card">
+      <div class="type-icon" style="background:rgba(63,182,139,0.12)">👂</div>
+      <h4>Auditory</h4>
+      <p>The study of how speech sounds are received and perceived by the listener.</p>
+    </div>
+  </div>
 
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/p/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/5/51/Voiceless_bilabial_plosive.ogg')">▶</button>
-                    </div>
-                    <p><strong>Place:</strong> Bilabial (Both lips)</p>
-                    <p><strong>Manner:</strong> Stop (Air is blocked, then released)</p>
-                    <p><strong>Voicing:</strong> Voiceless</p>
-                    <p><strong>Examples:</strong> <span class="example-word">p</span>en, a<span class="example-word">pp</span>le, sto<span class="example-word">p</span></p>
-                </div>
+  <!-- Manner of Articulation -->
+  <div class="page-title" style="margin-top:3rem">Manner of Articulation</div>
+  <div class="page-subtitle">How the airflow is shaped or obstructed during sound production.</div>
+  <div class="accent-line"></div>
+  <div class="manner-grid">
+    <div class="manner-card"><h4>Plosives (Stops)</h4><p>Complete stop of airflow, then sudden release causing an explosion of air. E.g.: /p/, /b/, /t/, /d/, /k/, /g/</p></div>
+    <div class="manner-card"><h4>Fricatives</h4><p>Partial narrowing of the vocal tract; air escapes gradually creating friction. E.g.: /f/, /v/, /s/, /z/, /ʃ/</p></div>
+    <div class="manner-card"><h4>Affricates</h4><p>Complete stop followed by a gradual release, combining plosive and fricative qualities. E.g.: /tʃ/, /dʒ/</p></div>
+    <div class="manner-card"><h4>Nasals</h4><p>Airflow is redirected through the nasal cavity. E.g.: /m/, /n/, /ŋ/</p></div>
+    <div class="manner-card"><h4>Lateral</h4><p>Air passes along the sides of the tongue while the tip blocks the centre. E.g.: /l/</p></div>
+    <div class="manner-card"><h4>Glides (Approximants)</h4><p>Produced with very little obstruction of airflow; similar in quality to a vowel. E.g.: /w/, /j/</p></div>
+  </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/b/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/2/2c/Voiced_bilabial_plosive.ogg')">▶</button>
-                    </div>
-                    <p><strong>Place:</strong> Bilabial (Both lips)</p>
-                    <p><strong>Manner:</strong> Stop</p>
-                    <p><strong>Voicing:</strong> Voiced</p>
-                    <p><strong>Examples:</strong> <span class="example-word">b</span>oy, ra<span class="example-word">bb</span>it, we<span class="example-word">b</span></p>
-                </div>
+  <!-- Place of Articulation -->
+  <div class="page-title" style="margin-top:3rem">Place of Articulation</div>
+  <div class="page-subtitle">Where in the vocal tract the obstruction of airflow occurs.</div>
+  <div class="accent-line"></div>
+  <div class="place-grid">
+    <div class="place-card"><div class="place-num">01</div><div><h4>Bilabial</h4><p>Both lips come together. E.g.: /p/, /b/, /m/, /w/</p></div></div>
+    <div class="place-card"><div class="place-num">02</div><div><h4>Labiodental</h4><p>Upper teeth touch the lower lip. E.g.: /f/, /v/</p></div></div>
+    <div class="place-card"><div class="place-num">03</div><div><h4>Dental</h4><p>Tongue tip placed against or between the upper teeth. E.g.: /θ/, /ð/</p></div></div>
+    <div class="place-card"><div class="place-num">04</div><div><h4>Alveolar</h4><p>Tongue tip touches the alveolar ridge (just behind upper teeth). E.g.: /t/, /d/, /s/, /z/, /n/, /l/</p></div></div>
+    <div class="place-card"><div class="place-num">05</div><div><h4>Post-Alveolar</h4><p>Tongue blade raised behind the alveolar ridge. E.g.: /ʃ/, /ʒ/, /tʃ/, /dʒ/, /r/</p></div></div>
+    <div class="place-card"><div class="place-num">06</div><div><h4>Palatal</h4><p>Tongue body raised toward the hard palate. E.g.: /j/</p></div></div>
+    <div class="place-card"><div class="place-num">07</div><div><h4>Velar</h4><p>Back of tongue raised toward the soft palate (velum). E.g.: /k/, /g/, /ŋ/</p></div></div>
+    <div class="place-card"><div class="place-num">08</div><div><h4>Glottal</h4><p>Constriction at the level of the glottis (vocal cords). E.g.: /h/, /ʔ/</p></div></div>
+  </div>
+</section>
 
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/f/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/1/1f/Voiceless_labiodental_fricative.ogg')">▶</button>
-                    </div>
-                    <p><strong>Place:</strong> Labiodental (Bottom lip & top teeth)</p>
-                    <p><strong>Manner:</strong> Fricative (Air pushes through a gap)</p>
-                    <p><strong>Voicing:</strong> Voiceless</p>
-                    <p><strong>Examples:</strong> <span class="example-word">f</span>ish, <span class="example-word">ph</span>one, lau<span class="example-word">gh</span></p>
-                </div>
+<!-- ══════════════ CONSONANTS ══════════════ -->
+<section id="consonants">
+  <div class="page-title">Consonant Phonemes</div>
+  <div class="page-subtitle">English has 24 consonant sounds. Each is classified by its place of articulation, manner of articulation, and voicing.</div>
+  <div class="accent-line"></div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/v/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/8/85/Voiced_labiodental_fricative.ogg')">▶</button>
-                    </div>
-                    <p><strong>Place:</strong> Labiodental</p>
-                    <p><strong>Manner:</strong> Fricative</p>
-                    <p><strong>Voicing:</strong> Voiced</p>
-                    <p><strong>Examples:</strong> <span class="example-word">v</span>an, o<span class="example-word">v</span>er, ha<span class="example-word">v</span>e</p>
-                </div>
+  <div class="section-label">Plosives</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Place</th><th>Voicing</th><th>Example Word</th><th>Position</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol">/p/</span></td><td>Bilabial</td><td>Voiceless</td><td><span class="example-word">pen, stop, tip</span></td><td>Initial, medial, final</td></tr>
+        <tr><td><span class="phoneme-symbol">/b/</span></td><td>Bilabial</td><td>Voiced</td><td><span class="example-word">bat, about, rob</span></td><td>Initial, medial, final</td></tr>
+        <tr><td><span class="phoneme-symbol">/t/</span></td><td>Alveolar</td><td>Voiceless</td><td><span class="example-word">top, letter, cat</span></td><td>Initial, medial, final</td></tr>
+        <tr><td><span class="phoneme-symbol">/d/</span></td><td>Alveolar</td><td>Voiced</td><td><span class="example-word">dog, order, bad</span></td><td>Initial, medial, final</td></tr>
+        <tr><td><span class="phoneme-symbol">/k/</span></td><td>Velar</td><td>Voiceless</td><td><span class="example-word">cat, back, school</span></td><td>Initial, medial, final</td></tr>
+        <tr><td><span class="phoneme-symbol">/g/</span></td><td>Velar</td><td>Voiced</td><td><span class="example-word">go, again, big</span></td><td>Initial, medial, final</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/θ/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/8/80/Voiceless_dental_fricative.ogg')">▶</button>
-                    </div>
-                    <p><strong>Place:</strong> Dental (Tongue between teeth)</p>
-                    <p><strong>Manner:</strong> Fricative</p>
-                    <p><strong>Voicing:</strong> Voiceless</p>
-                    <p><strong>Examples:</strong> <span class="example-word">th</span>ink, ma<span class="example-word">th</span>, <span class="example-word">th</span>ree</p>
-                </div>
+  <div class="section-label">Fricatives</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Place</th><th>Voicing</th><th>Example Word</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol">/f/</span></td><td>Labiodental</td><td>Voiceless</td><td><span class="example-word">fish, coffee, leaf</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/v/</span></td><td>Labiodental</td><td>Voiced</td><td><span class="example-word">van, over, love</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/θ/</span></td><td>Dental</td><td>Voiceless</td><td><span class="example-word">think, teeth, bath</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/ð/</span></td><td>Dental</td><td>Voiced</td><td><span class="example-word">this, other, breathe</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/s/</span></td><td>Alveolar</td><td>Voiceless</td><td><span class="example-word">sun, lesson, bus</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/z/</span></td><td>Alveolar</td><td>Voiced</td><td><span class="example-word">zoo, music, days</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/ʃ/</span></td><td>Post-Alveolar</td><td>Voiceless</td><td><span class="example-word">ship, nation, wish</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/ʒ/</span></td><td>Post-Alveolar</td><td>Voiced</td><td><span class="example-word">measure, vision, rouge</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/h/</span></td><td>Glottal</td><td>Voiceless</td><td><span class="example-word">hat, ahead, behind</span></td></tr>
+      </tbody>
+    </table>
+  </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/m/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/a/a9/Voiced_bilabial_nasal.ogg')">▶</button>
-                    </div>
-                    <p><strong>Place:</strong> Bilabial</p>
-                    <p><strong>Manner:</strong> Nasal (Air flows through the nose)</p>
-                    <p><strong>Voicing:</strong> Voiced</p>
-                    <p><strong>Examples:</strong> <span class="example-word">m</span>an, su<span class="example-word">mm</span>er, co<span class="example-word">m</span>b</p>
-                </div>
-            </div>
-        </section>
+  <div class="section-label">Affricates</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Place</th><th>Voicing</th><th>Example Word</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol">/tʃ/</span></td><td>Post-Alveolar</td><td>Voiceless</td><td><span class="example-word">chair, teacher, watch</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/dʒ/</span></td><td>Post-Alveolar</td><td>Voiced</td><td><span class="example-word">jump, age, bridge</span></td></tr>
+      </tbody>
+    </table>
+  </div>
 
-        <section id="vowels">
-            <h2>English Vowels</h2>
-            <p>Vowels are produced with an open mouth—air flows freely without being blocked. They are categorized by tongue height, tongue position (front/back), and lip rounding.</p>
+  <div class="section-label">Nasals</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Place</th><th>Voicing</th><th>Example Word</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol">/m/</span></td><td>Bilabial</td><td>Voiced</td><td><span class="example-word">man, summer, him</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/n/</span></td><td>Alveolar</td><td>Voiced</td><td><span class="example-word">no, inner, sun</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/ŋ/</span></td><td>Velar</td><td>Voiced</td><td><span class="example-word">sing, finger, long</span></td></tr>
+      </tbody>
+    </table>
+  </div>
 
-            <h3>1. Short Vowels</h3>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/ɪ/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/0/05/Near-close_near-front_unrounded_vowel.ogg')">▶</button>
-                    </div>
-                    <p><strong>Description:</strong> High front, unrounded, short</p>
-                    <p><strong>Examples:</strong> s<span class="example-word">i</span>t, h<span class="example-word">i</span>t, m<span class="example-word">y</span>th</p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/æ/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/c/c9/Near-open_front_unrounded_vowel.ogg')">▶</button>
-                    </div>
-                    <p><strong>Description:</strong> Low front, unrounded, short</p>
-                    <p><strong>Examples:</strong> c<span class="example-word">a</span>t, b<span class="example-word">a</span>d, m<span class="example-word">a</span>p</p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/ə/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/d/d9/Mid-central_vowel.ogg')">▶</button>
-                    </div>
-                    <p><strong>Description:</strong> Schwa (mid-central, relaxed)</p>
-                    <p><strong>Examples:</strong> <span class="example-word">a</span>bout, sof<span class="example-word">a</span></p>
-                </div>
-            </div>
+  <div class="section-label">Lateral & Glides (Approximants)</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Type</th><th>Place</th><th>Voicing</th><th>Example Word</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol">/l/</span></td><td>Lateral</td><td>Alveolar</td><td>Voiced</td><td><span class="example-word">land, yellow, all</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/r/</span></td><td>Approximant</td><td>Post-Alveolar</td><td>Voiced</td><td><span class="example-word">red, arrow, car</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/w/</span></td><td>Glide</td><td>Bilabial/Velar</td><td>Voiced</td><td><span class="example-word">wet, away, one</span></td></tr>
+        <tr><td><span class="phoneme-symbol">/j/</span></td><td>Glide</td><td>Palatal</td><td>Voiced</td><td><span class="example-word">yes, beyond, use</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-            <h3>2. Long Vowels</h3>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/i:/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/f/f0/Close_front_unrounded_vowel.ogg')">▶</button>
-                    </div>
-                    <p><strong>Description:</strong> High front, unrounded, long</p>
-                    <p><strong>Examples:</strong> s<span class="example-word">ee</span>, b<span class="example-word">ea</span>t, k<span class="example-word">ey</span></p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/u:/</span>
-                        <button class="audio-btn" onclick="playSound('https://upload.wikimedia.org/wikipedia/commons/5/54/Close_back_rounded_vowel.ogg')">▶</button>
-                    </div>
-                    <p><strong>Description:</strong> High back, rounded, long</p>
-                    <p><strong>Examples:</strong> f<span class="example-word">oo</span>d, bl<span class="example-word">ue</span>, tw<span class="example-word">o</span></p>
-                </div>
-            </div>
+<!-- ══════════════ VOWELS ══════════════ -->
+<section id="vowels">
+  <div class="page-title">Vowel Phonemes</div>
+  <div class="page-subtitle">English has 20 vowel sounds divided into short vowels, long vowels, and diphthongs. All vowels are voiced and produced without airflow obstruction.</div>
+  <div class="accent-line"></div>
 
-            <h3>3. Diphthongs</h3>
-            <p>A diphthong is a combination of two vowel sounds within the same syllable. Your tongue glides from one position to another.</p>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/aɪ/</span>
-                    </div>
-                    <p><strong>Examples:</strong> m<span class="example-word">y</span>, l<span class="example-word">i</span>ke, fl<span class="example-word">y</span></p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="phoneme">/eɪ/</span>
-                    </div>
-                    <p><strong>Examples:</strong> s<span class="example-word">ay</span>, m<span class="example-word">a</span>ke, <span class="example-word">ei</span>ght</p>
-                </div>
-            </div>
-        </section>
+  <div class="section-label">Short Vowels (7)</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>IPA Key Word</th><th>Example Words</th><th>Tongue Position</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol vowel">/ɪ/</span></td><td>KIT</td><td><span class="example-word">bit, sit, fish, him</span></td><td>High front, short</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/e/</span></td><td>DRESS</td><td><span class="example-word">bed, ten, red, said</span></td><td>Mid front</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/æ/</span></td><td>TRAP</td><td><span class="example-word">cat, map, hand, land</span></td><td>Low front</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/ɒ/</span></td><td>LOT</td><td><span class="example-word">hot, dog, top, stop</span></td><td>Low back, rounded</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/ʌ/</span></td><td>STRUT</td><td><span class="example-word">cup, sun, run, love</span></td><td>Mid central</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/ʊ/</span></td><td>FOOT</td><td><span class="example-word">book, put, full, good</span></td><td>High back, rounded, short</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/ə/</span></td><td>COMMA (schwa)</td><td><span class="example-word">about, sofa, teacher</span></td><td>Mid central (unstressed)</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-        <section id="transcription">
-            <h2>Phonetic Transcription (IPA)</h2>
-            <p>The International Phonetic Alphabet (IPA) is a system where each sound is represented by exactly one symbol. This helps you pronounce words perfectly, even if English spelling is confusing!</p>
-            <p>دلوقتي هنشوف إزاي نكتب الكلمة زي ما بننطقها بالظبط.</p>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Word</th>
-                        <th>Transcription</th>
-                        <th>Explanation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>cat</td>
-                        <td>/kæt/</td>
-                        <td>3 sounds: /k/ + /æ/ + /t/</td>
-                    </tr>
-                    <tr>
-                        <td>ship</td>
-                        <td>/ʃɪp/</td>
-                        <td>'sh' makes one sound /ʃ/, not two.</td>
-                    </tr>
-                    <tr>
-                        <td>church</td>
-                        <td>/tʃɜ:tʃ/</td>
-                        <td>'ch' is the affricate /tʃ/.</td>
-                    </tr>
-                    <tr>
-                        <td>phone</td>
-                        <td>/fəʊn/</td>
-                        <td>'ph' is pronounced as /f/. The 'e' is silent.</td>
-                    </tr>
-                    <tr>
-                        <td>think</td>
-                        <td>/θɪŋk/</td>
-                        <td>'th' is /θ/ and 'nk' is /ŋ/ + /k/.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+  <div class="section-label">Long Vowels (5)</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>IPA Key Word</th><th>Example Words</th><th>Tongue Position</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol vowel">/iː/</span></td><td>FLEECE</td><td><span class="example-word">see, feet, me, beach</span></td><td>High front, long</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/ɑː/</span></td><td>PALM</td><td><span class="example-word">car, farm, father, heart</span></td><td>Low back, long</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/ɔː/</span></td><td>THOUGHT</td><td><span class="example-word">all, more, saw, door</span></td><td>Mid-high back, rounded, long</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/uː/</span></td><td>GOOSE</td><td><span class="example-word">too, food, shoe, blue</span></td><td>High back, rounded, long</td></tr>
+        <tr><td><span class="phoneme-symbol vowel">/ɜː/</span></td><td>NURSE</td><td><span class="example-word">her, bird, word, turn</span></td><td>Mid central, long</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-        <section id="quiz">
-            <h2>Test Your Knowledge!</h2>
-            <p>جاهز تختبر نفسك؟ جاوب على الأسئلة دي وشوف نتيجتك.</p>
-            
-            <form id="quizForm" onsubmit="return false;">
-                
-                <div class="quiz-question">
-                    <p>1. Which of the following is a "voiced" sound?</p>
-                    <div class="options-group">
-                        <label><input type="radio" name="q1" value="0"> /p/</label>
-                        <label><input type="radio" name="q1" value="0"> /t/</label>
-                        <label><input type="radio" name="q1" value="1"> /b/</label>
-                        <label><input type="radio" name="q1" value="0"> /k/</label>
-                    </div>
-                </div>
+  <div class="section-label">Diphthongs (8)</div>
+  <div class="phoneme-table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>IPA Key Word</th><th>Example Words</th><th>Movement</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phoneme-symbol diph">/eɪ/</span></td><td>FACE</td><td><span class="example-word">day, rain, say, eight</span></td><td>Mid-front → high-front</td></tr>
+        <tr><td><span class="phoneme-symbol diph">/aɪ/</span></td><td>PRICE</td><td><span class="example-word">my, night, fly, time</span></td><td>Low-central → high-front</td></tr>
+        <tr><td><span class="phoneme-symbol diph">/ɔɪ/</span></td><td>CHOICE</td><td><span class="example-word">boy, oil, coin, joint</span></td><td>Mid-back → high-front</td></tr>
+        <tr><td><span class="phoneme-symbol diph">/əʊ/</span></td><td>GOAT</td><td><span class="example-word">go, home, phone, road</span></td><td>Mid-central → high-back</td></tr>
+        <tr><td><span class="phoneme-symbol diph">/aʊ/</span></td><td>MOUTH</td><td><span class="example-word">now, out, town, cow</span></td><td>Low-central → high-back</td></tr>
+        <tr><td><span class="phoneme-symbol diph">/ɪə/</span></td><td>NEAR</td><td><span class="example-word">ear, here, dear, fear</span></td><td>High-front → mid-central</td></tr>
+        <tr><td><span class="phoneme-symbol diph">/eə/</span></td><td>SQUARE</td><td><span class="example-word">air, hair, there, wear</span></td><td>Mid-front → mid-central</td></tr>
+        <tr><td><span class="phoneme-symbol diph">/ʊə/</span></td><td>CURE</td><td><span class="example-word">pure, tour, sure, poor</span></td><td>High-back → mid-central</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-                <div class="quiz-question">
-                    <p>2. The sound /m/ is classified by its manner of articulation as a:</p>
-                    <div class="options-group">
-                        <label><input type="radio" name="q2" value="0"> Stop</label>
-                        <label><input type="radio" name="q2" value="1"> Nasal</label>
-                        <label><input type="radio" name="q2" value="0"> Fricative</label>
-                        <label><input type="radio" name="q2" value="0"> Affricate</label>
-                    </div>
-                </div>
+<!-- ══════════════ TRANSCRIPTION ══════════════ -->
+<section id="transcription">
+  <div class="page-title">Phonetic Transcription</div>
+  <div class="page-subtitle">Phonetic transcription uses the International Phonetic Alphabet (IPA) to represent sounds precisely, regardless of spelling.</div>
+  <div class="accent-line"></div>
 
-                <div class="quiz-question">
-                    <p>3. What is the correct transcription for the word "cat"?</p>
-                    <div class="options-group">
-                        <label><input type="radio" name="q3" value="0"> /kat/</label>
-                        <label><input type="radio" name="q3" value="1"> /kæt/</label>
-                        <label><input type="radio" name="q3" value="0"> /kʌt/</label>
-                        <label><input type="radio" name="q3" value="0"> /cet/</label>
-                    </div>
-                </div>
+  <div class="transcription-intro">
+    <p>Phonetic transcription is written between <strong style="font-family:'DM Mono',monospace;color:var(--accent)">/slashes/</strong> for broad (phonemic) transcription, or <strong style="font-family:'DM Mono',monospace;color:var(--accent2)">[brackets]</strong> for narrow (phonetic) transcription. Spelling and pronunciation often differ in English — transcription reveals the true sound structure of words.</p>
+  </div>
 
-                <div class="quiz-question">
-                    <p>4. Which vowel is known as the "Schwa"?</p>
-                    <div class="options-group">
-                        <label><input type="radio" name="q4" value="0"> /æ/</label>
-                        <label><input type="radio" name="q4" value="0"> /ɪ/</label>
-                        <label><input type="radio" name="q4" value="1"> /ə/</label>
-                        <label><input type="radio" name="q4" value="0"> /u:/</label>
-                    </div>
-                </div>
+  <div class="section-label">Transcribed Word Examples</div>
+  <div class="trans-examples">
+    <div class="trans-card"><div class="word">phone</div><div class="ipa">/fəʊn/</div><div class="desc">Fricative + schwa-diphthong + nasal</div></div>
+    <div class="trans-card"><div class="word">thought</div><div class="ipa">/θɔːt/</div><div class="desc">Dental fricative + long vowel + plosive</div></div>
+    <div class="trans-card"><div class="word">ship</div><div class="ipa">/ʃɪp/</div><div class="desc">Post-alveolar fricative + short vowel + plosive</div></div>
+    <div class="trans-card"><div class="word">teacher</div><div class="ipa">/ˈtiːtʃə/</div><div class="desc">Long vowel + affricate + schwa</div></div>
+    <div class="trans-card"><div class="word">chair</div><div class="ipa">/tʃeə/</div><div class="desc">Affricate + diphthong</div></div>
+    <div class="trans-card"><div class="word">language</div><div class="ipa">/ˈlæŋɡwɪdʒ/</div><div class="desc">Lateral + trap vowel + nasal + glide + affricate</div></div>
+    <div class="trans-card"><div class="word">beautiful</div><div class="ipa">/ˈbjuːtɪfəl/</div><div class="desc">Glide + long vowel + short vowel + schwa + lateral</div></div>
+    <div class="trans-card"><div class="word">psychology</div><div class="ipa">/saɪˈkɒlədʒi/</div><div class="desc">Silent letter — starts with fricative /s/</div></div>
+  </div>
 
-                <div class="quiz-question">
-                    <p>5. The place of articulation for the /f/ sound is:</p>
-                    <div class="options-group">
-                        <label><input type="radio" name="q5" value="0"> Bilabial (Both lips)</label>
-                        <label><input type="radio" name="q5" value="1"> Labiodental (Bottom lip & top teeth)</label>
-                        <label><input type="radio" name="q5" value="0"> Alveolar (Behind upper teeth)</label>
-                        <label><input type="radio" name="q5" value="0"> Velar (Soft palate)</label>
-                    </div>
-                </div>
+  <div class="section-label" style="margin-top:2rem">Quick IPA Reference</div>
+  <div class="key-grid">
+    <div class="key-item"><span class="sym">/p/ /b/</span><div class="desc">Bilabial plosives</div></div>
+    <div class="key-item"><span class="sym">/t/ /d/</span><div class="desc">Alveolar plosives</div></div>
+    <div class="key-item"><span class="sym">/k/ /g/</span><div class="desc">Velar plosives</div></div>
+    <div class="key-item"><span class="sym">/f/ /v/</span><div class="desc">Labiodental fricatives</div></div>
+    <div class="key-item"><span class="sym">/θ/ /ð/</span><div class="desc">Dental fricatives</div></div>
+    <div class="key-item"><span class="sym">/s/ /z/</span><div class="desc">Alveolar fricatives</div></div>
+    <div class="key-item"><span class="sym">/ʃ/ /ʒ/</span><div class="desc">Post-alveolar fricatives</div></div>
+    <div class="key-item"><span class="sym">/tʃ/ /dʒ/</span><div class="desc">Affricates</div></div>
+    <div class="key-item"><span class="sym">/m/ /n/ /ŋ/</span><div class="desc">Nasals</div></div>
+    <div class="key-item"><span class="sym">/l/ /r/</span><div class="desc">Lateral / Approx.</div></div>
+    <div class="key-item"><span class="sym">/w/ /j/</span><div class="desc">Glides</div></div>
+    <div class="key-item"><span class="sym">/h/</span><div class="desc">Glottal fricative</div></div>
+    <div class="key-item"><span class="sym">/ɪ/ /e/ /æ/</span><div class="desc">Short front vowels</div></div>
+    <div class="key-item"><span class="sym">/ɒ/ /ʌ/ /ʊ/</span><div class="desc">Short back/central</div></div>
+    <div class="key-item"><span class="sym">/ə/</span><div class="desc">Schwa (unstressed)</div></div>
+    <div class="key-item"><span class="sym">/iː/ /uː/</span><div class="desc">Long high vowels</div></div>
+    <div class="key-item"><span class="sym">/ɑː/ /ɔː/ /ɜː/</span><div class="desc">Long vowels</div></div>
+    <div class="key-item"><span class="sym">/eɪ/ /aɪ/ /ɔɪ/</span><div class="desc">Closing diphthongs</div></div>
+    <div class="key-item"><span class="sym">/əʊ/ /aʊ/</span><div class="desc">Closing diphthongs</div></div>
+    <div class="key-item"><span class="sym">/ɪə/ /eə/ /ʊə/</span><div class="desc">Centering diphthongs</div></div>
+  </div>
+</section>
 
-                <button class="submit-btn" onclick="checkQuiz()">اعرف نتيجتك (Submit)</button>
-            </form>
+<!-- ══════════════ QUIZ ══════════════ -->
+<section id="quiz">
+  <div class="page-title">Knowledge Quiz</div>
+  <div class="page-subtitle">Test your understanding of phonetics definitions, phonemes, and articulation. Select one answer per question, then submit for your score.</div>
+  <div class="accent-line"></div>
 
-            <div id="quiz-feedback"></div>
-        </section>
-
+  <div id="quiz-form">
+    <div class="quiz-header">
+      <span style="font-size:0.9rem;color:var(--text-muted)">10 Questions</span>
+      <span class="quiz-progress" id="progress-label">0 / 10 answered</span>
     </div>
 
-    <script>
-        // Navigation Logic
-        function switchSection(sectionId) {
-            // Hide all sections
-            const sections = document.querySelectorAll('section');
-            sections.forEach(sec => sec.classList.remove('active'));
+    <!-- Q1 -->
+    <div class="quiz-card" id="qc1">
+      <div class="q-num">Question 01</div>
+      <div class="q-text">What is Phonetics?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(1,this,'B')">A. The study of sound systems in a specific language</button>
+        <button class="q-option" onclick="pick(1,this,'B')">B. The scientific study of speech sounds in all languages</button>
+        <button class="q-option" onclick="pick(1,this,'B')">C. The scientific study of language in general</button>
+        <button class="q-option" onclick="pick(1,this,'B')">D. The study of how sounds are written</button>
+      </div>
+      <div class="q-feedback" id="fb1"></div>
+    </div>
 
-            // Remove active class from all buttons
-            const navButtons = document.querySelectorAll('nav button');
-            navButtons.forEach(btn => btn.classList.remove('active'));
+    <!-- Q2 -->
+    <div class="quiz-card" id="qc2">
+      <div class="q-num">Question 02</div>
+      <div class="q-text">What is a Phoneme?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(2,this,'C')">A. A unit of written language</button>
+        <button class="q-option" onclick="pick(2,this,'C')">B. A syllable in a word</button>
+        <button class="q-option" onclick="pick(2,this,'C')">C. The smallest unit of sound that can change meaning</button>
+        <button class="q-option" onclick="pick(2,this,'C')">D. A sound with no obstruction</button>
+      </div>
+      <div class="q-feedback" id="fb2"></div>
+    </div>
 
-            // Show selected section and highlight button
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Find the button that was clicked to set active state
-            const targetBtn = Array.from(navButtons).find(btn => btn.getAttribute('onclick').includes(sectionId));
-            if (targetBtn) {
-                targetBtn.classList.add('active');
-            }
+    <!-- Q3 -->
+    <div class="quiz-card" id="qc3">
+      <div class="q-num">Question 03</div>
+      <div class="q-text">Which branch of phonetics studies how speech sounds are produced by the organs of speech?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(3,this,'A')">A. Articulatory Phonetics</button>
+        <button class="q-option" onclick="pick(3,this,'A')">B. Acoustic Phonetics</button>
+        <button class="q-option" onclick="pick(3,this,'A')">C. Auditory Phonetics</button>
+        <button class="q-option" onclick="pick(3,this,'A')">D. Phonology</button>
+      </div>
+      <div class="q-feedback" id="fb3"></div>
+    </div>
 
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+    <!-- Q4 -->
+    <div class="quiz-card" id="qc4">
+      <div class="q-num">Question 04</div>
+      <div class="q-text">The place of articulation for /p/ and /b/ is:</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(4,this,'B')">A. Alveolar</button>
+        <button class="q-option" onclick="pick(4,this,'B')">B. Bilabial</button>
+        <button class="q-option" onclick="pick(4,this,'B')">C. Labiodental</button>
+        <button class="q-option" onclick="pick(4,this,'B')">D. Glottal</button>
+      </div>
+      <div class="q-feedback" id="fb4"></div>
+    </div>
 
-        // Audio Player Logic
-        let currentAudio = null;
-        function playSound(url) {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
-            currentAudio = new Audio(url);
-            currentAudio.play().catch(e => {
-                console.error("Audio playback failed. The URL might be blocked or unavailable.", e);
-                alert("عفواً، ملف الصوت غير متاح حالياً.");
-            });
-        }
+    <!-- Q5 -->
+    <div class="quiz-card" id="qc5">
+      <div class="q-num">Question 05</div>
+      <div class="q-text">How are Plosives (stops) produced?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(5,this,'D')">A. Partial stop with gradual release causing friction</button>
+        <button class="q-option" onclick="pick(5,this,'D')">B. Air passing through the nose</button>
+        <button class="q-option" onclick="pick(5,this,'D')">C. Air passing along the sides of the tongue</button>
+        <button class="q-option" onclick="pick(5,this,'D')">D. Complete stop then sudden release causing an explosion</button>
+      </div>
+      <div class="q-feedback" id="fb5"></div>
+    </div>
 
-        // Quiz Logic
-        function checkQuiz() {
-            const totalQuestions = 5;
-            let score = 0;
-            let answered = 0;
+    <!-- Q6 -->
+    <div class="quiz-card" id="qc6">
+      <div class="q-num">Question 06</div>
+      <div class="q-text">The sound /θ/ as in "think" is classified as:</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(6,this,'C')">A. A bilabial plosive</button>
+        <button class="q-option" onclick="pick(6,this,'C')">B. A velar nasal</button>
+        <button class="q-option" onclick="pick(6,this,'C')">C. A voiceless dental fricative</button>
+        <button class="q-option" onclick="pick(6,this,'C')">D. A voiced alveolar fricative</button>
+      </div>
+      <div class="q-feedback" id="fb6"></div>
+    </div>
 
-            // Loop through q1 to q5
-            for (let i = 1; i <= totalQuestions; i++) {
-                const options = document.getElementsByName('q' + i);
-                let questionAnswered = false;
-                
-                for (let j = 0; j < options.length; j++) {
-                    if (options[j].checked) {
-                        questionAnswered = true;
-                        answered++;
-                        if (options[j].value === "1") {
-                            score++;
-                        }
-                        break;
-                    }
-                }
-            }
+    <!-- Q7 -->
+    <div class="quiz-card" id="qc7">
+      <div class="q-num">Question 07</div>
+      <div class="q-text">Which of the following is a diphthong?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(7,this,'B')">A. /ɪ/</button>
+        <button class="q-option" onclick="pick(7,this,'B')">B. /eɪ/</button>
+        <button class="q-option" onclick="pick(7,this,'B')">C. /iː/</button>
+        <button class="q-option" onclick="pick(7,this,'B')">D. /ɔː/</button>
+      </div>
+      <div class="q-feedback" id="fb7"></div>
+    </div>
 
-            const feedbackEl = document.getElementById('quiz-feedback');
-            feedbackEl.style.display = 'block';
+    <!-- Q8 -->
+    <div class="quiz-card" id="qc8">
+      <div class="q-num">Question 08</div>
+      <div class="q-text">What is "Voicing" in phonetics?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(8,this,'A')">A. The vibration of the vocal cords during sound production</button>
+        <button class="q-option" onclick="pick(8,this,'A')">B. The place where obstruction of airflow occurs</button>
+        <button class="q-option" onclick="pick(8,this,'A')">C. The way in which airflow is obstructed</button>
+        <button class="q-option" onclick="pick(8,this,'A')">D. The passage of air through the nose</button>
+      </div>
+      <div class="q-feedback" id="fb8"></div>
+    </div>
 
-            if (answered < totalQuestions) {
-                feedbackEl.className = 'warning';
-                feedbackEl.innerHTML = `⚠️ من فضلك جاوب على كل الأسئلة الأول! (You answered ${answered} out of ${totalQuestions})`;
-                return;
-            }
+    <!-- Q9 -->
+    <div class="quiz-card" id="qc9">
+      <div class="q-num">Question 09</div>
+      <div class="q-text">How many consonant phonemes does English have?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(9,this,'C')">A. 20</button>
+        <button class="q-option" onclick="pick(9,this,'C')">B. 26</button>
+        <button class="q-option" onclick="pick(9,this,'C')">C. 24</button>
+        <button class="q-option" onclick="pick(9,this,'C')">D. 44</button>
+      </div>
+      <div class="q-feedback" id="fb9"></div>
+    </div>
 
-            if (score === totalQuestions) {
-                feedbackEl.className = 'success';
-                feedbackEl.innerHTML = `🎉 ممتاز يا بطل! درجتك: ${score} / ${totalQuestions} (Perfect!)`;
-            } else if (score >= 3) {
-                feedbackEl.className = 'warning';
-                feedbackEl.innerHTML = `👍 جيد جداً! درجتك: ${score} / ${totalQuestions} (Good job!)`;
-            } else {
-                feedbackEl.className = 'danger';
-                feedbackEl.innerHTML = `📚 محتاج تراجع الدروس تاني. درجتك: ${score} / ${totalQuestions} (Keep practicing!)`;
-            }
-        }
-    </script>
+    <!-- Q10 -->
+    <div class="quiz-card" id="qc10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">The sounds /tʃ/ and /dʒ/ belong to which manner of articulation?</div>
+      <div class="q-options">
+        <button class="q-option" onclick="pick(10,this,'D')">A. Fricatives</button>
+        <button class="q-option" onclick="pick(10,this,'D')">B. Nasals</button>
+        <button class="q-option" onclick="pick(10,this,'D')">C. Plosives</button>
+        <button class="q-option" onclick="pick(10,this,'D')">D. Affricates</button>
+      </div>
+      <div class="q-feedback" id="fb10"></div>
+    </div>
+
+    <button class="quiz-submit-btn" onclick="submitQuiz()">Submit Quiz →</button>
+  </div>
+
+  <div class="score-box" id="score-box">
+    <div class="score-num" id="score-display">0/10</div>
+    <p>Questions Correct</p>
+    <div class="grade" id="grade-label"></div>
+    <br>
+    <button class="retry-btn" onclick="resetQuiz()">↩ Try Again</button>
+  </div>
+</section>
+
+<script>
+  // ── Navigation ──
+  function show(id, btn) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('visible'));
+    document.getElementById(id).classList.add('visible');
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ── Quiz Logic ──
+  const answers   = {};
+  const correct   = {1:'B',2:'C',3:'A',4:'B',5:'D',6:'C',7:'B',8:'A',9:'C',10:'D'};
+  const feedbacks = {
+    1: 'Phonetics studies speech sounds across ALL languages, while phonology focuses on a specific language.',
+    2: 'A phoneme is the smallest unit of sound that creates a difference in meaning (e.g., /p/ vs /b/ in "pat" vs "bat").',
+    3: 'Articulatory phonetics concerns the production of sounds — how the lips, tongue, and other organs work together.',
+    4: 'Bilabial means "two lips" — /p/ and /b/ are formed by pressing both lips together.',
+    5: 'Plosives involve a complete blockage of airflow followed by a sudden, explosive release.',
+    6: '/θ/ is dental (tongue between teeth) and voiceless (no vocal cord vibration), making it a voiceless dental fricative.',
+    7: '/eɪ/ is a diphthong — a gliding vowel moving from /e/ toward /ɪ/, as in "day" or "rain".',
+    8: 'Voicing refers specifically to the vibration of the vocal cords. Compare /s/ (voiceless) with /z/ (voiced).',
+    9: 'English has 24 consonant phonemes and 20 vowel sounds, totalling 44 phonemes.',
+    10: 'Affricates begin with a complete stop and end with a gradual fricative release: /tʃ/ (chair) and /dʒ/ (jump).'
+  };
+
+  let answered = 0;
+
+  function pick(q, btn, correctLetter) {
+    const card = document.getElementById('qc' + q);
+    if (card.classList.contains('answered-correct') || card.classList.contains('answered-wrong')) return;
+
+    const allOpts = card.querySelectorAll('.q-option');
+    const letters = ['A','B','C','D'];
+    const chosen  = letters[Array.from(allOpts).indexOf(btn)];
+
+    allOpts.forEach((b, i) => {
+      b.disabled = true;
+      if (letters[i] === correct[q]) b.classList.add('correct');
+    });
+
+    if (chosen === correct[q]) {
+      btn.classList.add('correct');
+      card.classList.add('answered-correct');
+    } else {
+      btn.classList.add('wrong');
+      card.classList.add('answered-wrong');
+    }
+
+    answers[q] = chosen;
+    const fb = document.getElementById('fb' + q);
+    fb.textContent = feedbacks[q];
+    fb.classList.add('show');
+
+    answered++;
+    document.getElementById('progress-label').textContent = answered + ' / 10 answered';
+  }
+
+  function submitQuiz() {
+    let score = 0;
+    for (let q = 1; q <= 10; q++) {
+      if (answers[q] === correct[q]) score++;
+      // auto-mark unanswered questions
+      if (!answers[q]) {
+        const card = document.getElementById('qc' + q);
+        card.querySelectorAll('.q-option').forEach((b, i) => {
+          b.disabled = true;
+          if (['A','B','C','D'][i] === correct[q]) b.classList.add('correct');
+        });
+        card.classList.add('answered-wrong');
+        const fb = document.getElementById('fb' + q);
+        fb.textContent = feedbacks[q];
+        fb.classList.add('show');
+      }
+    }
+
+    document.getElementById('quiz-form').style.display = 'none';
+    const box = document.getElementById('score-box');
+    box.classList.add('visible');
+    document.getElementById('score-display').textContent = score + '/10';
+
+    let grade;
+    if      (score === 10) grade = '🏆 Perfect Score!';
+    else if (score >= 8)   grade = '⭐ Excellent!';
+    else if (score >= 6)   grade = '👍 Good Work';
+    else if (score >= 4)   grade = '📖 Keep Studying';
+    else                   grade = '💪 Review the Material';
+
+    document.getElementById('grade-label').textContent = grade;
+  }
+
+  function resetQuiz() {
+    answered = 0;
+    for (let key in answers) delete answers[key];
+    document.getElementById('progress-label').textContent = '0 / 10 answered';
+
+    for (let q = 1; q <= 10; q++) {
+      const card = document.getElementById('qc' + q);
+      card.classList.remove('answered-correct','answered-wrong');
+      card.querySelectorAll('.q-option').forEach(b => {
+        b.disabled = false;
+        b.classList.remove('correct','wrong');
+      });
+      const fb = document.getElementById('fb' + q);
+      fb.textContent = '';
+      fb.classList.remove('show');
+    }
+
+    document.getElementById('score-box').classList.remove('visible');
+    document.getElementById('quiz-form').style.display = 'block';
+  }
+</script>
 </body>
 </html>
