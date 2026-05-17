@@ -1,0 +1,2637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhonLab — English Phonetics · Second Year</title>
+<style>
+/* ============================================================
+   RESET & ROOT
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#020818;
+  --navy2:#06122a;
+  --navy3:#0b1f45;
+  --blue:#1a56db;
+  --cyan:#06b6d4;
+  --cyan2:#22d3ee;
+  --glow:#0ea5e9;
+  --purple:#7c3aed;
+  --white:#f0f8ff;
+  --grey:#94a3b8;
+  --grey2:#cbd5e1;
+  --card:#0d1f3c;
+  --card2:#111d38;
+  --border:rgba(6,182,212,.18);
+  --border2:rgba(6,182,212,.35);
+  --font-main:'Segoe UI',system-ui,sans-serif;
+  --transition:.3s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--navy);
+  color:var(--white);
+  font-family:var(--font-main);
+  line-height:1.7;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;font-family:inherit}
+img{max-width:100%}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px}
+
+/* ============================================================
+   PARTICLE CANVAS
+   ============================================================ */
+#particles-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;opacity:.5;
+}
+
+/* ============================================================
+   GLASSMORPHISM BASE
+   ============================================================ */
+.glass{
+  background:rgba(13,31,60,.6);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border);
+  border-radius:16px;
+}
+.glass-strong{
+  background:rgba(13,31,60,.85);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--border2);
+  border-radius:20px;
+}
+
+/* ============================================================
+   GLOW EFFECTS
+   ============================================================ */
+.glow-text{
+  text-shadow:0 0 20px rgba(6,182,212,.7),0 0 40px rgba(6,182,212,.3);
+}
+.glow-box{
+  box-shadow:0 0 30px rgba(6,182,212,.15),0 8px 32px rgba(0,0,0,.4);
+}
+.glow-box:hover{
+  box-shadow:0 0 50px rgba(6,182,212,.3),0 12px 40px rgba(0,0,0,.5);
+}
+
+/* ============================================================
+   GRADIENT UTILITIES
+   ============================================================ */
+.grad-text{
+  background:linear-gradient(135deg,#06b6d4,#3b82f6,#8b5cf6);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.grad-border{
+  border-image:linear-gradient(135deg,var(--cyan),var(--blue)) 1;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:14px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(2,8,24,.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:var(--transition);
+}
+#navbar.scrolled{
+  background:rgba(2,8,24,.95);
+  box-shadow:0 4px 30px rgba(0,0,0,.5);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  font-size:1.4rem;font-weight:800;letter-spacing:-0.5px;
+}
+.nav-logo .logo-icon{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+  box-shadow:0 0 20px rgba(6,182,212,.4);
+}
+.nav-links{
+  display:flex;align-items:center;gap:8px;list-style:none;
+}
+.nav-links a{
+  padding:8px 16px;border-radius:8px;
+  font-size:.9rem;font-weight:500;color:var(--grey2);
+  transition:var(--transition);
+  position:relative;
+}
+.nav-links a:hover,.nav-links a.active{
+  color:var(--cyan);
+  background:rgba(6,182,212,.08);
+}
+.nav-links a.active::after{
+  content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);
+  width:20px;height:2px;background:var(--cyan);border-radius:1px;
+}
+.nav-cta{
+  padding:9px 20px;border-radius:10px;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:#fff;font-weight:600;font-size:.9rem;
+  box-shadow:0 4px 16px rgba(6,182,212,.3);
+  transition:var(--transition);
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(6,182,212,.5)}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--cyan);border-radius:1px;transition:var(--transition)}
+
+/* ============================================================
+   SECTION BASE
+   ============================================================ */
+section{position:relative;z-index:1;overflow:hidden}
+.section-inner{max-width:1200px;margin:0 auto;padding:0 40px}
+.section-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:100px;
+  background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);
+  font-size:.8rem;font-weight:600;color:var(--cyan);letter-spacing:.5px;text-transform:uppercase;
+  margin-bottom:16px;
+}
+.section-title{
+  font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;
+  margin-bottom:16px;
+}
+.section-sub{
+  font-size:1.1rem;color:var(--grey);max-width:600px;line-height:1.7;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+#hero{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:120px 0 80px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(6,182,212,.15) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 60%,rgba(59,130,246,.1) 0%,transparent 60%),
+    var(--navy);
+}
+.hero-inner{
+  max-width:1200px;margin:0 auto;padding:0 40px;
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 16px;border-radius:100px;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);
+  font-size:.8rem;color:var(--cyan);font-weight:600;margin-bottom:24px;
+}
+.hero-badge .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--cyan);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.hero-title{
+  font-size:clamp(2.5rem,5.5vw,4rem);font-weight:900;line-height:1.1;margin-bottom:24px;
+  letter-spacing:-1px;
+}
+.hero-desc{
+  font-size:1.1rem;color:var(--grey);margin-bottom:36px;max-width:520px;
+}
+.hero-buttons{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{
+  padding:14px 30px;border-radius:12px;font-weight:700;font-size:1rem;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:#fff;transition:var(--transition);
+  box-shadow:0 6px 24px rgba(6,182,212,.4);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(6,182,212,.6)}
+.btn-secondary{
+  padding:14px 30px;border-radius:12px;font-weight:600;font-size:1rem;
+  background:rgba(255,255,255,.05);border:1px solid var(--border2);
+  color:var(--white);transition:var(--transition);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-secondary:hover{background:rgba(6,182,212,.08);border-color:var(--cyan)}
+.hero-stats{
+  display:flex;gap:32px;margin-top:48px;
+  padding-top:32px;border-top:1px solid var(--border);
+}
+.hero-stat-num{font-size:1.8rem;font-weight:800;color:var(--cyan)}
+.hero-stat-label{font-size:.85rem;color:var(--grey);margin-top:2px}
+
+/* Hero Visual — floating IPA sphere */
+.hero-visual{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  height:480px;
+}
+.ipa-sphere{
+  position:relative;width:360px;height:360px;
+}
+.sphere-core{
+  position:absolute;inset:50px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 35%,rgba(6,182,212,.4),transparent 60%),
+    radial-gradient(circle at 65% 65%,rgba(59,130,246,.3),transparent 60%),
+    rgba(13,31,60,.8);
+  border:1px solid rgba(6,182,212,.3);
+  box-shadow:
+    0 0 80px rgba(6,182,212,.25),
+    inset 0 0 60px rgba(6,182,212,.08);
+  animation:sphere-breathe 4s ease-in-out infinite;
+}
+@keyframes sphere-breathe{0%,100%{box-shadow:0 0 60px rgba(6,182,212,.2),inset 0 0 40px rgba(6,182,212,.06)}50%{box-shadow:0 0 100px rgba(6,182,212,.35),inset 0 0 80px rgba(6,182,212,.12)}}
+.ipa-float{
+  position:absolute;
+  font-size:1.4rem;font-weight:700;
+  color:var(--cyan);
+  padding:8px 14px;border-radius:10px;
+  background:rgba(13,31,60,.9);
+  border:1px solid rgba(6,182,212,.25);
+  box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 15px rgba(6,182,212,.2);
+  animation:float-ipa 6s ease-in-out infinite;
+  cursor:default;transition:var(--transition);
+}
+.ipa-float:hover{
+  color:#fff;background:rgba(6,182,212,.2);
+  transform:scale(1.15)!important;
+  z-index:10;
+}
+@keyframes float-ipa{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.f1{top:5%;left:10%;animation-delay:0s}
+.f2{top:15%;right:5%;animation-delay:.8s}
+.f3{top:45%;left:0;animation-delay:1.6s}
+.f4{top:45%;right:2%;animation-delay:2.4s}
+.f5{bottom:15%;left:15%;animation-delay:3.2s}
+.f6{bottom:5%;right:15%;animation-delay:1.2s}
+.f7{top:28%;left:30%;animation-delay:2s}
+.f8{bottom:28%;right:28%;animation-delay:.4s}
+
+/* ============================================================
+   PROGRESS BAR (top)
+   ============================================================ */
+#progress-bar{
+  position:fixed;top:0;left:0;height:3px;z-index:2000;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));
+  transition:width .1s linear;
+  box-shadow:0 0 10px rgba(6,182,212,.8);
+}
+
+/* ============================================================
+   COURSE CHAPTERS
+   ============================================================ */
+#chapters{padding:100px 0}
+.chapters-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:20px;margin-top:60px;
+}
+.chapter-card{
+  padding:28px;border-radius:16px;
+  background:var(--card);border:1px solid var(--border);
+  transition:var(--transition);cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.chapter-card::before{
+  content:'';position:absolute;inset:0;opacity:0;
+  background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(59,130,246,.05));
+  transition:var(--transition);
+}
+.chapter-card:hover::before{opacity:1}
+.chapter-card:hover{
+  border-color:rgba(6,182,212,.4);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,.4),0 0 30px rgba(6,182,212,.1);
+}
+.chapter-num{
+  font-size:.75rem;font-weight:700;color:var(--cyan);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;
+}
+.chapter-title{
+  font-size:1.15rem;font-weight:700;margin-bottom:10px;
+  line-height:1.3;
+}
+.chapter-desc{
+  font-size:.9rem;color:var(--grey);line-height:1.6;margin-bottom:20px;
+}
+.chapter-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:.8rem;color:var(--grey);
+}
+.chapter-topics{
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;
+}
+.topic-tag{
+  padding:4px 10px;border-radius:6px;font-size:.75rem;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);
+  color:var(--cyan2);
+}
+.chapter-icon{
+  width:44px;height:44px;border-radius:12px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+}
+.icon-blue{background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(59,130,246,.1))}
+.icon-purple{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(99,102,241,.1))}
+.icon-green{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(5,150,105,.1))}
+.icon-orange{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(234,88,12,.1))}
+.icon-pink{background:linear-gradient(135deg,rgba(236,72,153,.15),rgba(168,85,247,.1))}
+
+/* ============================================================
+   LESSON MODAL
+   ============================================================ */
+#lesson-overlay{
+  display:none;position:fixed;inset:0;z-index:3000;
+  background:rgba(2,8,24,.9);
+  backdrop-filter:blur(12px);
+  overflow-y:auto;
+  animation:fade-in .3s ease;
+}
+#lesson-overlay.active{display:block}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+.lesson-modal{
+  max-width:860px;margin:40px auto;padding:20px;
+}
+.lesson-modal-inner{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:24px;
+  overflow:hidden;
+  animation:slide-up .35s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slide-up{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.lesson-header{
+  padding:36px 40px 24px;
+  background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(59,130,246,.05));
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.lesson-close{
+  position:absolute;top:20px;right:20px;
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  color:var(--grey);font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:var(--transition);
+}
+.lesson-close:hover{background:rgba(6,182,212,.1);color:var(--cyan)}
+.lesson-body{padding:36px 40px}
+.lesson-body h3{
+  font-size:1.1rem;font-weight:700;color:var(--cyan);
+  margin:28px 0 12px;padding-left:14px;
+  border-left:3px solid var(--cyan);
+}
+.lesson-body h3:first-child{margin-top:0}
+.lesson-body p{color:var(--grey2);line-height:1.8;margin-bottom:14px}
+.lesson-body .ipa-example{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:8px;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);
+  font-size:.95rem;color:var(--cyan2);font-family:monospace;
+  margin:3px;cursor:default;transition:var(--transition);
+}
+.lesson-body .ipa-example:hover{background:rgba(6,182,212,.15);transform:scale(1.03)}
+.lesson-body .example-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;margin:14px 0;
+}
+.lesson-body .example-card{
+  padding:12px 16px;border-radius:10px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+}
+.lesson-body .example-card .word{font-weight:700;margin-bottom:4px}
+.lesson-body .example-card .trans{color:var(--cyan);font-size:.9rem;font-family:monospace}
+.lesson-body .example-card .meaning{color:var(--grey);font-size:.8rem;margin-top:4px}
+.rule-box{
+  padding:18px 20px;border-radius:12px;margin:16px 0;
+  background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.15);
+  border-left:4px solid var(--cyan);
+}
+.rule-box strong{color:var(--cyan2)}
+.warning-box{
+  padding:18px 20px;border-radius:12px;margin:16px 0;
+  background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);
+  border-left:4px solid #f59e0b;
+  color:var(--grey2);
+}
+.stress-demo{
+  display:flex;align-items:flex-end;gap:4px;
+  padding:20px;border-radius:12px;
+  background:rgba(13,31,60,.8);border:1px solid var(--border);
+  margin:14px 0;
+  flex-wrap:wrap;gap:8px;
+}
+.syl{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.syl-bar{
+  width:36px;border-radius:4px 4px 0 0;
+  background:rgba(6,182,212,.2);
+  border-top:2px solid rgba(6,182,212,.4);
+  transition:var(--transition);
+}
+.syl-bar.strong{background:linear-gradient(0deg,rgba(6,182,212,.4),rgba(6,182,212,.7));border-top-color:var(--cyan);}
+.syl-bar.secondary{background:rgba(6,182,212,.35);border-top-color:rgba(6,182,212,.6);}
+.syl-label{font-size:.85rem;font-weight:600;color:var(--grey2)}
+.syl-label.strong{color:var(--cyan);font-weight:800}
+
+/* ============================================================
+   IPA EXPLORER
+   ============================================================ */
+#ipa{padding:100px 0;background:radial-gradient(ellipse 70% 40% at 50% 0,rgba(6,182,212,.07) 0%,transparent 60%)}
+.ipa-tabs{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:40px;margin-bottom:30px;
+}
+.ipa-tab{
+  padding:10px 22px;border-radius:10px;font-weight:600;font-size:.9rem;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--grey2);transition:var(--transition);
+}
+.ipa-tab.active,.ipa-tab:hover{
+  background:rgba(6,182,212,.1);border-color:var(--cyan);color:var(--cyan);
+}
+.ipa-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:10px;
+}
+.ipa-card{
+  aspect-ratio:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;
+  border-radius:14px;cursor:pointer;
+  background:var(--card);border:1px solid var(--border);
+  transition:var(--transition);position:relative;overflow:hidden;
+}
+.ipa-card::after{
+  content:'';position:absolute;inset:0;opacity:0;
+  background:radial-gradient(circle at center,rgba(6,182,212,.2),transparent 70%);
+  transition:var(--transition);
+}
+.ipa-card:hover::after{opacity:1}
+.ipa-card:hover{
+  transform:scale(1.08);
+  border-color:var(--cyan);
+  box-shadow:0 0 24px rgba(6,182,212,.3);
+}
+.ipa-card:active{transform:scale(.96)}
+.ipa-sym{font-size:1.6rem;font-weight:700;color:var(--cyan)}
+.ipa-ex{font-size:.7rem;color:var(--grey);text-align:center}
+.ipa-type{
+  position:absolute;top:5px;right:7px;
+  font-size:.55rem;font-weight:700;color:var(--cyan);opacity:.6;
+  text-transform:uppercase;
+}
+
+/* IPA Popup */
+#ipa-popup{
+  display:none;position:fixed;
+  top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);
+  width:380px;z-index:5000;
+  background:var(--card2);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:30px;
+  box-shadow:0 0 60px rgba(6,182,212,.2),0 20px 60px rgba(0,0,0,.6);
+  animation:pop-in .25s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+#ipa-popup.active{display:block}
+@keyframes pop-in{from{transform:translate(-50%,-50%) scale(.85);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.ipa-popup-close{
+  position:absolute;top:14px;right:14px;
+  width:28px;height:28px;border-radius:6px;
+  background:rgba(255,255,255,.05);
+  color:var(--grey);font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:var(--transition);
+}
+.ipa-popup-close:hover{background:rgba(6,182,212,.15);color:var(--cyan)}
+.ipa-popup-sym{
+  font-size:3.5rem;font-weight:900;
+  color:var(--cyan);text-align:center;margin-bottom:8px;
+  text-shadow:0 0 30px rgba(6,182,212,.6);
+}
+.ipa-popup-name{
+  text-align:center;font-weight:700;font-size:1.1rem;margin-bottom:4px;
+}
+.ipa-popup-cat{
+  text-align:center;color:var(--cyan);font-size:.8rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:18px;
+}
+.ipa-popup-desc{color:var(--grey2);font-size:.95rem;line-height:1.7;margin-bottom:16px}
+.ipa-popup-words{
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.ipa-popup-word{
+  padding:5px 12px;border-radius:7px;font-size:.85rem;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);
+  color:var(--cyan2);
+}
+.ipa-popup-art{
+  margin-top:16px;padding:14px;border-radius:10px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  font-size:.88rem;color:var(--grey);line-height:1.6;
+}
+#ipa-backdrop{
+  display:none;position:fixed;inset:0;z-index:4999;
+  background:rgba(0,0,0,.5);
+}
+#ipa-backdrop.active{display:block}
+
+/* ============================================================
+   WORD STRESS VISUALIZER
+   ============================================================ */
+#stress-tool{padding:100px 0}
+.stress-container{
+  margin-top:50px;padding:40px;border-radius:24px;
+  background:var(--card);border:1px solid var(--border);
+}
+.stress-input-row{
+  display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;
+}
+.stress-input{
+  flex:1;min-width:200px;padding:14px 20px;
+  border-radius:12px;font-size:1rem;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border2);
+  color:var(--white);outline:none;
+  transition:var(--transition);
+}
+.stress-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(6,182,212,.1)}
+.stress-analyze-btn{
+  padding:14px 28px;border-radius:12px;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:#fff;font-weight:700;font-size:1rem;
+  transition:var(--transition);white-space:nowrap;
+}
+.stress-analyze-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(6,182,212,.4)}
+#stress-display{min-height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.stress-syllables{
+  display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;justify-content:center;
+}
+.stress-syl{
+  display:flex;flex-direction:column;align-items:center;gap:8px;cursor:default;
+}
+.stress-bar-wrap{display:flex;align-items:flex-end;justify-content:center;height:80px}
+.stress-bar{
+  width:48px;border-radius:6px 6px 0 0;
+  transition:height .5s cubic-bezier(.4,0,.2,1);
+}
+.stress-bar.primary{background:linear-gradient(0deg,rgba(6,182,212,.5),var(--cyan));box-shadow:0 0 20px rgba(6,182,212,.4)}
+.stress-bar.secondary{background:rgba(6,182,212,.4)}
+.stress-bar.unstressed{background:rgba(6,182,212,.15)}
+.stress-syl-label{
+  font-size:1rem;font-weight:700;padding:6px 12px;
+  border-radius:8px;border:1px solid var(--border);
+  transition:var(--transition);
+}
+.stress-syl-label.primary{
+  color:var(--cyan);border-color:rgba(6,182,212,.4);
+  background:rgba(6,182,212,.1);
+  text-transform:uppercase;
+}
+.stress-syl-label.secondary{color:var(--grey2)}
+.stress-syl-label.unstressed{color:var(--grey)}
+.stress-mark{font-size:.7rem;color:var(--cyan);font-weight:800;text-align:center;height:14px}
+.stress-presets{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;
+}
+.stress-preset{
+  padding:7px 15px;border-radius:8px;font-size:.85rem;font-weight:600;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--grey2);transition:var(--transition);
+}
+.stress-preset:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.06)}
+.stress-info{
+  padding:16px 20px;border-radius:12px;
+  background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.15);
+  font-size:.9rem;color:var(--grey2);line-height:1.6;
+  max-width:600px;text-align:center;
+}
+.noun-verb-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:14px;margin-top:30px;
+}
+.nv-card{
+  padding:20px;border-radius:14px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  transition:var(--transition);
+}
+.nv-card:hover{border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.03)}
+.nv-word{font-size:1.1rem;font-weight:800;margin-bottom:10px}
+.nv-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.nv-pos{
+  font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:3px 8px;border-radius:5px;
+}
+.nv-pos.noun{background:rgba(6,182,212,.1);color:var(--cyan)}
+.nv-pos.verb{background:rgba(124,58,237,.1);color:#a78bfa}
+.nv-pos.adj{background:rgba(16,185,129,.1);color:#34d399}
+.nv-trans{font-family:monospace;color:var(--grey2);font-size:.95rem}
+.nv-example{font-size:.82rem;color:var(--grey);margin-top:8px;font-style:italic}
+
+/* ============================================================
+   SYLLABLE TRAINER
+   ============================================================ */
+#syllable-trainer{
+  padding:100px 0;
+  background:radial-gradient(ellipse 60% 40% at 0 50%,rgba(124,58,237,.06) 0%,transparent 60%);
+}
+.trainer-box{
+  padding:40px;border-radius:24px;
+  background:var(--card);border:1px solid var(--border);
+  margin-top:50px;
+}
+.trainer-rules{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;margin-bottom:32px;
+}
+.trainer-rule{
+  padding:16px 18px;border-radius:12px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+}
+.trainer-rule-title{
+  font-weight:700;color:var(--cyan2);margin-bottom:6px;font-size:.9rem;
+}
+.trainer-rule-desc{font-size:.85rem;color:var(--grey);line-height:1.5}
+#syl-output{
+  display:flex;flex-wrap:wrap;gap:2px;align-items:center;justify-content:center;
+  min-height:70px;font-size:2rem;font-weight:800;
+}
+.syl-part{
+  padding:6px 2px;transition:var(--transition);color:var(--white);
+}
+.syl-part.open{color:var(--cyan);border-bottom:3px solid var(--cyan)}
+.syl-part.closed{color:#a78bfa;border-bottom:3px solid #7c3aed}
+.syl-divider{color:rgba(6,182,212,.4);font-weight:400;font-size:1.5rem;padding:0 2px}
+.syl-info-row{
+  display:flex;gap:16px;flex-wrap:wrap;margin-top:20px;
+}
+.syl-info-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:600;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+}
+.chip-dot{width:8px;height:8px;border-radius:50%}
+.chip-cyan .chip-dot{background:var(--cyan)}
+.chip-cyan{color:var(--cyan)}
+.chip-purple .chip-dot{background:#a78bfa}
+.chip-purple{color:#a78bfa}
+.chip-grey .chip-dot{background:var(--grey)}
+.chip-grey{color:var(--grey)}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+#quiz{padding:100px 0}
+.quiz-container{
+  margin-top:50px;padding:40px;border-radius:24px;
+  background:var(--card);border:1px solid var(--border);
+}
+.quiz-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:28px;flex-wrap:wrap;gap:12px;
+}
+.quiz-progress-bar{
+  height:6px;border-radius:3px;
+  background:rgba(255,255,255,.06);
+  margin-bottom:30px;overflow:hidden;
+}
+.quiz-progress-fill{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));
+  transition:width .5s ease;
+  box-shadow:0 0 10px rgba(6,182,212,.4);
+}
+.quiz-question{
+  font-size:1.25rem;font-weight:700;margin-bottom:10px;line-height:1.4;
+}
+.quiz-sub{font-size:.9rem;color:var(--grey);margin-bottom:24px}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.quiz-opt{
+  padding:16px 20px;border-radius:12px;text-align:left;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  color:var(--white);font-size:.95rem;font-weight:500;
+  transition:var(--transition);
+}
+.quiz-opt:hover:not(:disabled){
+  border-color:var(--cyan);background:rgba(6,182,212,.08);
+  transform:translateY(-1px);
+}
+.quiz-opt.correct{
+  border-color:#10b981;background:rgba(16,185,129,.1);color:#34d399;
+}
+.quiz-opt.wrong{
+  border-color:#ef4444;background:rgba(239,68,68,.08);color:#f87171;
+}
+.quiz-opt:disabled{cursor:default}
+.quiz-explanation{
+  margin-top:18px;padding:16px 18px;border-radius:12px;
+  background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.15);
+  font-size:.9rem;color:var(--grey2);line-height:1.6;
+  display:none;
+}
+.quiz-explanation.show{display:block;animation:fade-in .3s ease}
+.quiz-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:24px;flex-wrap:wrap;gap:12px;
+}
+.quiz-score-display{
+  padding:10px 18px;border-radius:10px;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);
+  font-weight:700;color:var(--cyan);font-size:.95rem;
+}
+.quiz-types{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;
+}
+.quiz-type-btn{
+  padding:8px 18px;border-radius:9px;font-size:.85rem;font-weight:600;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--grey2);transition:var(--transition);
+}
+.quiz-type-btn.active,.quiz-type-btn:hover{
+  border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08);
+}
+/* Drag quiz */
+.drag-container{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.drag-source{flex:1;min-width:200px}
+.drag-target{flex:1;min-width:200px}
+.drag-title{font-weight:700;color:var(--grey2);margin-bottom:10px;font-size:.9rem}
+.drag-item{
+  padding:10px 16px;border-radius:9px;margin-bottom:8px;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);
+  color:var(--cyan2);font-weight:600;cursor:grab;
+  transition:var(--transition);user-select:none;
+}
+.drag-item:hover{background:rgba(6,182,212,.15);transform:translateX(3px)}
+.drag-item.dragging{opacity:.5;cursor:grabbing}
+.drag-slot{
+  padding:10px 16px;border-radius:9px;margin-bottom:8px;
+  min-height:44px;
+  border:2px dashed rgba(6,182,212,.2);
+  color:var(--grey);font-size:.85rem;
+  transition:var(--transition);
+}
+.drag-slot.over{border-color:var(--cyan);background:rgba(6,182,212,.05)}
+.drag-slot.filled{
+  border-style:solid;border-color:rgba(6,182,212,.3);
+  background:rgba(6,182,212,.06);
+  color:var(--cyan2);font-weight:600;
+}
+/* Results */
+.quiz-results{
+  text-align:center;padding:20px;display:none;
+}
+.quiz-results.show{display:block;animation:fade-in .4s ease}
+.result-score{
+  font-size:4rem;font-weight:900;
+  color:var(--cyan);
+  text-shadow:0 0 30px rgba(6,182,212,.5);
+  margin-bottom:8px;
+}
+.result-msg{font-size:1.1rem;color:var(--grey2);margin-bottom:24px}
+.result-breakdown{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;
+}
+.result-stat{
+  padding:14px 20px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  text-align:center;
+}
+.result-stat-num{font-size:1.6rem;font-weight:800}
+.result-stat-label{font-size:.8rem;color:var(--grey);margin-top:2px}
+
+/* ============================================================
+   GLOSSARY
+   ============================================================ */
+#glossary{
+  padding:100px 0;
+  background:radial-gradient(ellipse 60% 40% at 100% 50%,rgba(59,130,246,.06) 0%,transparent 60%);
+}
+.glossary-search{
+  display:flex;gap:12px;margin-top:40px;margin-bottom:24px;flex-wrap:wrap;
+}
+.glossary-input{
+  flex:1;min-width:200px;padding:12px 18px;
+  border-radius:10px;font-size:.95rem;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border2);
+  color:var(--white);outline:none;
+  transition:var(--transition);
+}
+.glossary-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(6,182,212,.1)}
+.glossary-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:14px;
+}
+.gloss-card{
+  padding:18px 20px;border-radius:14px;
+  background:var(--card);border:1px solid var(--border);
+  transition:var(--transition);
+}
+.gloss-card:hover{border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.03)}
+.gloss-num{
+  font-size:.75rem;font-weight:700;color:var(--cyan);
+  margin-bottom:6px;font-family:monospace;
+}
+.gloss-term{font-weight:700;font-size:1rem;margin-bottom:6px}
+.gloss-def{font-size:.88rem;color:var(--grey);line-height:1.6}
+.gloss-example{
+  margin-top:8px;font-size:.83rem;color:var(--cyan2);
+  font-family:monospace;
+}
+
+/* ============================================================
+   ARTICULATION DIAGRAMS
+   ============================================================ */
+#articulation{padding:100px 0}
+.articu-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:20px;margin-top:50px;
+}
+.articu-card{
+  padding:28px;border-radius:16px;
+  background:var(--card);border:1px solid var(--border);
+  transition:var(--transition);
+}
+.articu-card:hover{
+  border-color:rgba(6,182,212,.35);
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+.articu-svg-wrap{
+  height:160px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+}
+.articu-title{font-size:1rem;font-weight:700;margin-bottom:8px}
+.articu-desc{font-size:.85rem;color:var(--grey);line-height:1.5}
+.articu-examples{
+  display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;
+}
+.articu-ex-badge{
+  padding:3px 9px;border-radius:5px;font-size:.78rem;font-family:monospace;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);
+  color:var(--cyan2);
+}
+
+/* ============================================================
+   ALLOPHONIC VARIATIONS
+   ============================================================ */
+#allophones{
+  padding:100px 0;
+  background:radial-gradient(ellipse 70% 40% at 50% 100%,rgba(124,58,237,.06) 0%,transparent 60%);
+}
+.allophone-visual{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px;
+}
+.allophone-side{
+  padding:24px;border-radius:14px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+}
+.allophone-side-title{font-weight:700;margin-bottom:12px;font-size:.95rem}
+.allophone-side-sym{font-size:2.5rem;font-weight:900;margin-bottom:10px}
+.asp{color:var(--cyan);text-shadow:0 0 15px rgba(6,182,212,.5)}
+.unasp{color:#a78bfa;text-shadow:0 0 15px rgba(124,58,237,.4)}
+.allophone-words{
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.allo-word{
+  padding:5px 11px;border-radius:7px;font-size:.88rem;font-family:monospace;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--grey2);
+}
+
+/* ============================================================
+   SENTENCE STRESS
+   ============================================================ */
+#sentence-stress{padding:100px 0}
+.sent-example{
+  padding:24px;border-radius:14px;
+  background:var(--card);border:1px solid var(--border);
+  margin-top:14px;transition:var(--transition);
+}
+.sent-example:hover{border-color:rgba(6,182,212,.25)}
+.sent-text{
+  font-size:1.1rem;line-height:2;margin-bottom:10px;
+}
+.sent-text .prom{
+  color:var(--cyan);font-weight:800;font-size:1.2rem;
+  padding:2px 6px;border-radius:5px;
+  background:rgba(6,182,212,.08);
+  text-decoration:underline;text-decoration-color:rgba(6,182,212,.4);
+}
+.sent-meaning{font-size:.88rem;color:var(--grey);font-style:italic}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{
+  padding:60px 0 40px;
+  border-top:1px solid var(--border);
+  margin-top:60px;
+}
+.footer-inner{
+  max-width:1200px;margin:0 auto;padding:0 40px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;
+}
+.footer-brand .logo{font-size:1.3rem;font-weight:800;margin-bottom:12px}
+.footer-brand p{font-size:.9rem;color:var(--grey);line-height:1.6}
+.footer-col h4{font-weight:700;margin-bottom:16px;color:var(--grey2)}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:8px}
+.footer-col ul li a{font-size:.9rem;color:var(--grey);transition:var(--transition)}
+.footer-col ul li a:hover{color:var(--cyan)}
+.footer-bottom{
+  max-width:1200px;margin:0 auto;padding:24px 40px 0;
+  border-top:1px solid var(--border);margin-top:40px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.footer-bottom p{font-size:.85rem;color:var(--grey)}
+
+/* ============================================================
+   MOBILE NAV DRAWER
+   ============================================================ */
+#mobile-nav{
+  display:none;
+  position:fixed;top:0;right:0;bottom:0;width:280px;z-index:2000;
+  background:rgba(6,12,24,.97);
+  backdrop-filter:blur(20px);
+  border-left:1px solid var(--border);
+  padding:80px 24px 40px;
+  flex-direction:column;gap:8px;
+  transform:translateX(100%);
+  transition:transform .3s ease;
+}
+#mobile-nav.open{transform:translateX(0)}
+.mobile-nav-overlay{
+  display:none;position:fixed;inset:0;z-index:1999;
+  background:rgba(0,0,0,.5);
+}
+.mobile-nav-overlay.open{display:block}
+.mobile-nav-link{
+  padding:14px 16px;border-radius:10px;
+  font-weight:600;color:var(--grey2);
+  transition:var(--transition);display:block;
+}
+.mobile-nav-link:hover{background:rgba(6,182,212,.08);color:var(--cyan)}
+
+/* ============================================================
+   SCROLL ANIMATE
+   ============================================================ */
+.reveal{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:768px){
+  #navbar{padding:14px 20px}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  #mobile-nav{display:flex}
+  .hero-inner{grid-template-columns:1fr;gap:40px;text-align:center}
+  .hero-visual{display:none}
+  .hero-buttons{justify-content:center}
+  .hero-stats{justify-content:center}
+  .section-inner{padding:0 20px}
+  .footer-inner{grid-template-columns:1fr}
+  .quiz-options{grid-template-columns:1fr}
+  .allophone-visual{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .ipa-grid{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+  .lesson-body{padding:24px 20px}
+  .lesson-header{padding:24px 20px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== PROGRESS BAR ===================== -->
+<div id="progress-bar" style="width:0%"></div>
+
+<!-- ===================== PARTICLES ===================== -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <div class="logo-icon">🔬</div>
+    <span class="grad-text">PhonLab</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#hero" class="active">Home</a></li>
+    <li><a href="#chapters">Chapters</a></li>
+    <li><a href="#ipa">IPA</a></li>
+    <li><a href="#stress-tool">Stress</a></li>
+    <li><a href="#syllable-trainer">Syllables</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ul>
+  <a href="#quiz" class="nav-cta">Start Quiz</a>
+  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav-overlay" id="mob-overlay" onclick="toggleMobileNav()"></div>
+<nav id="mobile-nav">
+  <a class="mobile-nav-link" href="#hero" onclick="toggleMobileNav()">Home</a>
+  <a class="mobile-nav-link" href="#chapters" onclick="toggleMobileNav()">Chapters</a>
+  <a class="mobile-nav-link" href="#ipa" onclick="toggleMobileNav()">IPA Explorer</a>
+  <a class="mobile-nav-link" href="#stress-tool" onclick="toggleMobileNav()">Stress Tool</a>
+  <a class="mobile-nav-link" href="#syllable-trainer" onclick="toggleMobileNav()">Syllables</a>
+  <a class="mobile-nav-link" href="#quiz" onclick="toggleMobileNav()">Quiz</a>
+  <a class="mobile-nav-link" href="#glossary" onclick="toggleMobileNav()">Glossary</a>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="dot"></div>
+        Second Year · English Department · Faculty of Education
+      </div>
+      <h1 class="hero-title">
+        Master English<br>
+        <span class="grad-text">Phonetics &amp; Phonology</span>
+      </h1>
+      <p class="hero-desc">
+        An immersive platform built on Dr. Rewaa Ahmed Anwer's curriculum — covering sounds, syllables, stress, allophones, and the full IPA system.
+      </p>
+      <div class="hero-buttons">
+        <a href="#chapters" class="btn-primary">
+          📖 Start Learning
+        </a>
+        <a href="#ipa" class="btn-secondary">
+          🔤 IPA Explorer
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">14</div>
+          <div class="hero-stat-label">Chapters</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">44</div>
+          <div class="hero-stat-label">English Sounds</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">43</div>
+          <div class="hero-stat-label">Phonological Terms</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">30+</div>
+          <div class="hero-stat-label">Noun-Verb Pairs</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="ipa-sphere">
+        <div class="sphere-core"></div>
+        <div class="ipa-float f1">ə</div>
+        <div class="ipa-float f2">ʃ</div>
+        <div class="ipa-float f3">θ</div>
+        <div class="ipa-float f4">ŋ</div>
+        <div class="ipa-float f5">ɪ</div>
+        <div class="ipa-float f6">dʒ</div>
+        <div class="ipa-float f7">ˈ</div>
+        <div class="ipa-float f8">ʌ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTERS ===================== -->
+<section id="chapters">
+  <div class="section-inner">
+    <div class="section-tag">📚 Curriculum</div>
+    <h2 class="section-title">Course <span class="grad-text">Chapters</span></h2>
+    <p class="section-sub">All 14 chapters from the syllabus — tap any card to read the full lesson with examples, rules, and IPA transcriptions.</p>
+    <div class="chapters-grid" id="chapters-grid"></div>
+  </div>
+</section>
+
+<!-- ===================== LESSON MODAL ===================== -->
+<div id="lesson-overlay">
+  <div class="lesson-modal">
+    <div class="lesson-modal-inner" id="lesson-modal-inner">
+      <!-- injected dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- ===================== IPA EXPLORER ===================== -->
+<section id="ipa">
+  <div class="section-inner">
+    <div class="section-tag">🔤 Interactive</div>
+    <h2 class="section-title">IPA <span class="grad-text">Sound Explorer</span></h2>
+    <p class="section-sub">Click any symbol to see articulation details, example words, and lip/tongue position — all from your textbook.</p>
+    <div class="ipa-tabs" id="ipa-tabs"></div>
+    <div class="ipa-grid" id="ipa-grid"></div>
+  </div>
+</section>
+
+<!-- IPA Popup -->
+<div id="ipa-backdrop" onclick="closeIPAPopup()"></div>
+<div id="ipa-popup">
+  <div class="ipa-popup-close" onclick="closeIPAPopup()">✕</div>
+  <div class="ipa-popup-sym" id="pp-sym"></div>
+  <div class="ipa-popup-name" id="pp-name"></div>
+  <div class="ipa-popup-cat" id="pp-cat"></div>
+  <div class="ipa-popup-desc" id="pp-desc"></div>
+  <div class="ipa-popup-words" id="pp-words"></div>
+  <div class="ipa-popup-art" id="pp-art"></div>
+</div>
+
+<!-- ===================== STRESS VISUALIZER ===================== -->
+<section id="stress-tool">
+  <div class="section-inner">
+    <div class="section-tag">⚡ Interactive Tool</div>
+    <h2 class="section-title">Word Stress <span class="grad-text">Visualizer</span></h2>
+    <p class="section-sub">Type any English word and see its syllable stress pattern — primary, secondary, and unstressed — as a live waveform diagram.</p>
+    <div class="stress-container reveal">
+      <div class="stress-input-row">
+        <input class="stress-input" id="stress-input" placeholder="Type a word, e.g. 'photography'" oninput="analyzeStress()">
+        <button class="stress-analyze-btn" onclick="analyzeStress()">Analyze →</button>
+      </div>
+      <div class="stress-presets">
+        <span style="font-size:.85rem;color:var(--grey);padding:7px 0;">Try:</span>
+        <button class="stress-preset" onclick="setStressWord('photograph')">photograph</button>
+        <button class="stress-preset" onclick="setStressWord('photographer')">photographer</button>
+        <button class="stress-preset" onclick="setStressWord('photographic')">photographic</button>
+        <button class="stress-preset" onclick="setStressWord('opportunity')">opportunity</button>
+        <button class="stress-preset" onclick="setStressWord('university')">university</button>
+        <button class="stress-preset" onclick="setStressWord('information')">information</button>
+        <button class="stress-preset" onclick="setStressWord('impossible')">impossible</button>
+      </div>
+      <div id="stress-display">
+        <div class="stress-info">Type a word above to visualise its stress pattern and syllable breakdown.</div>
+      </div>
+    </div>
+
+    <h3 style="margin:50px 0 16px;font-size:1.3rem;font-weight:700;">
+      Noun / Verb Stress Shift <span class="grad-text">Pairs</span>
+    </h3>
+    <p style="color:var(--grey);margin-bottom:24px;font-size:.95rem;">In English, many words change their stress placement depending on whether they function as a noun/adjective or a verb — a feature unique to this language.</p>
+    <div class="noun-verb-grid" id="nv-grid"></div>
+  </div>
+</section>
+
+<!-- ===================== SYLLABLE TRAINER ===================== -->
+<section id="syllable-trainer">
+  <div class="section-inner">
+    <div class="section-tag">🧩 Trainer</div>
+    <h2 class="section-title">Syllable <span class="grad-text">Analyzer</span></h2>
+    <p class="section-sub">Break any word into syllables, identify open and closed syllables, count them, and see the IPA stress mark position.</p>
+    <div class="trainer-box reveal">
+      <div class="trainer-rules" id="syl-rules"></div>
+      <div class="stress-input-row">
+        <input class="stress-input" id="syl-input" placeholder="Type a word, e.g. 'pronunciation'" oninput="analyzeSyllables()">
+      </div>
+      <div id="syl-output"><span style="color:var(--grey)">Type a word above…</span></div>
+      <div class="syl-info-row" id="syl-info-row"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ARTICULATION ===================== -->
+<section id="articulation">
+  <div class="section-inner">
+    <div class="section-tag">🗣️ Articulatory Phonetics</div>
+    <h2 class="section-title">Places of <span class="grad-text">Articulation</span></h2>
+    <p class="section-sub">Interactive SVG diagrams showing how and where each consonant group is produced — as taught in your textbook.</p>
+    <div class="articu-grid" id="articu-grid"></div>
+  </div>
+</section>
+
+<!-- ===================== ALLOPHONES ===================== -->
+<section id="allophones">
+  <div class="section-inner">
+    <div class="section-tag">🔬 Chapter 13</div>
+    <h2 class="section-title">Allophonic <span class="grad-text">Variations</span></h2>
+    <p class="section-sub">Phonemes are abstract mental categories — their actual spoken variants are called allophones. We study the two most important cases: aspiration and clear/dark /l/.</p>
+    <div style="margin-top:40px;display:grid;gap:24px;">
+      <div id="asp-section" class="glass" style="padding:32px;border-radius:20px;"></div>
+      <div id="darkl-section" class="glass" style="padding:32px;border-radius:20px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SENTENCE STRESS ===================== -->
+<section id="sentence-stress">
+  <div class="section-inner">
+    <div class="section-tag">📢 Chapter 11</div>
+    <h2 class="section-title">Sentence <span class="grad-text">Stress</span></h2>
+    <p class="section-sub">The same sentence carries different meanings depending on which word receives prominence. Explore how shifting sentence stress changes interpretation.</p>
+    <div style="margin-top:40px;" id="sent-stress-container"></div>
+  </div>
+</section>
+
+<!-- ===================== QUIZ ===================== -->
+<section id="quiz">
+  <div class="section-inner">
+    <div class="section-tag">🎯 Test Yourself</div>
+    <h2 class="section-title">Interactive <span class="grad-text">Quiz</span></h2>
+    <p class="section-sub">Reinforce every chapter with multiple question types — stress identification, IPA matching, syllable counting, and allophone questions.</p>
+    <div class="quiz-container reveal" id="quiz-container"></div>
+  </div>
+</section>
+
+<!-- ===================== GLOSSARY ===================== -->
+<section id="glossary">
+  <div class="section-inner">
+    <div class="section-tag">📖 Chapter 14</div>
+    <h2 class="section-title">Phonological <span class="grad-text">Glossary</span></h2>
+    <p class="section-sub">All 43 phonological terms defined in the textbook — search any concept instantly.</p>
+    <div class="glossary-search">
+      <input class="glossary-input" id="gloss-input" placeholder="Search a term…" oninput="filterGlossary()">
+    </div>
+    <div class="glossary-grid" id="glossary-grid"></div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo grad-text">🔬 PhonLab</div>
+      <p>An immersive educational platform for second-year English Department students at the Faculty of Education.</p>
+      <p style="margin-top:10px;font-size:.8rem;">Based on: <em>Phonetics — Second Year, Dr. Rewaa Ahmed Anwer, 2024/2025</em></p>
+    </div>
+    <div class="footer-col">
+      <h4>Chapters</h4>
+      <ul>
+        <li><a href="#chapters">Introduction & Revision</a></li>
+        <li><a href="#chapters">Letter-Sound Correspondence</a></li>
+        <li><a href="#chapters">Syllable Structure</a></li>
+        <li><a href="#chapters">Types of Syllables</a></li>
+        <li><a href="#chapters">Syllabification</a></li>
+        <li><a href="#chapters">Word Stress</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Tools</h4>
+      <ul>
+        <li><a href="#ipa">IPA Explorer</a></li>
+        <li><a href="#stress-tool">Stress Visualizer</a></li>
+        <li><a href="#syllable-trainer">Syllable Analyzer</a></li>
+        <li><a href="#articulation">Articulation Diagrams</a></li>
+        <li><a href="#quiz">Interactive Quiz</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 PhonLab · Educational Platform · English Phonetics</p>
+    <p style="color:var(--cyan);font-size:.8rem;">Second Year · Faculty of Education</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   PARTICLES
+   ============================================================ */
+(function(){
+  const c=document.getElementById('particles-canvas');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  for(let i=0;i<55;i++){
+    pts.push({
+      x:Math.random()*2000,y:Math.random()*1200,
+      vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+      r:Math.random()*1.5+.5,
+      a:Math.random()
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(6,182,212,${p.a*.5})`;
+      ctx.fill();
+    });
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<160){
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(6,182,212,${.06*(1-d/160)})`;
+        ctx.lineWidth=1;ctx.stroke();
+      }
+    }));
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ============================================================
+   SCROLL PROGRESS & NAVBAR
+   ============================================================ */
+window.addEventListener('scroll',()=>{
+  const s=window.scrollY;
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('progress-bar').style.width=(s/h*100)+'%';
+  document.getElementById('navbar').classList.toggle('scrolled',s>60);
+  revealEls();
+  updateNavActive();
+});
+
+function updateNavActive(){
+  const sections=['hero','chapters','ipa','stress-tool','syllable-trainer','quiz','glossary'];
+  const navLinks=document.querySelectorAll('.nav-links a');
+  sections.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const r=el.getBoundingClientRect();
+    if(r.top<=100&&r.bottom>100){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      navLinks[i]&&navLinks[i].classList.add('active');
+    }
+  });
+}
+
+function revealEls(){
+  document.querySelectorAll('.reveal').forEach(el=>{
+    if(el.getBoundingClientRect().top<window.innerHeight-80)
+      el.classList.add('visible');
+  });
+}
+setTimeout(revealEls,200);
+
+/* ============================================================
+   MOBILE NAV
+   ============================================================ */
+function toggleMobileNav(){
+  document.getElementById('mobile-nav').classList.toggle('open');
+  document.getElementById('mob-overlay').classList.toggle('open');
+}
+
+/* ============================================================
+   CHAPTERS DATA
+   ============================================================ */
+const chapters=[
+{
+  num:'Chapter 01',title:'Introduction & Revision — The Study of Sounds',
+  icon:'🔬',iconClass:'icon-blue',
+  desc:'Phonetics vs. phonology, branches of phonetics, English consonants, vowels, and why pronunciation matters.',
+  topics:['Phonetics','Phonology','Articulatory','RP'],
+  body:`
+<h3>Why Study Phonetics?</h3>
+<p>Language has three components: <strong>Structures</strong> (grammar), <strong>Vocabulary</strong> (lexis), and <strong>Sound, stress, and intonation patterns</strong> (pronunciation). To understand spoken language you need all three. Phonetics deals with sound in terms of its <em>emission</em>, <em>transmission</em>, and <em>perception</em>.</p>
+<h3>Three Branches of Phonetics</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">Articulatory</div><div class="meaning">How sounds are produced by the organs of speech — your concern as a language student.</div></div>
+  <div class="example-card"><div class="word">Acoustic</div><div class="meaning">How sound waves travel from speaker to hearer.</div></div>
+  <div class="example-card"><div class="word">Auditory</div><div class="meaning">How the ear receives and perceives sounds.</div></div>
+</div>
+<h3>Phonetics vs. Phonology</h3>
+<p><strong>Phonetics</strong> (Trask, 1996): "the scientific study of speech." <strong>Phonology</strong>: "the branch of linguistics dealing with the relations among speech sounds in particular languages."</p>
+<h3>English: 26 Letters but 44 Sounds</h3>
+<p>The letter <em>a</em> is pronounced differently in every one of these words:</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">pale</div><div class="trans">/peɪl/</div></div>
+  <div class="example-card"><div class="word">ball</div><div class="trans">/bɔːl/</div></div>
+  <div class="example-card"><div class="word">woman</div><div class="trans">/ˈwʊmən/</div></div>
+  <div class="example-card"><div class="word">village</div><div class="trans">/ˈvɪlɪdʒ/</div></div>
+  <div class="example-card"><div class="word">bad</div><div class="trans">/bæd/</div></div>
+  <div class="example-card"><div class="word">father</div><div class="trans">/ˈfɑːðə/</div></div>
+  <div class="example-card"><div class="word">many</div><div class="trans">/ˈmeni/</div></div>
+</div>
+<h3>Connected Speech Phenomena</h3>
+<div class="rule-box"><strong>Elision:</strong> Disappearance of sounds — e.g., <em>last Monday</em> → <span class="ipa-example">/lɑːsmʌndi/</span></div>
+<div class="rule-box"><strong>Assimilation:</strong> A sound changes to resemble a neighbour — e.g., <em>that boy</em> → <span class="ipa-example">/ðæbbɔɪ/</span></div>
+<div class="rule-box"><strong>Linking:</strong> Extra sound added between words — e.g., <em>for example</em> → <span class="ipa-example">/fər ɪgzɑːmpl/</span></div>
+<h3>Received Pronunciation (RP)</h3>
+<p>Most phonetics textbooks concentrate on RP — the accent used by educated native speakers in south-east England, BBC announcers, and university graduates. It is the <em>prestige accent</em> of British society.</p>
+<h3>Vowels Overview</h3>
+<p>English has <strong>12 pure vowels</strong> and <strong>8 diphthongs</strong> = 20 vowel sounds. Pure vowels maintain a constant articulator position; diphthongs glide from one vowel position to another.</p>
+<div class="rule-box"><strong>Four Front Vowels:</strong> <span class="ipa-example">/iː/</span> <span class="ipa-example">/ɪ/</span> <span class="ipa-example">/e/</span> <span class="ipa-example">/æ/</span></div>
+<div class="rule-box"><strong>Five Back Vowels:</strong> <span class="ipa-example">/ɑː/</span> <span class="ipa-example">/ɔː/</span> <span class="ipa-example">/ɒ/</span> <span class="ipa-example">/uː/</span> <span class="ipa-example">/ʊ/</span></div>
+<div class="rule-box"><strong>Three Central Vowels:</strong> <span class="ipa-example">/ʌ/</span> <span class="ipa-example">/ɜː/</span> <span class="ipa-example">/ə/</span></div>
+<h3>Consonants: Three Descriptive Criteria</h3>
+<p><strong>1. Voicing</strong> — vibration of vocal cords: voiced (e.g. /b/) vs. voiceless (e.g. /p/).<br>
+<strong>2. Place of Articulation</strong> — bilabial, dental, alveolar, velar, etc.<br>
+<strong>3. Manner of Articulation</strong> — plosive, fricative, affricate, nasal, lateral, approximant.</p>
+`
+},
+{
+  num:'Chapter 02',title:'Letter-Sound Correspondence (Grapheme-Phoneme)',
+  icon:'🔡',iconClass:'icon-purple',
+  desc:'How English letters map to phonemes — consonant letters, positional variants, and digraph-phoneme correspondences.',
+  topics:['Grapheme','Phoneme','Digraphs','Variants'],
+  body:`
+<h3>Why Spelling ≠ Pronunciation</h3>
+<p>English does not have a direct one-to-one correspondence between grapheme and phoneme. Instead it represents a <em>morphophonemic system</em>. The same letter can represent multiple sounds depending on position and context.</p>
+<h3>Key Consonant Correspondences</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">b → /b/</div><div class="meaning">boy, lab; medially → <em>bb</em>: rabbit, abbot</div></div>
+  <div class="example-card"><div class="word">c → /k/ or /s/</div><div class="meaning">/k/ before a,o,u: cat; /s/ before i,y,e: celery</div></div>
+  <div class="example-card"><div class="word">g → /g/ or /dʒ/</div><div class="meaning">/g/: go; /dʒ/ before i,y,e: gentle, giant</div></div>
+  <div class="example-card"><div class="word">s → /s/ or /z/ or /ʒ/</div><div class="meaning">/s/: see; /z/: peas; /ʒ/: measure</div></div>
+  <div class="example-card"><div class="word">t → /t/ or /ʃ/ or /tʃ/</div><div class="meaning">/t/: tea; /ʃ/: nation; /tʃ/: question</div></div>
+  <div class="example-card"><div class="word">x → /ks/ or /gz/ or /z/</div><div class="meaning">/ks/: extra; /gz/: exact; /z/: xylophone</div></div>
+</div>
+<h3>Digraph-Phoneme Correspondences</h3>
+<div class="rule-box"><strong>sh → /ʃ/</strong> — show, shirt, push, washer (all positions)</div>
+<div class="rule-box"><strong>ph → /f/</strong> — telephone, phase, phantom (all positions)</div>
+<div class="rule-box"><strong>ch → /tʃ/ or /k/ or /ʃ/</strong> — child; chlorine; chic (French origin)</div>
+<div class="rule-box"><strong>th → /θ/ or /ð/ or /t/</strong> — think; this; Thomas</div>
+<div class="rule-box"><strong>gh → /g/ or /f/ or silent</strong> — ghost; tough; through</div>
+<div class="rule-box"><strong>ng → /ŋ/ or /ŋg/ or /ndʒ/</strong> — singer; longer; range</div>
+<div class="rule-box"><strong>qu → /kw/</strong> — quick, queen, quest</div>
+<h3>Positional Rules for /s/ Plurals</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">cats</div><div class="trans">/s/</div><div class="meaning">after voiceless consonant</div></div>
+  <div class="example-card"><div class="word">dogs</div><div class="trans">/z/</div><div class="meaning">after voiced consonant</div></div>
+  <div class="example-card"><div class="word">houses</div><div class="trans">/ɪz/</div><div class="meaning">after sibilant</div></div>
+</div>
+`
+},
+{
+  num:'Chapter 03',title:'Syllable Structure',
+  icon:'🧬',iconClass:'icon-green',
+  desc:'What a syllable is phonetically and phonologically — onset, rhyme, peak, coda, and consonant clusters.',
+  topics:['Onset','Coda','Rhyme','Clusters'],
+  body:`
+<h3>Definitions of the Syllable</h3>
+<p>Roach (1998): a syllable is a very important unit in both phonetics and phonology. Crystal (1985): syllables are "units of rhythm" consisting of a vowel, a syllabic consonant, or a vowel plus consonant combination.</p>
+<h3>Phonetic Structure</h3>
+<div class="rule-box"><strong>Minimum syllable:</strong> A single vowel in isolation — e.g., <span class="ipa-example">'are' /ɑː/</span></div>
+<div class="rule-box"><strong>Onset only:</strong> Consonant + vowel — e.g., <span class="ipa-example">'car' /kɑː/</span></div>
+<div class="rule-box"><strong>Coda only:</strong> Vowel + consonant — e.g., <span class="ipa-example">'arm' /ɑːm/</span></div>
+<div class="rule-box"><strong>Full syllable:</strong> Onset + peak + coda — e.g., <span class="ipa-example">'calm' /kɑːm/</span></div>
+<h3>Phonological Structure: Onset, Rhyme, Peak, Coda</h3>
+<p>A syllable is divided into: <strong>onset</strong> (initial consonants) + <strong>rhyme</strong>. The rhyme splits into <strong>peak</strong> (the vowel nucleus) + <strong>coda</strong> (final consonants). The coda is optional.</p>
+<div class="rule-box">
+<strong>Zero-onset syllable:</strong> begins with a vowel — any vowel except /uː/ (rare initially).<br>
+<strong>Pre-initial consonant:</strong> /s/ before other consonants: <span class="ipa-example">sting, sway, smoke</span><br>
+<strong>Post-initial consonant:</strong> /l/, /r/, /w/ after initial consonant: <span class="ipa-example">split, stream, square</span>
+</div>
+<h3>Consonant Clusters</h3>
+<p>English allows up to <strong>3 consonants</strong> in the onset and up to <strong>4</strong> in the coda (very rare). Two-consonant onsets are either /s/ + consonant or a stop + liquid/glide combination.</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">split</div><div class="trans">/splɪt/</div><div class="meaning">s + p + l onset</div></div>
+  <div class="example-card"><div class="word">stream</div><div class="trans">/striːm/</div><div class="meaning">s + t + r onset</div></div>
+  <div class="example-card"><div class="word">square</div><div class="trans">/skweə/</div><div class="meaning">s + k + w onset</div></div>
+</div>
+`
+},
+{
+  num:'Chapter 04',title:'Types of Syllables & Syllabic Consonants',
+  icon:'⚖️',iconClass:'icon-orange',
+  desc:'Strong vs. weak syllables, the role of schwa, and syllabic /l/ and /n/ — consonants that form syllable nuclei.',
+  topics:['Strong','Weak','Schwa','Syllabic /l/','Syllabic /n/'],
+  body:`
+<h3>Strong vs. Weak Syllables</h3>
+<p>Phoneticians distinguish syllables by nucleus prominence. <strong>Strong syllables</strong> have a full vowel phoneme as peak (not schwa). <strong>Weak syllables</strong> can only have four types of peak:</p>
+<div class="rule-box">
+i) The vowel <span class="ipa-example">/ə/</span> (schwa)<br>
+ii) A close front vowel in the area of <span class="ipa-example">/iː/</span> and <span class="ipa-example">/ɪ/</span><br>
+iii) A close back vowel in the area of <span class="ipa-example">/uː/</span> and <span class="ipa-example">/ʊ/</span><br>
+iv) A syllabic consonant
+</div>
+<h3>The Schwa /ə/ — Most Frequent English Vowel</h3>
+<p>The schwa is always associated with weak syllables. It is mid and central in quality, lax, and never occurs in stressed syllables. Example: in <span class="ipa-example">father /ˈfɑːðə/</span> the second syllable is shorter, less loud, and contains /ə/.</p>
+<h3>Syllabic /n/ — Symbol: /n̩/</h3>
+<p>Syllabic /n/ occurs in final and medial weak syllables, most commonly after alveolar plosives and fricatives:</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">threaten</div><div class="trans">/ˈθretn̩/</div></div>
+  <div class="example-card"><div class="word">eaten</div><div class="trans">/ˈiːtn̩/</div></div>
+  <div class="example-card"><div class="word">seven</div><div class="trans">/ˈsevn̩/</div></div>
+  <div class="example-card"><div class="word">heaven</div><div class="trans">/ˈhevn̩/</div></div>
+  <div class="example-card"><div class="word">often</div><div class="trans">/ˈɒfn̩/</div></div>
+  <div class="example-card"><div class="word">button</div><div class="trans">/ˈbʌtn̩/</div></div>
+</div>
+<div class="warning-box">Syllabic /n/ is NOT found after /l/, /tʃ/, /dʒ/ — those use /ə/ instead: <em>sullen /ˈsʌlən/</em>, <em>Christian /ˈkrɪstʃən/</em></div>
+<h3>Syllabic /l/ — Symbol: /l̩/</h3>
+<p>The IPA symbol [l̩] represents a syllabic /l/ — a syllable with no vowel. It occurs after another consonant, especially alveolar ones where lateral release occurs:</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">people</div><div class="trans">/ˈpiːpl̩/</div></div>
+  <div class="example-card"><div class="word">level</div><div class="trans">/ˈlevl̩/</div></div>
+  <div class="example-card"><div class="word">bottle</div><div class="trans">/ˈbɒtl̩/</div></div>
+  <div class="example-card"><div class="word">muddle</div><div class="trans">/ˈmʌdl̩/</div></div>
+  <div class="example-card"><div class="word">panel</div><div class="trans">/ˈpænl̩/</div></div>
+  <div class="example-card"><div class="word">pedal</div><div class="trans">/ˈpedl̩/</div></div>
+</div>
+`
+},
+{
+  num:'Chapter 05',title:'Syllabification',
+  icon:'✂️',iconClass:'icon-pink',
+  desc:'Rules for dividing words into syllables: VC/CV, V/CV, prefixes/suffixes, open and closed syllable types.',
+  topics:['VC/CV','Open','Closed','Affixes'],
+  body:`
+<h3>What is Syllabification?</h3>
+<p>Syllabification (or syllabication) is the breaking down of words into each uninterrupted unit of spoken language. Readers who need to decode words must learn syllabication rules holistically and apply them in steps.</p>
+<h3>Prerequisite Concepts</h3>
+<div class="rule-box">
+• Each syllable must contain a <strong>sounded vowel</strong>.<br>
+• <strong>Open syllable</strong>: ends with a vowel — vowel is generally long (e.g., <em>be•gin</em>)<br>
+• <strong>Closed syllable</strong>: ends with a consonant — vowel is usually short (e.g., <em>in•vite</em>)<br>
+• Digraphs (ch, sh, th, ck) cannot be divided<br>
+• In some cases, blends are not divided: <em>se•cret, ze•bra</em>
+</div>
+<h3>Syllabification Rules (in order)</h3>
+<div class="rule-box"><strong>Rule 1: Prefix/Root/Suffix</strong> — Divide between affixes and root first. This rule overrides all others.<br>Example: <em>re•place•ment, per•son•al•i•ty</em></div>
+<div class="rule-box"><strong>Rule 2: VC/CV</strong> — When two vowels are separated by two consonants, divide between the consonants.<br>Example: <em>VC / CV → al•pha•bet, pic•nic</em></div>
+<div class="rule-box"><strong>Rule 3: V/CV or VC/V</strong> — With one consonant between vowels:<br>• If the first vowel is long → divide after it (open syllable): <em>si•lent</em><br>• If the first vowel is short → divide after the consonant (closed syllable): <em>cab•in</em></div>
+<h3>The "-tion" Pattern</h3>
+<p>"tion" forms its own syllable and may take part of the root word with it:</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">generation</div><div class="trans">gen•er•a•tion</div></div>
+  <div class="example-card"><div class="word">explanation</div><div class="trans">ex•pla•na•tion</div></div>
+  <div class="example-card"><div class="word">cooperation</div><div class="trans">co•op•er•a•tion</div></div>
+</div>
+<h3>Schwa in Unaccented Syllables</h3>
+<p>Vowels in unaccented syllables often make the schwa sound — this makes spelling more difficult since /ə/ can be represented by any of the five vowels: <em>sup•ple•ment, talk•a•tive, ap•pli•ance</em></p>
+`
+},
+{
+  num:'Chapter 06',title:'Word Stress — Definition & Characteristics',
+  icon:'⚡',iconClass:'icon-blue',
+  desc:'What stress is, how it is produced and perceived, the four factors of prominence, and stress transcription notation.',
+  topics:['Prominence','Loudness','Pitch','Length'],
+  body:`
+<h3>Definition of Word Stress</h3>
+<p>Word stress is <em>a degree of force given to a particular syllable during the production of words</em>. In English, one syllable in each word is pronounced louder, longer, and on a different pitch than the others. Fluent speakers listen for stressed syllables — not weak ones.</p>
+<h3>Transcription Notation</h3>
+<div class="rule-box">Primary stress: <strong>ˈ</strong> placed before the stressed syllable — e.g., <span class="ipa-example">ˈfɑːðə</span> &nbsp; <span class="ipa-example">pəˈteɪtəʊ</span> &nbsp; <span class="ipa-example">əˈbaʊt</span></div>
+<h3>The Four Factors of Prominence</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">i) Loudness</div><div class="meaning">A stressed syllable tends to be louder. Least powerful factor alone.</div></div>
+  <div class="example-card"><div class="word">ii) Length</div><div class="meaning">Stressed syllables are longer. A powerful cue for listeners.</div></div>
+  <div class="example-card"><div class="word">iii) Pitch</div><div class="meaning">The strongest factor. Pitch movement (rise or fall) on a syllable makes it prominent.</div></div>
+  <div class="example-card"><div class="word">iv) Quality</div><div class="meaning">A vowel different from neighbouring vowels (especially /ə/) stands out.</div></div>
+</div>
+<div class="warning-box">Experimental research shows: <strong>Pitch > Length > Loudness > Quality</strong> in terms of perceptual importance.</div>
+<h3>Stress in Production</h3>
+<p>When producing a stressed syllable, the muscles used to expel air from the lungs are more active, producing higher <em>subglottal pressure</em> (Roach, 1998). Simply put, you exert more muscular effort.</p>
+<div class="stress-demo" id="demo-stress">
+  <div class="syl"><div class="syl-bar" style="height:20px"></div><div class="syl-label">pho</div></div>
+  <div class="syl"><div class="syl-bar strong" style="height:70px"></div><div class="syl-label strong">TO</div></div>
+  <div class="syl"><div class="syl-bar" style="height:20px"></div><div class="syl-label">graph</div></div>
+  <div style="padding:0 24px;color:var(--grey)">→</div>
+  <div class="syl"><div class="syl-bar" style="height:20px"></div><div class="syl-label">pho</div></div>
+  <div class="syl"><div class="syl-bar strong" style="height:70px"></div><div class="syl-label strong">TO</div></div>
+  <div class="syl"><div class="syl-bar secondary" style="height:40px"></div><div class="syl-label">gra</div></div>
+  <div class="syl"><div class="syl-bar" style="height:20px"></div><div class="syl-label">pher</div></div>
+</div>
+`
+},
+{
+  num:'Chapter 07',title:'Levels of Stress',
+  icon:'📊',iconClass:'icon-purple',
+  desc:'Primary stress, secondary stress, and unstressed syllables — the three-level IPA system explained with full examples.',
+  topics:['Primary','Secondary','Unstressed','ˈ ˌ'],
+  body:`
+<h3>Three Levels of Stress</h3>
+<p>While Daniel Jones identified five levels in the word <em>opportunity</em>, most phoneticians work with three:</p>
+<div class="rule-box"><strong>1. Primary stress (ˈ)</strong> — Maximum prominence. Marked with a high vertical stroke before the syllable. Produced when the pitch of the voice moves up or down noticeably.</div>
+<div class="rule-box"><strong>2. Secondary stress (ˌ)</strong> — Weaker than primary but stronger than unstressed. Marked with a low vertical stroke. E.g., the first syllable of <span class="ipa-example">ˌfəʊtəˈgræfɪk</span></div>
+<div class="rule-box"><strong>3. Unstressed</strong> — No mark. Syllables with /ə/, /ɪ/, /ʊ/, or syllabic consonants are the least prominent.</div>
+<h3>Illustrative Examples</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">around</div><div class="trans">/əˈraʊnd/</div><div class="meaning">weak + PRIMARY</div></div>
+  <div class="example-card"><div class="word">photographic</div><div class="trans">/ˌfəʊtəˈgræfɪk/</div><div class="meaning">secondary + unstressed + PRIMARY</div></div>
+  <div class="example-card"><div class="word">anthropology</div><div class="trans">/ˌænθrəˈpɒlədʒi/</div><div class="meaning">secondary + PRIMARY + unstressed</div></div>
+  <div class="example-card"><div class="word">incapable</div><div class="trans">/ˌɪnˈkeɪpəbl/</div><div class="meaning">secondary + PRIMARY + unstressed</div></div>
+</div>
+<h3>The Role of Schwa in Stress Levels</h3>
+<p>The schwa /ə/ signals minimal or zero stress. A syllable containing a full vowel but not given primary stress counts as having secondary stress. Example: the first syllable of <span class="ipa-example">poetic /pəʊˈetɪk/</span> is more prominent than the first syllable of <span class="ipa-example">pathetic /pəˈθetɪk/</span>.</p>
+`
+},
+{
+  num:'Chapter 08',title:'Stress in Simple Words',
+  icon:'📝',iconClass:'icon-green',
+  desc:'Rules for two-syllable and three-syllable nouns, verbs, and adjectives — including the key noun/verb stress shift.',
+  topics:['2-syllable','3-syllable','Nouns','Verbs','Adjectives'],
+  body:`
+<h3>Two-Syllable Words</h3>
+<p>The general principle for <strong>verbs and adjectives</strong>: if the final syllable is <em>weak</em>, stress the first; if <em>strong</em>, stress the final.</p>
+<div class="rule-box">
+<strong>Verbs — final syllable weak → stress 1st:</strong><br>
+<span class="ipa-example">ˈenter</span> &nbsp; <span class="ipa-example">ˈopen</span> &nbsp; <span class="ipa-example">ˈenvy</span> &nbsp; <span class="ipa-example">ˈequal</span>
+</div>
+<div class="rule-box">
+<strong>Verbs — final syllable strong → stress 2nd:</strong><br>
+<span class="ipa-example">əˈpply</span> &nbsp; <span class="ipa-example">əˈttract</span> &nbsp; <span class="ipa-example">məɪnˈteɪn</span> &nbsp; <span class="ipa-example">əˈrrɪve</span>
+</div>
+<div class="rule-box">
+<strong>Nouns</strong> — stress 1st syllable unless it is weak AND 2nd is strong:<br>
+<span class="ipa-example">ˈmoney</span> &nbsp; <span class="ipa-example">ˈproduct</span> &nbsp; but <span class="ipa-example">dɪˈvæn</span> &nbsp; <span class="ipa-example">bəˈluːn</span>
+</div>
+<h3>Three-Syllable Words</h3>
+<div class="rule-box"><strong>Verbs — strong final:</strong> <span class="ipa-example">ˌentəˈteɪn</span> &nbsp; <span class="ipa-example">ˌrezəˈrekt</span></div>
+<div class="rule-box"><strong>Verbs — weak final, strong penultimate:</strong> <span class="ipa-example">ɪŋˈkaʊntə</span> &nbsp; <span class="ipa-example">dɪˈtɜːmɪn</span></div>
+<div class="rule-box"><strong>Verbs — 2nd and 3rd both weak:</strong> <span class="ipa-example">ˈpærədi</span> &nbsp; <span class="ipa-example">ˈmɒnɪtə</span></div>
+<div class="rule-box"><strong>Nouns — stress 1st unless weak:</strong> <span class="ipa-example">ˈkwɒntɪti</span> &nbsp; but <span class="ipa-example">mɪˈməʊzə</span> &nbsp; <span class="ipa-example">dɪˈzɑːstə</span></div>
+<h3>Four Quick Rules to Remember</h3>
+<div class="rule-box">
+✦ Stress 1st syllable of: most 2-syllable nouns (CLImate) and most 2-syllable adjectives (FLIPpant)<br>
+✦ Stress last syllable of: most 2-syllable verbs (reQUIRE)<br>
+✦ Stress 2nd-to-last of: words ending in <em>-ic, -sion, -tion</em> (ecSTATic, exTENsion)<br>
+✦ Stress 3rd-from-last of: words ending in <em>-cy, -ty, -phy, -gy, -al</em> (deMOCracy, geOGraphy)
+</div>
+`
+},
+{
+  num:'Chapter 09',title:'Complex Word Stress — Affixes & Compounds',
+  icon:'🔩',iconClass:'icon-orange',
+  desc:'How prefixes and suffixes shift stress — stress-attracting, stress-neutral, and stress-changing affixes; compound word stress rules.',
+  topics:['Suffixes','Prefixes','Compounds','Auto-stressed'],
+  body:`
+<h3>Simple vs. Complex Words</h3>
+<p>A <em>simple</em> word is not a compound and has no affixes. A <em>complex</em> word has one or more affixes. Affixes have three possible effects on stress:</p>
+<div class="rule-box">a) The affix itself receives primary stress (auto-stressed affixes)<br>b) The word is stressed as if the affix were not there (neutral affixes)<br>c) Stress remains on the stem but shifts to a different syllable (stress-changing affixes)</div>
+<h3>I. Stress-Attracting Suffixes (auto-stressed)</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">-ee</div><div class="trans">refuˈgee, evacuˈee</div></div>
+  <div class="example-card"><div class="word">-eer</div><div class="trans">ˌmountiˈniə, ˌvɒlənˈtɪə</div></div>
+  <div class="example-card"><div class="word">-ese</div><div class="trans">ˌdʒæpəˈniːz, ˌpɔːtʃəˈgiːz</div></div>
+  <div class="example-card"><div class="word">-ette</div><div class="trans">ˌsɪgəˈret, ˌlɔːndəˈret</div></div>
+  <div class="example-card"><div class="word">-esque</div><div class="trans">ˌpɪktʃəˈresk</div></div>
+</div>
+<h3>II. Stress-Neutral Suffixes (don't affect placement)</h3>
+<p>-able, -age, -al, -en, -ful, -ing, -less, -like, -ly, -ment, -ness, -ous, -fy, -wise, -y</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">comfortable</div><div class="trans">ˈkʌmftəbl</div></div>
+  <div class="example-card"><div class="word">wonderful</div><div class="trans">ˈwʌndəfl</div></div>
+  <div class="example-card"><div class="word">amazing</div><div class="trans">əˈmeɪzɪŋ</div></div>
+  <div class="example-card"><div class="word">powerless</div><div class="trans">ˈpaʊələs</div></div>
+</div>
+<h3>III. Stress-Changing Suffixes (shift stress in stem)</h3>
+<p>These cause primary stress to fall on the last syllable of the stem: -eous, -graphy, -ial, -ic, -ion, -ious, -ty, -ive</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">photo → photography</div><div class="trans">fəˈtɒgrəfi</div></div>
+  <div class="example-card"><div class="word">climate → climatic</div><div class="trans">klaɪˈmætɪk</div></div>
+  <div class="example-card"><div class="word">perfect → perfection</div><div class="trans">pəˈfekʃn</div></div>
+  <div class="example-card"><div class="word">tranquil → tranquillity</div><div class="trans">træŋˈkwɪləti</div></div>
+</div>
+<h3>Compound Word Stress</h3>
+<div class="rule-box"><strong>Noun + Noun compound → stress on 1st element:</strong> ˈtypewriter, ˈsunrise, ˈsuitcase, ˈteacup</div>
+<div class="rule-box"><strong>Adj + V(past participle) → stress on 2nd:</strong> well-ˈdone, old-ˈfashioned, narrow-ˈminded</div>
+<div class="rule-box"><strong>Phrasal verbs → stress on prep/adv:</strong> sit ˈdown, fly aˈway, stand ˈup</div>
+<div class="rule-box"><strong>Words ending -ic(s), -sion, -tion, -ive, -ant → stress penultimate syllable</strong></div>
+<div class="rule-box"><strong>Words ending -cy, -ty, -phy, -gy, -al, -er, -ful, -less, -ous, -fy, -ible, -able, -ist → stress antepenultimate</strong></div>
+`
+},
+{
+  num:'Chapter 10',title:'Listen & Repeat — Stress Exercises',
+  icon:'🎧',iconClass:'icon-pink',
+  desc:'Structured exercises from the CDELT textbook — syllable counting, stress marking, suffix identification, and word class determination.',
+  topics:['Exercises','Suffixes','Prefixes','Practice'],
+  body:`
+<h3>Word Accent (1) — Syllable Counting</h3>
+<p>Practice identifying the number of syllables and the accented syllable. Remember: every syllable must contain a sounded vowel.</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">police</div><div class="trans">poˈlice (2)</div></div>
+  <div class="example-card"><div class="word">intend</div><div class="trans">inˈtend (2)</div></div>
+  <div class="example-card"><div class="word">distinction</div><div class="trans">disˈtinction (3)</div></div>
+  <div class="example-card"><div class="word">synonymous</div><div class="trans">syˈnonymous (4)</div></div>
+  <div class="example-card"><div class="word">bureaucracy</div><div class="trans">buˈreaucracy (4)</div></div>
+  <div class="example-card"><div class="word">university</div><div class="trans">uniˈversity (5)</div></div>
+</div>
+<h3>Suffix Rules for Accent (Listen & Repeat 2)</h3>
+<div class="rule-box"><strong>Nouns ending -ian, -ion, -tion, -ity</strong> → accent on syllable preceding suffix:<br><span class="ipa-example">poliˈtician</span> &nbsp; <span class="ipa-example">phoneˈtician</span> &nbsp; <span class="ipa-example">reˈality</span> &nbsp; <span class="ipa-example">uniˈversity</span></div>
+<div class="rule-box"><strong>Verbs ending -ify, -ish</strong> → accent on syllable preceding suffix:<br><span class="ipa-example">ˈqualify</span> &nbsp; <span class="ipa-example">ˈrectify</span> &nbsp; <span class="ipa-example">esˈtablish</span> &nbsp; <span class="ipa-example">iˈdentify</span></div>
+<div class="rule-box"><strong>Adjectives ending -ic, -ical, -eous, -ious, -cious</strong> → accent on syllable preceding suffix:<br><span class="ipa-example">hiˈstoric</span> &nbsp; <span class="ipa-example">sympaˈthetic</span> &nbsp; <span class="ipa-example">susˈpicious</span></div>
+<div class="rule-box"><strong>Verbs of 2 syllables ending -ate</strong> → accent on final syllable; 3-syllable → antepenultimate:<br><span class="ipa-example">transˈlate</span> &nbsp; <span class="ipa-example">deˈbate</span> but <span class="ipa-example">ˈdominate</span> &nbsp; <span class="ipa-example">ˈcirculate</span></div>
+<div class="rule-box"><strong>Nouns ending -ation, -ition</strong> → accent on penultimate syllable (first syllable of suffix):<br><span class="ipa-example">civiliˈzation</span> &nbsp; <span class="ipa-example">imaginˈation</span> &nbsp; <span class="ipa-example">compoˈsition</span></div>
+<h3>Stress-Neutral Prefixes (Listen & Repeat 3)</h3>
+<p>Prefixes un-, in-, im-, mis-, re-, dis-, anti-, extra-, inter-, over- do NOT shift the root stress:</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">possible → impossible</div><div class="trans">imˈpossible</div></div>
+  <div class="example-card"><div class="word">pronounce → mispronounce</div><div class="trans">misproˈnounce</div></div>
+  <div class="example-card"><div class="word">national → international</div><div class="trans">interˈnational</div></div>
+  <div class="example-card"><div class="word">work → overwork</div><div class="trans">overˈwork</div></div>
+</div>
+`
+},
+{
+  num:'Chapter 11',title:'Sentence Stress',
+  icon:'📢',iconClass:'icon-blue',
+  desc:'How prominence within a sentence changes meaning — content words vs. function words, nuclear stress, and contrastive stress.',
+  topics:['Content Words','Function Words','Nuclear','Prominence'],
+  body:`
+<h3>What is Sentence Stress?</h3>
+<p>In connected speech, words are not all given equal salience. The speaker picks out certain words as more important — these receive <em>prominence</em>. The most prominent word in an intonation group receives the <strong>sentence stress (nuclear stress)</strong>.</p>
+<h3>The Basic Rule</h3>
+<div class="rule-box"><strong>Content words</strong> (nouns, main verbs, adjectives, adverbs) normally receive sentence stress.<br><strong>Function words</strong> (articles, prepositions, conjunctions, pronouns) are normally unstressed.</div>
+<h3>Shifting Meaning with Stress Shift</h3>
+<p>The sentence <em>"I don't think she will listen to him"</em> can mean 7 different things depending on which word is stressed. Here are three examples:</p>
+<div class="example-grid">
+  <div class="example-card"><div class="word">I don't think she will listen to him</div><div class="meaning"><em>I</em> stressed → I don't, but someone else might</div></div>
+  <div class="example-card"><div class="word">I DON'T think she will listen to him</div><div class="meaning"><em>don't</em> stressed → It is definitely not true</div></div>
+  <div class="example-card"><div class="word">I don't think SHE will listen to him</div><div class="meaning"><em>she</em> stressed → someone else might listen</div></div>
+</div>
+<h3>Nuclear Stress</h3>
+<p>The <em>nuclear syllable</em> is the stressed syllable within the most prominent word. Sentence stress always falls on the syllable that normally receives word stress. Example: "I'll meet you toˈmorrow" — the nucleus is on the stressed syllable of <em>tomorrow</em>.</p>
+<h3>Word Stress vs. Sentence Stress</h3>
+<div class="rule-box">
+1. Word stress is <strong>fixed</strong> — <em>arrived</em> is always arˈRIVED, never ˈARrived.<br>
+2. Sentence stress is <strong>variable</strong> — determined by what the speaker wants to emphasize.<br>
+3. A monosyllabic word can take sentence stress if it is important in context.
+</div>
+<h3>Contrastive Stress</h3>
+<p>When contrasting, the stressed word is given extra prominence and surrounding normally-stressed words may lose some stress. Example: "We saw ˈSami walking" (implying, but not Ali).</p>
+`
+},
+{
+  num:'Chapter 12',title:'Questions & Answers on Stress',
+  icon:'❓',iconClass:'icon-purple',
+  desc:'A comprehensive Q&A covering the definition, notation, functions, and patterns of stress in English — straight from the textbook.',
+  topics:['Q&A','Lexical Stress','Suprasegmental','Rules'],
+  body:`
+<h3>What is Stress?</h3>
+<p>Stress is the <em>prominence given to a syllable or a word</em>, caused by additional breath force, variation in pitch, and greater breath expenditure. Stressed syllables have greater duration, volume, and higher pitch.</p>
+<h3>Is Stress Segmental or Suprasegmental?</h3>
+<p><strong>Suprasegmental</strong> — it applies to whole syllables, not individual phonemes. A stressed syllable is produced with greater respiratory and laryngeal activity.</p>
+<h3>What Makes a Syllable Stressed?</h3>
+<p>A stressed syllable is characterized by: <em>Duration</em> (how long it lasts), <em>Volume</em> (how loud it is), and <em>Key</em> (how high its pitch is compared with neighbours). The most reliable acoustic cue is that a stressed syllable frequently has a <strong>longer vowel</strong>.</p>
+<h3>Functions of Stress</h3>
+<div class="rule-box">1. <strong>Emphasis / contrast</strong> — e.g., "John ˈand Mary should go" (not or)<br>2. <strong>Syntactic function</strong> — noun/verb pairs: an ˈinsult vs. to inˈsult<br>3. <strong>Compound vs. phrase</strong> — a ˈhot dog (food) vs. a ˈhot ˈdog (overheated animal)</div>
+<h3>Weak Syllables — The Four Possible Centres</h3>
+<div class="rule-box">a. /ə/ (schwa)<br>b. A close front vowel near /iː/ and /ɪ/<br>c. A close back vowel near /uː/ and /ʊ/<br>d. A syllabic consonant /l/, /m/, or /n/</div>
+<h3>Rules for Secondary Stress</h3>
+<div class="rule-box">1. <strong>One syllable before main stress</strong> → no secondary stress: <span class="ipa-example">laˈpel</span><br>2. <strong>Two syllables before</strong> → secondary on first: <span class="ipa-example">ˌaluˈminum</span><br>3. <strong>Three+ syllables before</strong> → secondary on strong syllable 2 back from main stress: <span class="ipa-example">ˌencycloˈpedia</span></div>
+<h3>Stress Patterns: Photo / Photography / Photographic</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">photograph</div><div class="trans">ˈfəʊtəgrɑːf</div><div class="meaning">stress on 1st</div></div>
+  <div class="example-card"><div class="word">photography</div><div class="trans">fəˈtɒgrəfi</div><div class="meaning">stress on 2nd — suffix -y shifts</div></div>
+  <div class="example-card"><div class="word">photographic</div><div class="trans">ˌfəʊtəˈgræfɪk</div><div class="meaning">stress on 3rd — suffix -ic shifts</div></div>
+</div>
+`
+},
+{
+  num:'Chapter 13',title:'Allophonic Variations',
+  icon:'🔬',iconClass:'icon-green',
+  desc:'Phonemes as abstract categories, allophones as their context-specific realisations — aspiration of voiceless plosives and clear vs. dark /l/.',
+  topics:['Allophones','Aspiration','Clear /l/','Dark /l/'],
+  body:`
+<h3>Phonemes vs. Allophones</h3>
+<p>A <em>phoneme</em> is an abstract mental concept that is never pronounced as such. The actual speech sounds produced are called <strong>phones</strong>. Any variant of a phoneme that does not lead to a change in meaning is called an <strong>allophone</strong> of that phoneme.</p>
+<div class="rule-box">Allophones = varieties of the same phoneme that occur in specific phonological contexts. Listing each phoneme's allophones is known as <em>phonemics</em>.</div>
+<h3>1. Aspiration of Voiceless Plosives /p/, /t/, /k/</h3>
+<p>When voiceless plosives occur at the <strong>start of a stressed syllable</strong>, they are produced with a puff of air — they are <em>aspirated</em>. When preceded by /s/, they are <em>unaspirated</em>.</p>
+<div class="allophone-visual">
+  <div class="allophone-side">
+    <div class="allophone-side-title">Aspirated [pʰ] [tʰ] [kʰ]</div>
+    <div class="allophone-side-sym asp">tʰ</div>
+    <p style="font-size:.9rem;color:var(--grey2)">Initial in stressed syllable — accompanied by a puff of air.</p>
+    <div class="allophone-words">
+      <span class="allo-word">tall /tʰɔːl/</span>
+      <span class="allo-word">port /pʰɔːt/</span>
+      <span class="allo-word">kill /kʰɪl/</span>
+    </div>
+  </div>
+  <div class="allophone-side">
+    <div class="allophone-side-title">Unaspirated [p=] [t=] [k=]</div>
+    <div class="allophone-side-sym unasp">t=</div>
+    <p style="font-size:.9rem;color:var(--grey2)">After /s/ — no puff of air, tongue released without aspiration.</p>
+    <div class="allophone-words">
+      <span class="allo-word">stall /st=ɔːl/</span>
+      <span class="allo-word">sport /sp=ɔːt/</span>
+      <span class="allo-word">school /sk=uːl/</span>
+    </div>
+  </div>
+</div>
+<h3>2. Clear and Dark /l/</h3>
+<div class="allophone-visual">
+  <div class="allophone-side">
+    <div class="allophone-side-title">Clear [l] — before vowels and /j/</div>
+    <div class="allophone-side-sym asp">l</div>
+    <p style="font-size:.9rem;color:var(--grey2)">Voiced alveolar lateral. Tongue tip touches alveolar ridge. Air flows around the sides.</p>
+    <div class="allophone-words">
+      <span class="allo-word">light /laɪt/</span>
+      <span class="allo-word">look /lʊk/</span>
+      <span class="allo-word">blue /bluː/</span>
+    </div>
+  </div>
+  <div class="allophone-side">
+    <div class="allophone-side-title">Dark [ɫ] — after vowels / word-finally</div>
+    <div class="allophone-side-sym unasp">ɫ</div>
+    <p style="font-size:.9rem;color:var(--grey2)">Velarized: back of tongue raised toward velum (like a high back vowel). Extra lifting of tongue position.</p>
+    <div class="allophone-words">
+      <span class="allo-word">feel /fiːɫ/</span>
+      <span class="allo-word">pull /pʊɫ/</span>
+      <span class="allo-word">milk /mɪɫk/</span>
+    </div>
+  </div>
+</div>
+<div class="warning-box">Only voiceless plosives /p/, /t/, /k/ are aspirated. Voiced plosives /b/, /d/, /g/ are NEVER aspirated. Only plosives can be aspirated — no nasals, fricatives, or approximants.</div>
+`
+},
+{
+  num:'Chapter 14',title:'Phonological Terms — Full Glossary',
+  icon:'📖',iconClass:'icon-pink',
+  desc:'All 43 phonological terms defined in the textbook — from consonant and vowel to diphthong, lateral, glottal, and nuclear stress.',
+  topics:['Consonants','Vowels','Diphthongs','Terms'],
+  body:`
+<h3>Core Consonant Terms</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">Bilabial</div><div class="meaning">Made by pressing both lips together — /p/, /b/, /m/</div></div>
+  <div class="example-card"><div class="word">Labiodental</div><div class="meaning">Upper teeth on lower lip — /f/, /v/</div></div>
+  <div class="example-card"><div class="word">Dental</div><div class="meaning">Tongue tip between upper and lower teeth — /θ/, /ð/</div></div>
+  <div class="example-card"><div class="word">Alveolar</div><div class="meaning">Tongue tip/blade on alveolar ridge — /t/, /d/, /s/, /z/, /n/, /l/</div></div>
+  <div class="example-card"><div class="word">Alveolo-palatal</div><div class="meaning">Tongue between alveolar ridge and hard palate — /ʃ/, /ʒ/</div></div>
+  <div class="example-card"><div class="word">Velar</div><div class="meaning">Back of tongue on soft palate — /k/, /g/, /ŋ/</div></div>
+  <div class="example-card"><div class="word">Glottal</div><div class="meaning">Made at the glottis — /h/</div></div>
+  <div class="example-card"><div class="word">Post-alveolar</div><div class="meaning">Tongue tip toward back of alveolar ridge — /r/</div></div>
+</div>
+<h3>Manner of Articulation Terms</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">Plosive</div><div class="meaning">Total closure then sudden release — /p/, /b/, /t/, /d/, /k/, /g/</div></div>
+  <div class="example-card"><div class="word">Fricative</div><div class="meaning">Air forced through narrow gap — /f/, /v/, /θ/, /ð/, /s/, /z/, /ʃ/, /ʒ/, /h/</div></div>
+  <div class="example-card"><div class="word">Affricate</div><div class="meaning">Plosive + fricative — /tʃ/, /dʒ/</div></div>
+  <div class="example-card"><div class="word">Nasal</div><div class="meaning">Air through nose — /m/, /n/, /ŋ/</div></div>
+  <div class="example-card"><div class="word">Lateral</div><div class="meaning">Air around sides of tongue — /l/</div></div>
+  <div class="example-card"><div class="word">Semi-vowel</div><div class="meaning">Vowel-like but functions as consonant — /j/, /w/</div></div>
+</div>
+<h3>Vowel Description Terms</h3>
+<div class="example-grid">
+  <div class="example-card"><div class="word">Close</div><div class="meaning">Tongue at highest position — /iː/, /uː/</div></div>
+  <div class="example-card"><div class="word">Mid</div><div class="meaning">Tongue between half-close and half-open — /e/, /ɔː/</div></div>
+  <div class="example-card"><div class="word">Open</div><div class="meaning">Tongue at lowest position — /æ/, /ɒ/</div></div>
+  <div class="example-card"><div class="word">Front</div><div class="meaning">Front part of tongue — /iː/, /e/, /æ/</div></div>
+  <div class="example-card"><div class="word">Central</div><div class="meaning">Central tongue — /ʌ/, /ə/, /ɜː/</div></div>
+  <div class="example-card"><div class="word">Back</div><div class="meaning">Back tongue — /uː/, /ʊ/, /ɔː/</div></div>
+  <div class="example-card"><div class="word">Rounded</div><div class="meaning">Lips rounded — /ɒ/, /ɔː/, /uː/</div></div>
+  <div class="example-card"><div class="word">Spread</div><div class="meaning">Lips spread — /iː/, /ɪ/</div></div>
+</div>
+`
+}
+];
+
+/* Render chapters */
+(function(){
+  const grid=document.getElementById('chapters-grid');
+  chapters.forEach((ch,i)=>{
+    const div=document.createElement('div');
+    div.className='chapter-card reveal';
+    div.innerHTML=`
+      <div class="chapter-icon ${ch.iconClass}">${ch.icon}</div>
+      <div class="chapter-num">${ch.num}</div>
+      <div class="chapter-title">${ch.title}</div>
+      <div class="chapter-desc">${ch.desc}</div>
+      <div class="chapter-topics">${ch.topics.map(t=>`<span class="topic-tag">${t}</span>`).join('')}</div>
+      <div class="chapter-meta"><span>Open lesson →</span></div>
+    `;
+    div.onclick=()=>openLesson(i);
+    grid.appendChild(div);
+  });
+})();
+
+function openLesson(i){
+  const ch=chapters[i];
+  const overlay=document.getElementById('lesson-overlay');
+  const inner=document.getElementById('lesson-modal-inner');
+  inner.innerHTML=`
+    <div class="lesson-header">
+      <button class="lesson-close" onclick="closeLesson()">✕</button>
+      <div class="chapter-num">${ch.num}</div>
+      <h2 style="font-size:1.6rem;font-weight:800;margin-bottom:8px;line-height:1.2">${ch.title}</h2>
+      <div class="chapter-topics">${ch.topics.map(t=>`<span class="topic-tag">${t}</span>`).join('')}</div>
+    </div>
+    <div class="lesson-body">${ch.body}</div>
+  `;
+  overlay.classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeLesson(){
+  document.getElementById('lesson-overlay').classList.remove('active');
+  document.body.style.overflow='';
+}
+document.getElementById('lesson-overlay').addEventListener('click',function(e){
+  if(e.target===this)closeLesson();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLesson();closeIPAPopup()}});
+
+/* ============================================================
+   IPA DATA
+   ============================================================ */
+const ipaData={
+  'Vowels':[
+    {sym:'iː',name:'FLEECE vowel',cat:'Close Front Unrounded',desc:'Produced with the tongue high and front, lips spread wide.',art:'Tongue: high, front. Lips: spread. Long vowel.',words:['cheese','police','siege','seize']},
+    {sym:'ɪ',name:'KIT vowel',cat:'Near-Close Front Unrounded',desc:'Similar to /iː/ but shorter, tongue slightly lower.',art:'Tongue: near-high, front. Lips: slightly spread. Short.',words:['bit','busy','village','sieve']},
+    {sym:'e',name:'DRESS vowel',cat:'Close-Mid Front Unrounded',desc:'Tongue is at a mid-front position.',art:'Tongue: mid-high, front. Lips: spread or neutral.',words:['head','bed','many']},
+    {sym:'æ',name:'TRAP vowel',cat:'Near-Open Front Unrounded',desc:'Tongue is near the front and quite low.',art:'Tongue: low, front. Lips: spread. Short.',words:['sat','back','cat']},
+    {sym:'ɑː',name:'PALM / START vowel',cat:'Open Back Unrounded',desc:'Tongue is at its lowest and furthest back position. Long.',art:'Tongue: low, back. Lips: neutral/open. Long.',words:['hard','father','half','heart']},
+    {sym:'ɔː',name:'THOUGHT vowel',cat:'Close-Mid Back Rounded',desc:'Tongue is back and raised, lips rounded. Long.',art:'Tongue: mid-high, back. Lips: rounded. Long.',words:['core','war','talk','dawn']},
+    {sym:'ɒ',name:'LOT vowel',cat:'Open Back Rounded',desc:'Tongue at its lowest, back. Lips slightly rounded. Short.',art:'Tongue: low, back. Lips: slightly rounded. Short.',words:['not','swan','what','was']},
+    {sym:'uː',name:'GOOSE vowel',cat:'Close Back Rounded',desc:'Tongue high and back, lips strongly rounded. Long.',art:'Tongue: high, back. Lips: strongly rounded. Long.',words:['tooth','youth','soup','lose']},
+    {sym:'ʊ',name:'FOOT vowel',cat:'Near-Close Back Rounded',desc:'Similar to /uː/ but shorter, lips less rounded.',art:'Tongue: near-high, back. Lips: rounded. Short.',words:['should','wood','woman']},
+    {sym:'ʌ',name:'STRUT vowel',cat:'Open-Mid Back Unrounded',desc:'Tongue at mid-back, lips neutral.',art:'Tongue: mid-low, back. Lips: neutral. Short.',words:['mother','enough','flood']},
+    {sym:'ɜː',name:'NURSE vowel',cat:'Open-Mid Central Unrounded',desc:'Central position, neither front nor back. Long.',art:'Tongue: mid, central. Lips: neutral. Long.',words:['bird','purse','church','skirt']},
+    {sym:'ə',name:'Schwa',cat:'Mid Central Unrounded',desc:'The most frequent English vowel — always in unstressed syllables. Mid and central, lax.',art:'Tongue: mid, central. Lips: neutral. Short. Only in unstressed syllables.',words:['arrive','teacher','negative','particular']},
+  ],
+  'Diphthongs':[
+    {sym:'eɪ',name:'FACE diphthong',cat:'Front Closing',desc:'Glides from /e/ toward /ɪ/. Ends in a front vowel.',art:'Start: mid-front tongue. End: near-high front. Lips spread.',words:['gate','bait','eight','break']},
+    {sym:'aɪ',name:'PRICE diphthong',cat:'Front Closing',desc:'Glides from open /a/ toward /ɪ/.',art:'Start: open, central. End: near-high, front. Jaw rises.',words:['light','lie','by','fly']},
+    {sym:'ɔɪ',name:'CHOICE diphthong',cat:'Front Closing',desc:'Glides from back rounded /ɔ/ toward /ɪ/.',art:'Start: mid-back, rounded. End: near-high, front. Lips unround.',words:['boy','noise','choice']},
+    {sym:'əʊ',name:'GOAT diphthong',cat:'Back Closing',desc:'Glides from schwa /ə/ toward /ʊ/.',art:'Start: mid-central. End: near-high back. Lips round gradually.',words:['low','know','though','sew']},
+    {sym:'aʊ',name:'MOUTH diphthong',cat:'Back Closing',desc:'Glides from open /a/ toward /ʊ/.',art:'Start: open central. End: near-high back. Lips round.',words:['how','proud','cow','owl']},
+    {sym:'ɪə',name:'NEAR diphthong',cat:'Central / Centering',desc:'Glides from near-close /ɪ/ toward schwa /ə/.',art:'Start: near-high front. End: mid central. Jaw drops slightly.',words:['here','dear','cheer','fierce']},
+    {sym:'eə',name:'SQUARE diphthong',cat:'Central / Centering',desc:'Glides from /e/ toward schwa /ə/.',art:'Start: mid front. End: mid central.',words:['chair','dare','wear','tear']},
+    {sym:'ʊə',name:'CURE diphthong',cat:'Central / Centering',desc:'Glides from /ʊ/ toward schwa /ə/.',art:'Start: near-high back, rounded. End: mid central.',words:['poor','sure','tour']},
+  ],
+  'Consonants':[
+    {sym:'p',name:'Bilabial Plosive (voiceless)',cat:'Bilabial / Voiceless',desc:'Complete closure of both lips, then sudden release.',art:'Place: bilabial. Manner: plosive. Voicing: voiceless. Aspirated word-initially: [pʰ]',words:['pie','pack','leap','hop']},
+    {sym:'b',name:'Bilabial Plosive (voiced)',cat:'Bilabial / Voiced',desc:'Like /p/ but vocal cords vibrate.',art:'Place: bilabial. Manner: plosive. Voicing: voiced.',words:['boy','bog','lab','curb']},
+    {sym:'t',name:'Alveolar Plosive (voiceless)',cat:'Alveolar / Voiceless',desc:'Tongue tip on alveolar ridge, sudden release.',art:'Place: alveolar. Manner: plosive. Voicing: voiceless. Aspirated initially: [tʰ]',words:['tea','taste','cat','sit']},
+    {sym:'d',name:'Alveolar Plosive (voiced)',cat:'Alveolar / Voiced',desc:'Like /t/ but with vocal cord vibration.',art:'Place: alveolar. Manner: plosive. Voicing: voiced.',words:['dog','dish','pad','hard']},
+    {sym:'k',name:'Velar Plosive (voiceless)',cat:'Velar / Voiceless',desc:'Back of tongue on soft palate, burst release.',art:'Place: velar. Manner: plosive. Voicing: voiceless. Aspirated initially: [kʰ]',words:['cat','cart','back','rock']},
+    {sym:'g',name:'Velar Plosive (voiced)',cat:'Velar / Voiced',desc:'Like /k/ but voiced.',art:'Place: velar. Manner: plosive. Voicing: voiced.',words:['go','gun','bag','dig']},
+    {sym:'f',name:'Labiodental Fricative (voiceless)',cat:'Labiodental / Voiceless',desc:'Upper teeth on lower lip, air forced through gap.',art:'Place: labiodental. Manner: fricative. Voicing: voiceless.',words:['fat','fun','fill','flat']},
+    {sym:'v',name:'Labiodental Fricative (voiced)',cat:'Labiodental / Voiced',desc:'Like /f/ but voiced.',art:'Place: labiodental. Manner: fricative. Voicing: voiced.',words:['vote','vice','veto','avid']},
+    {sym:'θ',name:'Dental Fricative (voiceless)',cat:'Dental / Voiceless',desc:'Tongue tip between upper and lower teeth, air forced through.',art:'Place: dental. Manner: fricative. Voicing: voiceless.',words:['think','three','bath','theatre']},
+    {sym:'ð',name:'Dental Fricative (voiced)',cat:'Dental / Voiced',desc:'Like /θ/ but voiced.',art:'Place: dental. Manner: fricative. Voicing: voiced.',words:['this','then','those','bathe']},
+    {sym:'s',name:'Alveolar Fricative (voiceless)',cat:'Alveolar / Voiceless',desc:'Tongue blade near alveolar ridge, hissing sound.',art:'Place: alveolar. Manner: fricative. Voicing: voiceless.',words:['see','so','bus','task']},
+    {sym:'z',name:'Alveolar Fricative (voiced)',cat:'Alveolar / Voiced',desc:'Like /s/ but voiced.',art:'Place: alveolar. Manner: fricative. Voicing: voiced.',words:['peas','plays','logs','please']},
+    {sym:'ʃ',name:'Palato-alveolar Fricative (voiceless)',cat:'Alveolar-Palatal / Voiceless',desc:'Tongue raised toward palate behind alveolar ridge.',art:'Place: alveolo-palatal. Manner: fricative. Voicing: voiceless.',words:['show','shirt','push','washer']},
+    {sym:'ʒ',name:'Palato-alveolar Fricative (voiced)',cat:'Alveolar-Palatal / Voiced',desc:'Like /ʃ/ but voiced.',art:'Place: alveolo-palatal. Manner: fricative. Voicing: voiced.',words:['measure','leisure','vision']},
+    {sym:'h',name:'Glottal Fricative (voiceless)',cat:'Glottal / Voiceless',desc:'Air passes through open glottis with friction.',art:'Place: glottal. Manner: fricative. Voicing: voiceless.',words:['how','heel','huge','hug']},
+    {sym:'tʃ',name:'Palato-alveolar Affricate (voiceless)',cat:'Alveolar / Voiceless / Affricate',desc:'Plosive /t/ + fricative /ʃ/ combined.',art:'Place: alveolar-palatal. Manner: affricate. Voicing: voiceless.',words:['child','chew','chalk','church']},
+    {sym:'dʒ',name:'Palato-alveolar Affricate (voiced)',cat:'Alveolar / Voiced / Affricate',desc:'Plosive /d/ + fricative /ʒ/ combined.',art:'Place: alveolar-palatal. Manner: affricate. Voicing: voiced.',words:['joy','just','jeep','gentle']},
+    {sym:'m',name:'Bilabial Nasal (voiced)',cat:'Bilabial / Nasal',desc:'Both lips close, air released through nose.',art:'Place: bilabial. Manner: nasal. Voicing: voiced. Can be syllabic: /m̩/',words:['may','mile','room','dim']},
+    {sym:'n',name:'Alveolar Nasal (voiced)',cat:'Alveolar / Nasal',desc:'Tongue on alveolar ridge, air through nose.',art:'Place: alveolar. Manner: nasal. Voicing: voiced. Syllabic /n̩/: button, threaten.',words:['new','name','man','own']},
+    {sym:'ŋ',name:'Velar Nasal (voiced)',cat:'Velar / Nasal',desc:'Back of tongue on velum, air through nose. Never word-initial.',art:'Place: velar. Manner: nasal. Voicing: voiced. Only in medial and final position.',words:['singer','bring','long','hang']},
+    {sym:'l',name:'Alveolar Lateral (voiced)',cat:'Alveolar / Lateral',desc:'Tongue tip on alveolar ridge, air around sides. Has clear [l] and dark [ɫ] allophones.',art:'Place: alveolar. Manner: lateral. Voicing: voiced. Syllabic /l̩/: bottle, people.',words:['list','lame','pal','pool']},
+    {sym:'r',name:'Post-alveolar Approximant (voiced)',cat:'Post-alveolar / Approximant',desc:'Tongue tip raised toward back of alveolar ridge without touching.',art:'Place: post-alveolar. Manner: approximant. Voicing: voiced. Non-rhotic in RP.',words:['ring','roast','run','car']},
+    {sym:'j',name:'Palatal Approximant / Semi-vowel',cat:'Palatal / Semi-vowel',desc:'Like a vowel /iː/ but acts as consonant in syllable onset.',art:'Place: palatal. Manner: approximant. Voicing: voiced.',words:['yes','you','yam','beyond']},
+    {sym:'w',name:'Labio-velar Approximant / Semi-vowel',cat:'Labio-velar / Semi-vowel',desc:'Like /uː/ but acts as consonant.',art:'Place: labio-velar. Manner: approximant. Voicing: voiced.',words:['we','way','wore','between']},
+  ]
+};
+
+/* Render IPA tabs */
+(function(){
+  const tabsEl=document.getElementById('ipa-tabs');
+  const gridEl=document.getElementById('ipa-grid');
+  const cats=Object.keys(ipaData);
+  let active=cats[0];
+  function render(){
+    gridEl.innerHTML='';
+    ipaData[active].forEach(item=>{
+      const div=document.createElement('div');
+      div.className='ipa-card reveal';
+      div.innerHTML=`<div class="ipa-type">${item.cat.split('/')[0].trim()}</div><div class="ipa-sym">${item.sym}</div><div class="ipa-ex">${item.words[0]}</div>`;
+      div.onclick=()=>openIPAPopup(item);
+      gridEl.appendChild(div);
+    });
+    setTimeout(revealEls,50);
+  }
+  cats.forEach(cat=>{
+    const btn=document.createElement('button');
+    btn.className='ipa-tab'+(cat===active?' active':'');
+    btn.textContent=cat;
+    btn.onclick=()=>{
+      active=cat;
+      document.querySelectorAll('.ipa-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    };
+    tabsEl.appendChild(btn);
+  });
+  render();
+})();
+
+function openIPAPopup(item){
+  document.getElementById('pp-sym').textContent=item.sym;
+  document.getElementById('pp-name').textContent=item.name;
+  document.getElementById('pp-cat').textContent=item.cat;
+  document.getElementById('pp-desc').textContent=item.desc;
+  document.getElementById('pp-art').textContent=item.art;
+  document.getElementById('pp-words').innerHTML=item.words.map(w=>`<span class="ipa-popup-word">${w}</span>`).join('');
+  document.getElementById('ipa-popup').classList.add('active');
+  document.getElementById('ipa-backdrop').classList.add('active');
+}
+function closeIPAPopup(){
+  document.getElementById('ipa-popup').classList.remove('active');
+  document.getElementById('ipa-backdrop').classList.remove('active');
+}
+
+/* ============================================================
+   STRESS VISUALIZER
+   ============================================================ */
+const stressDict={
+  'photograph':['pho','TO','graph'],
+  'photographer':['pho','TO','gra','pher'],
+  'photographic':['pho','to','GRAPH','ic'],
+  'opportunity':['op','por','TU','ni','ty'],
+  'university':['u','ni','VER','si','ty'],
+  'information':['in','for','MA','tion'],
+  'impossible':['im','POS','si','ble'],
+  'education':['ed','u','CA','tion'],
+  'communication':['com','mu','ni','CA','tion'],
+  'pronunciation':['pro','nun','ci','A','tion'],
+  'beautiful':['BEAU','ti','ful'],
+  'technology':['tech','NOL','o','gy'],
+  'democracy':['de','MOC','ra','cy'],
+  'geography':['ge','OG','ra','phy'],
+  'electricity':['e','lec','TRIC','i','ty'],
+  'vocabulary':['vo','CAB','u','lar','y'],
+  'economy':['e','CON','o','my'],
+  'economic':['e','co','NOM','ic'],
+  'political':['po','LIT','i','cal'],
+};
+
+function setStressWord(w){
+  document.getElementById('stress-input').value=w;
+  analyzeStress();
+}
+
+function analyzeStress(){
+  const input=document.getElementById('stress-input').value.toLowerCase().trim();
+  const display=document.getElementById('stress-display');
+  if(!input){display.innerHTML='<div class="stress-info">Type a word above to visualise its stress pattern.</div>';return;}
+  let syllables=stressDict[input];
+  if(!syllables){
+    // simple heuristic
+    syllables=simpleSyllabify(input);
+  }
+  const maxH=72;
+  const syls=syllables.map(s=>{
+    const isPrimary=s===s.toUpperCase()&&s.length>0;
+    const isSecondary=false;
+    const label=s.charAt(0)+s.slice(1).toLowerCase();
+    return {label,isPrimary,height:isPrimary?maxH:20};
+  });
+  const stressIdx=syls.findIndex(s=>s.isPrimary);
+  let infoText='';
+  if(stressIdx>=0){
+    const pos=['first','second','third','fourth','fifth'][stressIdx]||`${stressIdx+1}th`;
+    infoText=`Primary stress on the <strong>${pos}</strong> syllable — "${syllables[stressIdx].toUpperCase()}"`;
+  }
+  display.innerHTML=`
+    <div class="stress-syllables" id="stress-syls"></div>
+    <div class="stress-info" style="font-size:.88rem;">${infoText||'Estimated pattern — check a dictionary for exact stress.'}</div>
+  `;
+  const container=document.getElementById('stress-syls');
+  syls.forEach(syl=>{
+    const div=document.createElement('div');
+    div.className='stress-syl';
+    div.innerHTML=`
+      <div class="stress-mark">${syl.isPrimary?'ˈ':''}</div>
+      <div class="stress-bar-wrap"><div class="stress-bar ${syl.isPrimary?'primary':syl.isSecondary?'secondary':'unstressed'}" style="height:0"></div></div>
+      <div class="stress-syl-label ${syl.isPrimary?'primary':syl.isSecondary?'secondary':'unstressed'}">${syl.label}</div>
+    `;
+    container.appendChild(div);
+    setTimeout(()=>{
+      div.querySelector('.stress-bar').style.height=syl.height+'px';
+    },50);
+  });
+}
+
+function simpleSyllabify(word){
+  const vowels='aeiouy';
+  let syls=[];let cur='';let vCount=0;
+  for(let i=0;i<word.length;i++){
+    cur+=word[i];
+    if(vowels.includes(word[i])){
+      vCount++;
+      if(vCount>0&&i<word.length-1&&!vowels.includes(word[i+1])&&vowels.includes(word[i+2]||'')){
+        syls.push(cur);cur='';
+      }
+    }
+  }
+  if(cur)syls.push(cur);
+  if(syls.length===0)syls=[word];
+  // guess stress: penultimate if 2+ syllables
+  if(syls.length>=2){
+    const stressIdx=syls.length===2?0:syls.length-2;
+    syls[stressIdx]=syls[stressIdx].toUpperCase();
+  }
+  return syls;
+}
+
+/* Noun-Verb Pairs */
+const nvPairs=[
+  {word:'conduct',nounTrans:'ˈkɒndʌkt',verbTrans:'kənˈdʌkt',nounEx:"His conduct was appreciable.",verbEx:"The function was conducted by the students."},
+  {word:'contrast',nounTrans:'ˈkɒntrɑːst',verbTrans:'kənˈtrɑːst',nounEx:"There's quite a CON-trast between their views.",verbEx:"I will compare and con-TRAST these two poems."},
+  {word:'desert',nounTrans:'ˈdezət',verbTrans:'dɪˈzɜːt',nounEx:"Egypt has vast deserts.",verbEx:"He deserted his family."},
+  {word:'export',nounTrans:'ˈekspɔːt',verbTrans:'ɪkˈspɔːt',nounEx:"Coffee is an IM-port from Brazil.",verbEx:"We aim to ex-PORT more goods."},
+  {word:'import',nounTrans:'ˈɪmpɔːt',verbTrans:'ɪmˈpɔːt',nounEx:"Coffee is an IM-port from Brazil.",verbEx:"We'd like to im-PORT more coffee."},
+  {word:'insult',nounTrans:'ˈɪnsʌlt',verbTrans:'ɪnˈsʌlt',nounEx:"What she said felt like an IN-sult.",verbEx:"Please don't in-SULT me."},
+  {word:'object',nounTrans:'ˈɒbdʒɪkt',verbTrans:'əbˈdʒekt',nounEx:"What is that OB-ject over there?",verbEx:"Would anyone ob-JECT if I opened a window?"},
+  {word:'permit',nounTrans:'ˈpɜːmɪt',verbTrans:'pəˈmɪt',nounEx:"Do you have a PER-mit to drive?",verbEx:"Will you per-MIT me to park here?"},
+  {word:'present',nounTrans:'ˈpreznt',verbTrans:'prɪˈzent',nounEx:"She gave me a nice PRES-ent.",verbEx:"Allow me to pres-ENT my friend."},
+  {word:'protest',nounTrans:'ˈprəʊtest',verbTrans:'prəˈtest',nounEx:"There was a political PRO-test.",verbEx:"I had to pro-TEST about the state of the kitchen."},
+  {word:'record',nounTrans:'ˈrekɔːd',verbTrans:'rɪˈkɔːd',nounEx:"She keeps a RE-cord of her spending.",verbEx:"It's important to re-CORD your expenses."},
+  {word:'suspect',nounTrans:'ˈsʌspekt',verbTrans:'səˈspekt',nounEx:"The police interviewed the SUS-pect.",verbEx:"I sus-PECT that tree will have to be cut down."},
+  {word:'increase',nounTrans:'ˈɪŋkriːs',verbTrans:'ɪŋˈkriːs',nounEx:"There has been an IN-crease in accidents.",verbEx:"We need to in-CREASE our sales."},
+  {word:'project',nounTrans:'ˈprɒdʒekt',verbTrans:'prəˈdʒekt',nounEx:"This PRO-ject should be completed next month.",verbEx:"We could pro-JECT the film onto that wall."},
+  {word:'rebel',nounTrans:'ˈrebl',verbTrans:'rɪˈbel',nounEx:"The rebel was punished.",verbEx:"The soldiers rebelled against the orders."},
+  {word:'perfect',nounTrans:'ˈpɜːfɪkt (adj)',verbTrans:'pəˈfekt',nounEx:"Your homework is PER-fect.",verbEx:"We need to per-FECT our design."},
+];
+
+(function(){
+  const grid=document.getElementById('nv-grid');
+  nvPairs.forEach(pair=>{
+    const div=document.createElement('div');
+    div.className='nv-card reveal';
+    div.innerHTML=`
+      <div class="nv-word">${pair.word}</div>
+      <div class="nv-row">
+        <span class="nv-pos noun">Noun/Adj</span>
+        <span class="nv-trans">${pair.nounTrans}</span>
+      </div>
+      <div class="nv-row">
+        <span class="nv-pos verb">Verb</span>
+        <span class="nv-trans">${pair.verbTrans}</span>
+      </div>
+      <div class="nv-example">"${pair.nounEx}"</div>
+    `;
+    grid.appendChild(div);
+  });
+})();
+
+/* ============================================================
+   SYLLABLE TRAINER
+   ============================================================ */
+const sylRules=[
+  {title:'Rule 1: Prefix / Root / Suffix',desc:'Divide between affixes and root first. This rule overrides all others.'},
+  {title:'Rule 2: VC / CV Pattern',desc:'When two consonants appear between vowels, divide between them: al•pha•bet, pic•nic.'},
+  {title:'Rule 3: Open Syllable (V/CV)',desc:'If the first vowel before a single consonant is long → divide after the vowel: si•lent.'},
+  {title:'Rule 4: Closed Syllable (VC/V)',desc:'If the first vowel is short → divide after the consonant: cab•in.'},
+  {title:'Open = ends in vowel',desc:'Vowel is generally long: be, go, no, si•lent.'},
+  {title:'Closed = ends in consonant',desc:'Vowel is usually short or schwa: cat, win, neg•a•tive.'},
+];
+(function(){
+  const container=document.getElementById('syl-rules');
+  sylRules.forEach(r=>{
+    const div=document.createElement('div');
+    div.className='trainer-rule';
+    div.innerHTML=`<div class="trainer-rule-title">${r.title}</div><div class="trainer-rule-desc">${r.desc}</div>`;
+    container.appendChild(div);
+  });
+})();
+
+const sylDict={
+  'pronunciation':'pro•nun•ci•a•tion',
+  'education':'ed•u•ca•tion',
+  'information':'in•for•ma•tion',
+  'communication':'com•mu•ni•ca•tion',
+  'hospital':'hos•pi•tal',
+  'impossible':'im•pos•si•ble',
+  'beautiful':'beau•ti•ful',
+  'university':'u•ni•ver•si•ty',
+  'opportunity':'op•por•tu•ni•ty',
+  'electricity':'e•lec•tric•i•ty',
+  'technology':'tech•nol•o•gy',
+  'democracy':'de•moc•ra•cy',
+  'vocabulary':'vo•cab•u•lar•y',
+  'economy':'e•con•o•my',
+  'introduction':'in•tro•duc•tion',
+  'phonetics':'pho•net•ics',
+  'syllable':'syl•la•ble',
+  'photograph':'pho•to•graph',
+  'photographer':'pho•tog•ra•pher',
+};
+
+function analyzeSyllables(){
+  const w=document.getElementById('syl-input').value.toLowerCase().trim();
+  const out=document.getElementById('syl-output');
+  const info=document.getElementById('syl-info-row');
+  if(!w){out.innerHTML='<span style="color:var(--grey)">Type a word above…</span>';info.innerHTML='';return;}
+  const sylStr=sylDict[w]||simpleSylStr(w);
+  const parts=sylStr.split('•');
+  out.innerHTML=parts.map((p,i)=>{
+    const isOpen=!p.match(/[bcdfghjklmnpqrstvwxyz]$/i);
+    return `${i>0?'<span class="syl-divider">·</span>':''}<span class="syl-part ${isOpen?'open':'closed'}">${p}</span>`;
+  }).join('');
+  info.innerHTML=`
+    <div class="syl-info-chip chip-grey"><div class="chip-dot"></div>${parts.length} syllable${parts.length!==1?'s':''}</div>
+    <div class="syl-info-chip chip-cyan"><div class="chip-dot"></div>${parts.filter(p=>!p.match(/[bcdfghjklmnpqrstvwxyz]$/i)).length} open</div>
+    <div class="syl-info-chip chip-purple"><div class="chip-dot"></div>${parts.filter(p=>p.match(/[bcdfghjklmnpqrstvwxyz]$/i)).length} closed</div>
+  `;
+}
+
+function simpleSylStr(word){
+  const vowels='aeiouy';
+  let result='';let vFound=false;
+  for(let i=0;i<word.length;i++){
+    result+=word[i];
+    if(vowels.includes(word[i])){
+      vFound=true;
+      if(i<word.length-2&&!vowels.includes(word[i+1])&&vowels.includes(word[i+2])){
+        result+='•';
+      }
+    }
+  }
+  return result||word;
+}
+
+/* ============================================================
+   ARTICULATION DIAGRAMS
+   ============================================================ */
+const articulations=[
+  {
+    title:'Bilabial',
+    desc:'Both lips pressed together. The airstream is completely blocked, then released.',
+    examples:['/p/','/b/','/m/'],
+    svg:`<svg viewBox="0 0 200 160" width="160">
+      <ellipse cx="100" cy="80" rx="60" ry="45" fill="none" stroke="rgba(6,182,212,.2)" stroke-width="1.5"/>
+      <!-- lips -->
+      <path d="M60 85 Q100 72 140 85" fill="none" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M60 85 Q100 98 140 85" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- closure indicator -->
+      <circle cx="100" cy="85" r="4" fill="#06b6d4" opacity=".7">
+        <animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".7;.3;.7" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="100" y="140" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="sans-serif">Lip closure</text>
+    </svg>`
+  },
+  {
+    title:'Alveolar',
+    desc:'Tongue tip or blade raised to touch the alveolar ridge (the ridge behind the upper front teeth).',
+    examples:['/t/','/d/','/s/','/z/','/n/','/l/'],
+    svg:`<svg viewBox="0 0 200 160" width="160">
+      <!-- mouth outline -->
+      <path d="M30 110 Q60 40 170 50" fill="none" stroke="rgba(6,182,212,.2)" stroke-width="1.5"/>
+      <!-- tongue -->
+      <path d="M50 130 Q80 100 120 75" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+      <!-- alveolar ridge -->
+      <ellipse cx="118" cy="74" rx="10" ry="6" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="1.5"/>
+      <!-- tip -->
+      <circle cx="118" cy="74" r="3" fill="#06b6d4">
+        <animate attributeName="r" values="3;5;3" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <text x="100" y="150" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="sans-serif">Tongue tip on alveolar ridge</text>
+    </svg>`
+  },
+  {
+    title:'Velar',
+    desc:'Back of tongue raised to touch the soft palate (velum).',
+    examples:['/k/','/g/','/ŋ/'],
+    svg:`<svg viewBox="0 0 200 160" width="160">
+      <path d="M30 110 Q60 40 170 50" fill="none" stroke="rgba(6,182,212,.2)" stroke-width="1.5"/>
+      <!-- tongue body raised back -->
+      <path d="M50 130 Q90 120 140 70" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+      <!-- velum -->
+      <ellipse cx="155" cy="72" rx="12" ry="8" fill="rgba(124,58,237,.2)" stroke="#a78bfa" stroke-width="1.5"/>
+      <circle cx="148" cy="74" r="3" fill="#a78bfa">
+        <animate attributeName="r" values="3;6;3" dur="2.2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="100" y="150" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="sans-serif">Back of tongue on velum</text>
+    </svg>`
+  },
+  {
+    title:'Dental',
+    desc:'Tongue tip placed between or just behind upper and lower teeth.',
+    examples:['/θ/','/ð/'],
+    svg:`<svg viewBox="0 0 200 160" width="160">
+      <!-- upper teeth -->
+      <rect x="68" y="55" width="8" height="14" rx="2" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <rect x="78" y="55" width="8" height="14" rx="2" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <rect x="88" y="55" width="8" height="14" rx="2" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <!-- tongue -->
+      <path d="M45 130 Q80 100 95 75" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+      <!-- tip between teeth -->
+      <ellipse cx="95" cy="70" rx="8" ry="5" fill="rgba(6,182,212,.3)" stroke="#06b6d4" stroke-width="1.5"/>
+      <text x="100" y="150" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="sans-serif">Tongue tip between teeth</text>
+    </svg>`
+  },
+  {
+    title:'Labiodental',
+    desc:'Upper front teeth make contact with the lower lip, forcing air through a narrow gap.',
+    examples:['/f/','/v/'],
+    svg:`<svg viewBox="0 0 200 160" width="160">
+      <!-- upper teeth -->
+      <rect x="75" y="60" width="8" height="12" rx="2" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <rect x="85" y="60" width="8" height="12" rx="2" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <!-- lower lip -->
+      <path d="M60 90 Q100 82 140 90" fill="none" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+      <!-- contact point -->
+      <circle cx="88" cy="75" r="4" fill="rgba(6,182,212,.5)">
+        <animate attributeName="opacity" values="1;.3;1" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <text x="100" y="150" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="sans-serif">Upper teeth + lower lip</text>
+    </svg>`
+  },
+  {
+    title:'Glottal',
+    desc:'The glottis (space between the vocal folds) is the place of articulation. Air passes through with friction.',
+    examples:['/h/'],
+    svg:`<svg viewBox="0 0 200 160" width="160">
+      <!-- vocal cords open -->
+      <line x1="80" y1="55" x2="100" y2="90" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+      <line x1="120" y1="55" x2="100" y2="90" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+      <!-- airflow arrow -->
+      <path d="M100 95 L100 135" stroke="rgba(6,182,212,.4)" stroke-width="2" stroke-dasharray="4,3"/>
+      <polygon points="94,130 100,145 106,130" fill="rgba(6,182,212,.4)"/>
+      <text x="100" y="28" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="sans-serif">Glottis (open)</text>
+      <text x="100" y="150" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="sans-serif">Air through open glottis</text>
+    </svg>`
+  },
+];
+
+(function(){
+  const grid=document.getElementById('articu-grid');
+  articulations.forEach(a=>{
+    const div=document.createElement('div');
+    div.className='articu-card reveal';
+    div.innerHTML=`
+      <div class="articu-svg-wrap">${a.svg}</div>
+      <div class="articu-title">${a.title} Consonants</div>
+      <div class="articu-desc">${a.desc}</div>
+      <div class="articu-examples">${a.examples.map(e=>`<span class="articu-ex-badge">${e}</span>`).join('')}</div>
+    `;
+    grid.appendChild(div);
+  });
+})();
+
+/* ============================================================
+   ALLOPHONES SECTION
+   ============================================================ */
+document.getElementById('asp-section').innerHTML=`
+  <h3 style="font-size:1.25rem;font-weight:800;margin-bottom:12px;">1 — Aspiration of Voiceless Plosives</h3>
+  <p style="color:var(--grey2);margin-bottom:20px;line-height:1.7;">The voiceless plosives /p/, /t/, /k/ each have at least two allophones: an <strong>aspirated</strong> form (with a puff of air) when they appear initially in a stressed syllable, and an <strong>unaspirated</strong> form when preceded by /s/.</p>
+  <div class="allophone-visual">
+    <div class="allophone-side">
+      <div class="allophone-side-title">Aspirated [pʰ] [tʰ] [kʰ] — word-initial</div>
+      <div class="allophone-side-sym asp">pʰ tʰ kʰ</div>
+      <div class="allophone-words">
+        <span class="allo-word">tall [tʰɔːl]</span>
+        <span class="allo-word">port [pʰɔːt]</span>
+        <span class="allo-word">kill [kʰɪl]</span>
+      </div>
+    </div>
+    <div class="allophone-side">
+      <div class="allophone-side-title">Unaspirated [p=] [t=] [k=] — after /s/</div>
+      <div class="allophone-side-sym unasp">p= t= k=</div>
+      <div class="allophone-words">
+        <span class="allo-word">stall [st=ɔːl]</span>
+        <span class="allo-word">sport [sp=ɔːt]</span>
+        <span class="allo-word">school [sk=uːl]</span>
+      </div>
+    </div>
+  </div>
+  <div class="warning-box" style="margin-top:18px;">Only <strong>voiceless</strong> plosives /p t k/ are aspirated. Voiced plosives /b d g/ are never aspirated. Only plosives can be aspirated — no nasals, fricatives, or approximants.</div>
+`;
+
+document.getElementById('darkl-section').innerHTML=`
+  <h3 style="font-size:1.25rem;font-weight:800;margin-bottom:12px;">2 — Clear /l/ and Dark /ɫ/</h3>
+  <p style="color:var(--grey2);margin-bottom:20px;line-height:1.7;">The phoneme /l/ has two main allophones in English, determined entirely by its position relative to vowels.</p>
+  <div class="allophone-visual">
+    <div class="allophone-side">
+      <div class="allophone-side-title">Clear [l] — before vowels and /j/</div>
+      <div class="allophone-side-sym asp">l</div>
+      <p style="font-size:.88rem;color:var(--grey2);line-height:1.6;margin-bottom:10px;">Voiced alveolar lateral. Tongue tip on alveolar ridge. The rest of the tongue is in a neutral position. Air flows around the sides of the tongue.</p>
+      <div class="allophone-words">
+        <span class="allo-word">light</span><span class="allo-word">look</span><span class="allo-word">blue</span><span class="allo-word">lemon</span>
+      </div>
+    </div>
+    <div class="allophone-side">
+      <div class="allophone-side-title">Dark [ɫ] — after vowels / word-finally</div>
+      <div class="allophone-side-sym unasp">ɫ</div>
+      <p style="font-size:.88rem;color:var(--grey2);line-height:1.6;margin-bottom:10px;">Velarized: the back of the tongue is raised toward the velum (soft palate), giving it a quality similar to a high back vowel. Symbolized [ɫ].</p>
+      <div class="allophone-words">
+        <span class="allo-word">feel</span><span class="allo-word">pull</span><span class="allo-word">milk</span><span class="allo-word">cold</span>
+      </div>
+    </div>
+  </div>
+`;
+
+/* ============================================================
+   SENTENCE STRESS
+   ============================================================ */
+const sentExamples=[
+  {
+    sentence:'I don\'t think she will listen to him.',
+    variants:[
+      {text:'<span class="prom">I</span> don\'t think she will listen to him.',meaning:'I don\'t — but someone else might think that.'},
+      {text:'I <span class="prom">don\'t</span> think she will listen to him.',meaning:'It is definitely not true that I think that.'},
+      {text:'I don\'t think <span class="prom">she</span> will listen to him.',meaning:'I think someone other than her might listen.'},
+      {text:'I don\'t think she will <span class="prom">listen</span> to him.',meaning:'She might talk to him, but not listen.'},
+      {text:'I don\'t think she will listen to <span class="prom">him</span>.',meaning:'She might listen to someone else, but not him.'},
+    ]
+  },
+  {
+    sentence:'We used to visit Alexandria every summer.',
+    variants:[
+      {text:'We used to visit Alexandria <span class="prom">EV</span>ery summer.',meaning:'Emphasising regularity — it happened every year.'},
+      {text:'We used to visit <span class="prom">Alex</span>andria every summer.',meaning:'Emphasising the destination — not Port Said or Luxor.'},
+    ]
+  },
+  {
+    sentence:'I love you very much.',
+    variants:[
+      {text:'<span class="prom">I</span> love you very much.',meaning:'"I" — not another person loves you.'},
+      {text:'I <span class="prom">love</span> you very much.',meaning:'"love" — not just like or admire.'},
+      {text:'I love <span class="prom">you</span> very much.',meaning:'"you" — not another person.'},
+      {text:'I love you <span class="prom">very much</span>.',meaning:'"a lot" — not just a little.'},
+    ]
+  },
+];
+
+(function(){
+  const container=document.getElementById('sent-stress-container');
+  sentExamples.forEach(ex=>{
+    const wrap=document.createElement('div');
+    wrap.style.marginBottom='32px';
+    wrap.innerHTML=`<h4 style="font-weight:700;color:var(--grey2);margin-bottom:14px;font-size:.95rem;">Original: <em>${ex.sentence}</em></h4>`;
+    ex.variants.forEach(v=>{
+      const div=document.createElement('div');
+      div.className='sent-example reveal';
+      div.innerHTML=`<div class="sent-text">${v.text}</div><div class="sent-meaning">💬 ${v.meaning}</div>`;
+      wrap.appendChild(div);
+    });
+    container.appendChild(wrap);
+  });
+})();
+
+/* ============================================================
+   QUIZ ENGINE
+   ============================================================ */
+const allQuestions=[
+  {q:'Which symbol marks PRIMARY stress in IPA?',opts:['ˈ (high stroke before syllable)','ˌ (low stroke before syllable)','ː (length mark)','/ (syllable boundary)'],ans:0,exp:'Primary stress is marked by ˈ placed at the upper-left of the stressed syllable. Example: ˈfɑːðə (father).'},
+  {q:'What is the correct transcription for "photograph"?',opts:['fəˈtɒgrəfi','fəʊtəgræfɪk','ˈfəʊtəgrɑːf','ˌfəʊtəˈgræfɪk'],ans:2,exp:'"Photograph" has primary stress on the first syllable: ˈfəʊtəgrɑːf. The -y suffix in photography shifts stress to the second syllable.'},
+  {q:'A syllabic consonant is one that…',opts:['Is always voiceless','Forms the nucleus of a syllable without a vowel','Cannot be stressed','Occurs only word-initially'],ans:1,exp:'Syllabic consonants (/n̩/, /l̩/, /m̩/) form syllable nuclei without a vowel. Examples: bottle /ˈbɒtl̩/, button /ˈbʌtn̩/.'},
+  {q:'In "photography", where does primary stress fall?',opts:['1st syllable (pho-)','2nd syllable (tog-)','3rd syllable (ra-)','4th syllable (phy)'],ans:1,exp:'photography = fəˈtɒgrəfi. The suffix -y is stress-changing, shifting stress to the second syllable of the stem.'},
+  {q:'Which of the following is a FRONT CLOSING diphthong?',opts:['/əʊ/  (goat)','/aʊ/  (mouth)','/eɪ/  (face)','/ɪə/  (near)'],ans:2,exp:'Front closing diphthongs end in /ɪ/ — a front vowel. They are /eɪ/, /aɪ/, and /ɔɪ/. Centering diphthongs end in /ə/.'},
+  {q:'The schwa /ə/ occurs…',opts:['Only in stressed syllables','Only in unstressed syllables','Only in word-final position','Only before consonants'],ans:1,exp:'The schwa /ə/ is always associated with weak (unstressed) syllables. It NEVER occurs in stressed syllables. It is the most frequently occurring vowel in English.'},
+  {q:'Which pair correctly shows the noun/verb stress shift?',opts:["ˈconduct (N) / ˈconduct (V)",'ˈconduct (N) / kənˈdʌkt (V)','kənˈdʌkt (N) / ˈkɒndʌkt (V)','kənˈdʌkt (N) / kənˈdʌkt (V)'],ans:1,exp:'In English, two-syllable nouns are typically stressed on the 1st syllable (ˈconduct) while their verb counterparts are stressed on the 2nd (kənˈdʌkt).'},
+  {q:'Aspiration of voiceless plosives occurs…',opts:['After /s/ in a cluster','At the start of a stressed syllable','Only in word-final position','Only for /t/'],ans:1,exp:'Voiceless plosives /p/, /t/, /k/ are aspirated [pʰ], [tʰ], [kʰ] when they begin a stressed syllable. After /s/ (e.g., sport, stall) they are unaspirated.'},
+  {q:'How many pure vowels does English have?',opts:['8','12','20','26'],ans:1,exp:'English has 12 pure vowels (monophthongs) + 8 diphthongs = 20 vowel sounds in total. 26 is the number of letters in the alphabet.'},
+  {q:'The word "bottle" /ˈbɒtl/ contains…',opts:['Two strong syllables','A syllabic /l/ in the second syllable','A schwa in every syllable','Three syllables'],ans:1,exp:'The second syllable of "bottle" contains a syllabic /l̩/ — it forms a syllable with no vowel. This is lateral release after the alveolar /t/.'},
+  {q:'Which of these words has SECONDARY stress?',opts:['ˈfather','ˈopen','ˌfəʊtəˈgræfɪk','pəˈteɪtəʊ'],ans:2,exp:'Photographic /ˌfəʊtəˈgræfɪk/ has secondary stress (ˌ) on the first syllable and primary stress (ˈ) on the third syllable.'},
+  {q:'A CLOSED syllable is one that…',opts:['Ends with a vowel','Ends with a consonant','Contains a diphthong','Has no onset'],ans:1,exp:'A closed syllable ends with a consonant and its vowel is usually short (or schwa). An open syllable ends with a vowel that is generally long.'},
+  {q:'In English, how many diphthongs are there?',opts:['5','6','8','10'],ans:2,exp:'There are 8 diphthongs in English, divided into: 3 front closing (/eɪ/, /aɪ/, /ɔɪ/), 2 back closing (/əʊ/, /aʊ/), and 3 centering/central (/ɪə/, /eə/, /ʊə/).'},
+  {q:'Which is the correct description of Dark /l/ [ɫ]?',opts:['Tongue tip on dental ridge','Back of tongue raised toward velum (velarized)','Air released through nose','Lips pressed together'],ans:1,exp:'Dark /l/ is velarized: the back of the tongue is raised toward the velum (soft palate), giving it a quality similar to a high back vowel. It occurs after vowels and word-finally.'},
+  {q:'Sentence stress is…',opts:['Fixed and cannot change','Always on the first word','Variable — determined by what the speaker wants to emphasize','Always on a noun'],ans:2,exp:'Unlike word stress (which is fixed), sentence stress is variable. The speaker determines which word receives prominence based on what they want to emphasize. This changes the meaning of the sentence.'},
+  {q:'The digraph "th" is pronounced /θ/ (voiceless) in which word?',opts:['this','then','those','think'],ans:3,exp:'"Think" uses the voiceless /θ/. The voiced /ð/ typically appears in function words (this, then, those, the, that, they) and before voiced sounds.'},
+  {q:'Which suffix ATTRACTS (carries) the primary stress itself?',opts:['-ness','-ful','-ese (as in Japanese)','-ly'],ans:2,exp:'Stress-attracting suffixes like -ee, -eer, -ese, -ette, -esque carry the primary stress on themselves: ˌJapaˈnese, ˌrefuˈgee, ˌcigarˈette.'},
+  {q:'In "information", where does primary stress fall?',opts:['1st syllable','2nd syllable','3rd syllable','4th syllable'],ans:2,exp:'"Information" = /ˌɪnfəˈmeɪʃn/. Nouns ending in -ation/-ition are accented on the penultimate syllable (the first syllable of the suffix), which is the 3rd syllable here.'},
+  {q:'What is an allophone?',opts:['A different phoneme','A variant of the same phoneme that does not change meaning','A type of syllable','A stress mark'],ans:1,exp:'Allophones are varieties of the same phoneme. When a phoneme is pronounced in different contexts, each variant is an allophone. They do not change meaning — only the phoneme determines meaning.'},
+  {q:'The VC/CV syllabification rule means…',opts:['Vowel-consonant / consonant-vowel — divide between the two consonants','Only consonants can be syllable boundaries','Vowels always precede consonants','Consonants are never divided'],ans:0,exp:'When two consonants appear between two vowels, the VC/CV rule says divide between the consonants: al•pha•bet, pic•nic, bas•ket.'},
+];
+
+let quizIdx=0, score=0, answered=false;
+let shuffled=[...allQuestions].sort(()=>Math.random()-.5).slice(0,12);
+
+function renderQuiz(){
+  if(quizIdx>=shuffled.length){showResults();return;}
+  const q=shuffled[quizIdx];
+  const pct=Math.round((quizIdx/shuffled.length)*100);
+  document.getElementById('quiz-container').innerHTML=`
+    <div class="quiz-header">
+      <div style="font-weight:700;color:var(--grey2)">Question ${quizIdx+1} of ${shuffled.length}</div>
+      <div class="quiz-score-display">Score: ${score} / ${quizIdx}</div>
+    </div>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+    <div class="quiz-question">${q.q}</div>
+    <div class="quiz-options">
+      ${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('')}
+    </div>
+    <div class="quiz-explanation" id="quiz-exp">${q.exp}</div>
+    <div class="quiz-nav">
+      <div></div>
+      <button class="stress-analyze-btn" id="quiz-next" onclick="nextQ()" style="display:none">Next Question →</button>
+    </div>
+  `;
+}
+
+function answerQuiz(chosen){
+  if(answered)return;
+  answered=true;
+  const q=shuffled[quizIdx];
+  const btns=document.querySelectorAll('.quiz-opt');
+  btns.forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.ans)b.classList.add('correct');
+    else if(i===chosen)b.classList.add('wrong');
+  });
+  if(chosen===q.ans)score++;
+  document.getElementById('quiz-exp').classList.add('show');
+  document.getElementById('quiz-next').style.display='inline-flex';
+}
+
+function nextQ(){
+  quizIdx++;answered=false;renderQuiz();
+}
+
+function showResults(){
+  const pct=Math.round((score/shuffled.length)*100);
+  const msg=pct>=80?'Excellent work! 🎉':pct>=60?'Good effort — keep practicing! 📚':'Review the chapters and try again! 💪';
+  document.getElementById('quiz-container').innerHTML=`
+    <div class="quiz-results show">
+      <div class="result-score">${score}/${shuffled.length}</div>
+      <div style="font-size:2rem;margin-bottom:8px;">${pct}%</div>
+      <div class="result-msg">${msg}</div>
+      <div class="result-breakdown">
+        <div class="result-stat"><div class="result-stat-num" style="color:#34d399">${score}</div><div class="result-stat-label">Correct</div></div>
+        <div class="result-stat"><div class="result-stat-num" style="color:#f87171">${shuffled.length-score}</div><div class="result-stat-label">Incorrect</div></div>
+        <div class="result-stat"><div class="result-stat-num" style="color:var(--cyan)">${pct}%</div><div class="result-stat-label">Score</div></div>
+      </div>
+      <button class="btn-primary" onclick="restartQuiz()">Try Again 🔄</button>
+    </div>
+  `;
+}
+
+function restartQuiz(){
+  quizIdx=0;score=0;answered=false;
+  shuffled=[...allQuestions].sort(()=>Math.random()-.5).slice(0,12);
+  renderQuiz();
+}
+
+renderQuiz();
+
+/* ============================================================
+   GLOSSARY
+   ============================================================ */
+const glossaryTerms=[
+  {num:'01',term:'Consonant',def:'A speech sound made by partly or completely stopping the flow of air through the mouth. Described by voicing, place, and manner of articulation.',ex:'/p/, /n/'},
+  {num:'02',term:'Vowel',def:'A sound made by letting the air come freely out of the mouth. Described by tongue height, tongue part, lip shape, and length.',ex:'/iː/, /ɒ/'},
+  {num:'03',term:'Voiced Sound',def:'Made with the vocal cords brought together tightly so that there is vibration. All vowels are voiced.',ex:'/b/, /d/, /g/, all vowels'},
+  {num:'04',term:'Voiceless Consonant',def:'Made with the vocal cords separated so air passes freely with no vibration.',ex:'/p/, /t/, /k/'},
+  {num:'05',term:'Plosive',def:'Made by stopping the air in the mouth completely and then releasing it quickly. Six plosives in English.',ex:'/p/, /b/, /t/, /d/, /k/, /g/'},
+  {num:'06',term:'Bilabial',def:'Made by pressing together the two lips.',ex:'/p/, /b/, /m/'},
+  {num:'07',term:'Alveolar',def:'Made by raising the tip (or blade) of the tongue to touch the alveolar ridge.',ex:'/t/, /d/, /s/, /n/, /l/'},
+  {num:'08',term:'Velar',def:'Made by raising the back of the tongue to touch the soft palate or velum.',ex:'/k/, /g/, /ŋ/'},
+  {num:'09',term:'Fricative',def:'Made by releasing air gradually through a narrow opening, causing friction. Nine fricatives in English.',ex:'/f/, /v/, /θ/, /ð/, /s/, /z/, /ʃ/, /ʒ/, /h/'},
+  {num:'10',term:'Labiodental',def:'Made by the upper teeth touching the lower lip.',ex:'/f/, /v/'},
+  {num:'11',term:'Dental',def:'Made by putting the tip of the tongue between the upper and lower teeth.',ex:'/θ/, /ð/'},
+  {num:'12',term:'Alveolo-Palatal',def:'Made by the tongue touching the area between the alveolar ridge and the hard palate.',ex:'/ʃ/, /ʒ/'},
+  {num:'13',term:'Glottal',def:'Made by the glottis or the opening between the vocal cords.',ex:'/h/'},
+  {num:'14',term:'Affricate',def:'Made by stopping air in the mouth and then releasing it slowly with friction. Plosive + fricative.',ex:'/tʃ/, /dʒ/'},
+  {num:'15',term:'Oral Sound',def:'Made by releasing air through the mouth. All vowels are oral; 21 consonants are oral.',ex:'Most English sounds'},
+  {num:'16',term:'Nasal Consonant',def:'Made by lowering the soft palate so that air is released continuously through the nose.',ex:'/m/, /n/, /ŋ/'},
+  {num:'17',term:'Lateral Consonant',def:'Made by releasing the air around the sides of the tongue.',ex:'/l/'},
+  {num:'18',term:'Post-alveolar',def:'Made by raising the tip of the tongue towards the back of the alveolar ridge.',ex:'/r/'},
+  {num:'19',term:'Retroflex',def:'Made by curling the tongue backwards with the tip raised.',ex:'/r/ (in some accents)'},
+  {num:'20',term:'Semi-vowel',def:'A sound produced like vowels but used in the place of consonants in a word.',ex:'/j/, /w/'},
+  {num:'21',term:'Close Vowel',def:'Made with the tongue at the highest point in the mouth.',ex:'/iː/, /uː/'},
+  {num:'22',term:'Mid Vowel',def:'Made with the tongue between the half-close and half-open positions.',ex:'/e/, /ɔː/'},
+  {num:'23',term:'Open Vowel',def:'Made with the tongue at the lowest position in the mouth.',ex:'/æ/, /ɒ/'},
+  {num:'24',term:'Front Vowel',def:'Made by the front part of the tongue.',ex:'/iː/, /e/, /æ/'},
+  {num:'25',term:'Central Vowel',def:'Made by the central part of the tongue.',ex:'/ʌ/, /ə/, /ɜː/'},
+  {num:'26',term:'Back Vowel',def:'Made by the back part of the tongue.',ex:'/uː/, /ʊ/, /ɔː/'},
+  {num:'27',term:'Rounded Vowel',def:'Made by the lips rounded.',ex:'/ɒ/, /ɔː/, /uː/, /ʊ/'},
+  {num:'28',term:'Non-rounded Vowel',def:'Made by the lips not rounded — spread or neutrally open.',ex:'/ɪ/, /e/, /æ/'},
+  {num:'29',term:'Spread Vowel',def:'Made by the lips spread.',ex:'/ɪ/, /iː/'},
+  {num:'30',term:'Short Vowel',def:'Takes a short time in production.',ex:'/ɪ/, /ʊ/, /e/, /æ/, /ɒ/, /ʌ/, /ə/'},
+  {num:'31',term:'Long Vowel',def:'Takes a long time in production. Marked with /ː/.',ex:'/iː/, /uː/, /ɑː/, /ɔː/, /ɜː/'},
+  {num:'32',term:'Pure Vowel (Monophthong)',def:'Made as one consistent articulation, whether long or short. 12 in English.',ex:'/ɪ/, /uː/ (no glide)'},
+  {num:'33',term:'Diphthong',def:'A sound formed by two pure vowels pronounced one after the other in the same syllable. 8 in English.',ex:'/eɪ/, /aɪ/'},
+  {num:'34',term:'Front Closing Diphthong',def:'Ends with /ɪ/ — a front vowel.',ex:'/eɪ/, /aɪ/, /ɔɪ/'},
+  {num:'35',term:'Back Closing Diphthong',def:'Ends with /ʊ/ — a back vowel.',ex:'/aʊ/, /əʊ/'},
+  {num:'36',term:'Central / Centering Diphthong',def:'Ends with /ə/ — a central vowel.',ex:'/ɪə/, /eə/, /ʊə/'},
+  {num:'37',term:'Syllable',def:'A sound unit that contains a vowel or syllabic consonant. Counted by the number of sounded vowels.',ex:"'act' = 1 syllable; 'happy' = 2"},
+  {num:'38',term:'Stress',def:'Extra force given to the pronunciation of one of the syllables in a word. Marked by ˈ before the syllable.',ex:"'happy' /ˈhæpi/ — stress on 1st"},
+  {num:'39',term:"Adam's Apple",def:"An informal term for the visible point of the larynx (thyroid cartilage) at the front of the throat.",ex:'Moves visibly when swallowing'},
+  {num:'40',term:'Articulator',def:'A part of the mouth/throat area that is moved to produce speech sounds. Principal articulators: tongue, lips, lower jaw, teeth, velum, uvula, larynx.',ex:'Tongue is the most important'},
+  {num:'41',term:'BBC Pronunciation',def:"The accent associated with BBC newsreaders and announcers — a modern, accessible form of Received Pronunciation (RP).",ex:"Considered a prestige accent"},
+  {num:'42',term:'Function Word',def:"Words that structure a sentence grammatically but carry little independent meaning (articles, prepositions, conjunctions). They have strong and weak forms.",ex:"'and' = /ænd/ strong, /ən/ weak"},
+  {num:'43',term:'Glottis',def:"The opening between the vocal folds. Can be fully closed (for voiced sounds), narrowed (for voicing), or wide open (for breathing).",ex:"Wide open during aspiration"},
+];
+
+function renderGlossary(filter=''){
+  const grid=document.getElementById('glossary-grid');
+  grid.innerHTML='';
+  const fl=filter.toLowerCase();
+  const items=fl?glossaryTerms.filter(t=>t.term.toLowerCase().includes(fl)||t.def.toLowerCase().includes(fl)):glossaryTerms;
+  items.forEach(t=>{
+    const div=document.createElement('div');
+    div.className='gloss-card reveal';
+    div.innerHTML=`<div class="gloss-num">#${t.num}</div><div class="gloss-term">${t.term}</div><div class="gloss-def">${t.def}</div><div class="gloss-example">${t.ex}</div>`;
+    grid.appendChild(div);
+  });
+  setTimeout(revealEls,50);
+}
+function filterGlossary(){
+  renderGlossary(document.getElementById('gloss-input').value);
+}
+renderGlossary();
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('load',()=>{
+  revealEls();
+});
+</script>
+</body>
+  </html>
