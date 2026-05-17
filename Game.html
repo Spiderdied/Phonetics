@@ -1358,8 +1358,6 @@ function renderStressPuzzle(pz) {
   pz.syllables.forEach((syl, i) => {
     const btn = document.createElement('button');
     btn.className = 'puzzle-btn';
-    btn.innerHTML = i === pz.answer ? 
-      `<span class="syllable-stress">${syl.toUpperCase()}</span>` : syl.toLowerCase();
     btn.innerHTML = syl;
     btn.onclick = () => handleStressAnswer(i, pz, btn);
     opts.appendChild(btn);
@@ -1558,4 +1556,4 @@ document.getElementById('title-screen').addEventListener('touchstart', e=>{
 },{passive:false});
 </script>
 </body>
-  </html>
+</html>
