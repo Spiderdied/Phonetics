@@ -975,4 +975,307 @@ function checkDoors(){
 
 function updateCamera(){
   camTX=clamp(0,P.x-W/2+P.w/2,WW-W);
-  camTY=clamp(0,P.y-H/2,WH-
+  camTY=clamp(0,P.y-H/2,WH-H);
+  camX+=(camTX-camX)*.09;
+  camY+=(camTY-camY)*.09;
+  if(camShake>0){
+    camX+=(Math.random()-.5)*camShake;
+    camY+=(Math.random()-.5)*camShake;
+    camShake*=.82; if(camShake<.4) camShake=0;
+  }
+}
+
+function updateZone(){
+  trigZones.forEach(tz=>{
+    if(overlap(P.x,P.y,P.w,P.h,tz.x,tz.y,tz.w,tz.h)){
+      if(tz.zone!==curZone){
+        curZone=tz.zone;
+        document.getElementById('zone-name').textContent=ZONES[curZone].name;
+        document.getElementById('zone-ipa').textContent=ZONES[curZone].ipa;
+      }
+    }
+  });
+}
+
+// ─── PLAYER UPDATE ────────────────────────────────────────
+const GRAV=.48, MAXFALL=15, SPD=4.6, JUMP=-13.2, DASHSPD=15;
+
+function updatePlayer(){
+  if(P.dead){
+    P.deadT--;
+    if(P.deadT<=0) respawn();
+    return;
+  }
+  if(puzzleOpen) return;
+
+  const goL=inp.L||keys['ArrowLeft']||keys['KeyA'];
+  const goR=inp.R||keys['ArrowRight']||keys['KeyD'];
+  const goJ=inp.J||keys['Space']||keys['ArrowUp']||keys['KeyW'];
+  const goD=inp.D||keys['ShiftLeft']||keys['ShiftRight'];
+
+  if(!P.dashing){
+    if(goL){P.vx=-SPD; P.facing=-1;}
+    else if(goR){P.vx=SPD; P.facing=1;}
+    else P.vx*=.72;
+  }
+
+  // Jump
+  if(goJ&&!P._jHeld){
+    P._jHeld=true;
+    if(P.jumps>0){
+      P.vy=JUMP; P.jumps--;
+      playJump();
+      spawnParts(P.x+P.w/2,P.y+P.h,'#00e5ff44',6,1.5);
+    }
+  }
+  if(!goJ) P._jHeld=false;
+
+  // Dash
+  if(goD&&!P.dashing&&P.dashCD<=0){
+    P.dashing=true; P.dashT=11; P.dashCD=44;
+    playDash();
+    spawnParts(P.x+P.w/2,P.y+P.h/2,'#00e5ff',12,2.5);
+  }
+  if(P.dashing){P.vx=P.facing*DASHSPD; P.dashT--; if(P.dashT<=0) P.dashing=false;}
+  if(P.dashCD>0) P.dashCD--;
+  if(P.inv>0) P.inv--;
+  if(P.glowT>0){P.glowT--; if(P.glowT<=0) P.glowing=false;}
+
+  P.vy=Math.min(P.vy+GRAV,MAXFALL);
+  P.x+=P.vx; P.y+=P.vy;
+  P.onGround=false;
+  [...plats,...movPlats].forEach(p=>resolveP(p));
+
+  // Walk anim
+  if(P.onGround&&Math.abs(P.vx)>.5){
+    P.walkT++;
+    if(P.walkT%7===0){P.walkF++; playStep();}
+  }
+
+  // Bounds
+  P.x=clamp(0,P.x,WW-P.w);
+  if(P.y>WH+80) die();
+
+  // Door
+  if((keys['KeyE']||keys['Enter'])&&nearDoor&&!puzzleOpen){
+    openPuzzle(nearDoor); keys['KeyE']=false; keys['Enter']=false;
+  }
+
+  stressLv=Math.max(0,stressLv-.015);
+  document.getElementById('stress-fill').style.width=stressLv+'%';
+
+  // Jump dots UI
+  document.getElementById('jd0').className='jump-dot'+(P.jumps>=1?' active':'');
+  document.getElementById('jd1').className='jump-dot'+(P.jumps>=2?' active':'');
+}
+
+function die(){
+  if(P.dead) return;
+  P.dead=true; P.deadT=90;
+  stressLv=Math.min(100,stressLv+25);
+  camShake=18; spawnParts(P.x+P.w/2,P.y+P.h/2,'#ff3366',22,3);
+  playDie();
+}
+function respawn(){
+  P.dead=false; P.x=SPAWN.x; P.y=SPAWN.y;
+  P.vx=0; P.vy=0; P.onGround=false;
+  P.jumps=P.maxJumps; P.dashing=false; P.inv=80;
+}
+
+// ─── PUZZLES ──────────────────────────────────────────────
+function openPuzzle(door){
+  if(puzzleOpen) return;
+  puzzleOpen=true; activeDoor=door;
+  document.getElementById('puzzle-overlay').style.display='flex';
+  const q=getPuzzle(door);
+  if(!q) return;
+  document.getElementById('puzzle-topic').textContent=q.topic||'';
+  document.getElementById('puzzle-fb').textContent='';
+  document.getElementById('puzzle-fb').className='';
+  if(door.qt==='stress'){
+    renderStress(q);
+  } else {
+    renderMulti(q);
+  }
+}
+function getPuzzle(door){
+  if(door.qt==='stress') return STRESS_Q[door.qi%STRESS_Q.length];
+  if(door.qt==='ipa')    return IPA_Q[door.qi%IPA_Q.length];
+  return SYLL_Q[door.qi%SYLL_Q.length];
+}
+function renderStress(q){
+  document.getElementById('puzzle-title').textContent='WORD STRESS PATTERN';
+  document.getElementById('puzzle-inst').textContent=`Choose the STRESSED syllable in: "${q.word}"`;
+  const opts=document.getElementById('puzzle-options');
+  opts.innerHTML='';
+  q.syls.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='p-btn';
+    b.textContent=s;
+    b.onclick=()=>answerStress(i,q,b);
+    opts.appendChild(b);
+  });
+}
+function renderMulti(q){
+  document.getElementById('puzzle-title').textContent=q.topic||'PHONETICS CHALLENGE';
+  document.getElementById('puzzle-inst').textContent=q.q;
+  const opts=document.getElementById('puzzle-options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='p-btn';
+    b.textContent=o;
+    b.onclick=()=>answerMulti(i,q,b);
+    opts.appendChild(b);
+  });
+}
+function answerStress(c,q,btn){
+  const fb=document.getElementById('puzzle-fb');
+  if(c===q.ans){
+    fb.textContent='✓ Correct! '+q.hint;
+    fb.className='fb-ok'; btn.classList.add('active');
+    playCorrect(); setTimeout(()=>closePuzzle(true),1300);
+  } else {
+    fb.textContent='✗ Wrong. '+q.hint;
+    fb.className='fb-no'; btn.classList.add('wrong');
+    playWrong(); stressLv=Math.min(100,stressLv+10);
+  }
+}
+function answerMulti(c,q,btn){
+  const fb=document.getElementById('puzzle-fb');
+  if(c===q.ans){
+    fb.textContent='✓ Correct! The seal dissolves...';
+    fb.className='fb-ok'; btn.classList.add('active');
+    playCorrect(); setTimeout(()=>closePuzzle(true),1300);
+  } else {
+    fb.textContent='✗ Wrong. The tower resists...';
+    fb.className='fb-no'; btn.classList.add('wrong');
+    playWrong(); stressLv=Math.min(100,stressLv+12);
+  }
+}
+function closePuzzle(solved){
+  puzzleOpen=false;
+  document.getElementById('puzzle-overlay').style.display='none';
+  if(solved&&activeDoor){
+    activeDoor.solved=true;
+    P.glowing=true; P.glowT=220;
+    playUnlock();
+    spawnParts(activeDoor.x+activeDoor.w/2,activeDoor.y+activeDoor.h/2,'#00e5ff',24,3);
+    for(let i=0;i<8;i++) setTimeout(()=>spawnIPA(activeDoor.x+Math.random()*activeDoor.w,activeDoor.y),i*80);
+    camShake=7; stressLv=Math.max(0,stressLv-18);
+  }
+  activeDoor=null;
+}
+
+// ─── INPUT ────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{keys[e.code]=true;});
+document.addEventListener('keyup',e=>{keys[e.code]=false;});
+document.addEventListener('keydown',e=>{if(e.code==='Escape'&&puzzleOpen) closePuzzle(false);});
+
+function setupMobile(){
+  const mb={
+    'mb-left':  {start:()=>inp.L=true,  end:()=>inp.L=false},
+    'mb-right': {start:()=>inp.R=true,  end:()=>inp.R=false},
+    'mb-jump':  {start:()=>inp.J=true,  end:()=>inp.J=false},
+    'mb-dash':  {start:()=>inp.D=true,  end:()=>inp.D=false}
+  };
+  Object.entries(mb).forEach(([id,h])=>{
+    const el=document.getElementById(id);
+    el.addEventListener('touchstart',e=>{e.preventDefault();h.start();},{passive:false});
+    el.addEventListener('touchend',  e=>{e.preventDefault();h.end();},  {passive:false});
+  });
+  canvas.addEventListener('touchstart',e=>{
+    if(nearDoor&&!puzzleOpen){openPuzzle(nearDoor);}
+  },{passive:true});
+}
+
+// ─── DEATH OVERLAY ────────────────────────────────────────
+function drawDeathOverlay(){
+  if(!P.dead) return;
+  const fr=1-P.deadT/90;
+  ctx.save();
+  ctx.fillStyle=`rgba(10,0,5,${fr*.75})`;
+  ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=fr;
+  ctx.font=`${clamp(14,2.8*(W/900),34)}px 'Cinzel'`;
+  ctx.fillStyle='#ff3366';
+  ctx.textAlign='center';
+  ctx.shadowBlur=30; ctx.shadowColor='#ff0044';
+  ctx.fillText('STRESS OVERWHELMS',W/2,H/2);
+  ctx.font=`${clamp(9,1.3*(W/900),14)}px 'Share Tech Mono'`;
+  ctx.fillStyle='#ff336666';
+  ctx.shadowBlur=0;
+  ctx.fillText('returning to checkpoint...',W/2,H/2+36);
+  ctx.restore();
+}
+
+// ─── HIT CHROMATIC ────────────────────────────────────────
+function updateChromatic(){
+  const ch=document.getElementById('chromatic');
+  ch.style.opacity=Math.min(1,camShake/15)*.6;
+}
+
+// ─── VIGNETTE + CINEMATIC BARS ────────────────────────────
+function drawCinematicBars(){
+  const bh=Math.floor(H*.055);
+  ctx.fillStyle='#000';
+  ctx.fillRect(0,0,W,bh);
+  ctx.fillRect(0,H-bh,W,bh);
+}
+
+// ─── MAIN LOOP ────────────────────────────────────────────
+function loop(ts){
+  if(!running) return;
+  animF++;
+  lastT=ts;
+  // Ambient IPA float
+  if(Math.random()<.018) spawnIPA(camX+Math.random()*W,camY+Math.random()*H);
+
+  updateMovPlats();
+  updatePlayer();
+  updateEnemies();
+  updateParticles();
+  updateCamera();
+  updateZone();
+  checkDoors();
+  updateChromatic();
+
+  ctx.clearRect(0,0,W,H);
+  drawBG();
+  drawParallaxBG();
+  drawLightBeams();
+  drawFloatLetters();
+  drawFog();
+  drawZoneLabels();
+  drawPlatforms();
+  drawDoors();
+  drawEnemies();
+  drawParticles();
+  drawPlayer();
+  drawCinematicBars();
+  drawDeathOverlay();
+
+  requestAnimationFrame(loop);
+}
+
+// ─── START ────────────────────────────────────────────────
+function startGame(){
+  const ts=document.getElementById('title-screen');
+  ts.style.transition='opacity 1.8s';
+  ts.style.opacity='0';
+  setTimeout(()=>ts.style.display='none',1800);
+  running=true;
+  getAC();
+  startDrone();
+  buildWorld();
+  P.x=SPAWN.x; P.y=SPAWN.y;
+  setupMobile();
+  requestAnimationFrame(t=>{lastT=t; loop(t);});
+}
+
+const ts=document.getElementById('title-screen');
+ts.addEventListener('click',startGame);
+ts.addEventListener('touchstart',e=>{e.preventDefault();startGame();},{passive:false});
+</script>
+</body>
+  </html>
