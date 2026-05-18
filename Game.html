@@ -5,1555 +5,974 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>THE STRESS TOWER</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  background: #000;
-  overflow: hidden;
-  font-family: 'Georgia', serif;
-  touch-action: none;
-  user-select: none;
-}
-canvas { display: block; }
-#ui {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 10;
-}
-#title-screen {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  cursor: pointer;
-}
-.title-logo {
-  font-size: clamp(28px, 6vw, 72px);
-  font-family: 'Georgia', serif;
-  font-weight: bold;
-  letter-spacing: 0.3em;
-  color: #fff;
-  text-shadow: 0 0 40px #00e5ff, 0 0 80px #00e5ff55;
-  animation: titlePulse 3s ease-in-out infinite;
-  text-align: center;
-}
-.title-sub {
-  margin-top: 20px;
-  font-size: clamp(10px, 2vw, 18px);
-  color: #00e5ff88;
-  letter-spacing: 0.5em;
-  text-transform: uppercase;
-  font-family: 'Courier New', monospace;
-}
-.title-prompt {
-  margin-top: 60px;
-  font-size: clamp(11px, 1.8vw, 16px);
-  color: #ffffff55;
-  letter-spacing: 0.2em;
-  animation: blink 2s ease-in-out infinite;
-}
-.title-ipa {
-  margin-top: 40px;
-  display: flex;
-  gap: 30px;
-  font-size: clamp(18px, 4vw, 40px);
-  color: #00e5ff44;
-}
-.title-ipa span {
-  animation: ipaFloat 3s ease-in-out infinite;
-}
-.title-ipa span:nth-child(2) { animation-delay: 0.5s; }
-.title-ipa span:nth-child(3) { animation-delay: 1s; }
-.title-ipa span:nth-child(4) { animation-delay: 1.5s; }
-.title-ipa span:nth-child(5) { animation-delay: 2s; }
-@keyframes titlePulse {
-  0%, 100% { text-shadow: 0 0 40px #00e5ff, 0 0 80px #00e5ff55; }
-  50% { text-shadow: 0 0 60px #00e5ff, 0 0 120px #00e5ffaa, 0 0 200px #00e5ff33; }
-}
-@keyframes blink {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.9; }
-}
-@keyframes ipaFloat {
-  0%, 100% { transform: translateY(0); color: #00e5ff44; }
-  50% { transform: translateY(-10px); color: #00e5ffaa; }
-}
-#hud {
-  position: fixed;
-  top: 20px; left: 20px;
-  z-index: 20;
-  pointer-events: none;
-}
-.zone-label {
-  font-family: 'Courier New', monospace;
-  font-size: clamp(9px, 1.5vw, 13px);
-  color: #00e5ff88;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-}
-#prompt-box {
-  position: fixed;
-  bottom: clamp(100px, 18vw, 140px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  pointer-events: none;
-  text-align: center;
-  max-width: 90vw;
-}
-.prompt-text {
-  font-family: 'Courier New', monospace;
-  font-size: clamp(11px, 2vw, 16px);
-  color: #ffffffcc;
-  text-shadow: 0 0 20px #00e5ff;
-  letter-spacing: 0.1em;
-  padding: 10px 20px;
-  background: #000000aa;
-  border: 1px solid #00e5ff33;
-}
-#puzzle-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: #000000dd;
-  z-index: 50;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.puzzle-title {
-  font-family: 'Georgia', serif;
-  font-size: clamp(18px, 4vw, 36px);
-  color: #00e5ff;
-  text-align: center;
-  margin-bottom: 10px;
-  letter-spacing: 0.2em;
-  text-shadow: 0 0 30px #00e5ff;
-}
-.puzzle-inst {
-  font-family: 'Courier New', monospace;
-  font-size: clamp(10px, 1.8vw, 14px);
-  color: #ffffff88;
-  text-align: center;
-  margin-bottom: 30px;
-  letter-spacing: 0.05em;
-  max-width: 500px;
-}
-.puzzle-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
-  max-width: 700px;
-}
-.puzzle-btn {
-  font-family: 'Courier New', monospace;
-  font-size: clamp(13px, 2.5vw, 20px);
-  padding: 14px 28px;
-  background: #000;
-  border: 1px solid #00e5ff55;
-  color: #fff;
-  cursor: pointer;
-  letter-spacing: 0.1em;
-  transition: all 0.2s;
-  pointer-events: all;
-}
-.puzzle-btn:hover, .puzzle-btn.active {
-  background: #00e5ff22;
-  border-color: #00e5ff;
-  color: #00e5ff;
-  text-shadow: 0 0 15px #00e5ff;
-  box-shadow: 0 0 25px #00e5ff44;
-}
-.puzzle-btn .syllable-stress {
-  display: inline-block;
-  border-bottom: 2px solid currentColor;
-  font-weight: bold;
-}
-.puzzle-feedback {
-  margin-top: 25px;
-  font-family: 'Courier New', monospace;
-  font-size: clamp(12px, 2vw, 18px);
-  text-align: center;
-  height: 30px;
-  letter-spacing: 0.1em;
-}
-.feedback-correct { color: #00ff88; text-shadow: 0 0 20px #00ff88; }
-.feedback-wrong { color: #ff3333; text-shadow: 0 0 20px #ff3333; }
-#mobile-controls {
-  position: fixed;
-  bottom: 0; left: 0;
-  width: 100%; height: 130px;
-  z-index: 30;
-  pointer-events: all;
-  display: none;
-}
-.ctrl-btn {
-  position: absolute;
-  background: #00e5ff11;
-  border: 1px solid #00e5ff33;
-  color: #00e5ffaa;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  width: 60px; height: 60px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: none;
-}
-.ctrl-btn:active { background: #00e5ff33; }
-#btn-left { left: 20px; bottom: 40px; }
-#btn-right { left: 100px; bottom: 40px; }
-#btn-jump { right: 20px; bottom: 60px; width: 70px; height: 70px; font-size: 26px; }
-#btn-dash { right: 105px; bottom: 40px; font-size: 16px; }
-#stress-meter {
-  position: fixed;
-  top: 20px; right: 20px;
-  width: clamp(80px, 15vw, 140px);
-  z-index: 20;
-}
-.stress-label {
-  font-family: 'Courier New', monospace;
-  font-size: 9px;
-  color: #00e5ff66;
-  letter-spacing: 0.2em;
-  margin-bottom: 4px;
-  text-align: right;
-}
-.stress-bar-bg {
-  width: 100%;
-  height: 3px;
-  background: #ffffff11;
-}
-.stress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #00e5ff, #ffffff);
-  transition: width 0.3s;
-  box-shadow: 0 0 8px #00e5ff;
-}
-#grain-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 200;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grainAnim 0.15s steps(1) infinite;
-}
-@keyframes grainAnim {
-  0% { transform: translate(0,0); }
-  25% { transform: translate(-2px, 1px); }
-  50% { transform: translate(1px, -2px); }
-  75% { transform: translate(2px, 1px); }
-  100% { transform: translate(-1px, 2px); }
-}
-#chromatic {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 199;
-  mix-blend-mode: screen;
-  opacity: 0;
-  background: radial-gradient(ellipse at center, transparent 70%, #ff003311 100%);
-  transition: opacity 0.5s;
-}
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Share+Tech+Mono&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;overflow:hidden;font-family:'Share Tech Mono',monospace;touch-action:none;user-select:none;}
+canvas{display:block;}
+
+#title-screen{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;overflow:hidden;}
+#title-bg{position:absolute;inset:0;}
+.t-wrap{position:relative;z-index:2;text-align:center;padding:20px;}
+.t-eyebrow{font-size:clamp(8px,1.2vw,12px);color:#00e5ff44;letter-spacing:.6em;margin-bottom:20px;}
+.t-logo{font-family:'Cinzel',serif;font-size:clamp(32px,6vw,88px);font-weight:900;color:#fff;letter-spacing:.15em;text-shadow:0 0 60px #00e5ff,0 0 120px #00e5ff44;animation:logoPulse 4s ease-in-out infinite;}
+.t-logo em{color:#00e5ff;font-style:normal;}
+.t-sub{font-size:clamp(8px,1.2vw,13px);color:#00e5ff55;letter-spacing:.5em;margin-top:12px;}
+.t-ipa{display:flex;gap:clamp(10px,2vw,24px);margin:36px auto;flex-wrap:wrap;justify-content:center;}
+.t-ipa span{font-size:clamp(14px,3vw,40px);color:#00e5ff22;animation:ipaFloat 3s ease-in-out infinite;}
+.t-ipa span:nth-child(1){animation-delay:0s;color:#00e5ff55;}
+.t-ipa span:nth-child(2){animation-delay:.35s;}
+.t-ipa span:nth-child(3){animation-delay:.7s;color:#00e5ff44;}
+.t-ipa span:nth-child(4){animation-delay:1.05s;}
+.t-ipa span:nth-child(5){animation-delay:1.4s;color:#00e5ff33;}
+.t-ipa span:nth-child(6){animation-delay:1.75s;}
+.t-prompt{font-size:clamp(9px,1.3vw,13px);color:#ffffff33;letter-spacing:.3em;margin-top:44px;animation:blink 2.5s ease-in-out infinite;cursor:pointer;}
+.t-controls{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:20px;opacity:.3;}
+.t-key{font-size:10px;color:#00e5ff;border:1px solid #00e5ff33;padding:3px 8px;letter-spacing:.2em;}
+
+#hud-zone{position:fixed;top:20px;left:20px;z-index:20;pointer-events:none;}
+#zone-name{font-family:'Cinzel',serif;font-size:clamp(10px,1.6vw,15px);color:#00e5ff99;letter-spacing:.3em;text-shadow:0 0 20px #00e5ff55;}
+#zone-ipa{font-size:clamp(8px,1.1vw,11px);color:#00e5ff44;letter-spacing:.2em;margin-top:4px;}
+
+#stress-hud{position:fixed;top:20px;right:20px;z-index:20;pointer-events:none;width:clamp(90px,14vw,160px);}
+#stress-label{font-size:9px;color:#00e5ff44;letter-spacing:.25em;text-align:right;margin-bottom:5px;}
+#stress-track{width:100%;height:2px;background:#ffffff0a;}
+#stress-fill{height:100%;background:linear-gradient(90deg,#00e5ff,#ff3366);transition:width .3s;box-shadow:0 0 10px #00e5ff;}
+#jumps-display{display:flex;gap:5px;justify-content:flex-end;margin-top:6px;}
+.jump-dot{width:6px;height:6px;border-radius:50%;border:1px solid #00e5ff44;transition:background .15s;}
+.jump-dot.active{background:#00e5ff;box-shadow:0 0 8px #00e5ff;}
+
+#prompt-box{position:fixed;bottom:clamp(120px,18vh,160px);left:50%;transform:translateX(-50%);z-index:20;pointer-events:none;display:none;text-align:center;}
+#prompt-inner{font-size:clamp(10px,1.5vw,14px);color:#ffffffcc;letter-spacing:.15em;padding:8px 20px;background:#00000099;border:1px solid #00e5ff22;box-shadow:0 0 30px #00e5ff11;}
+
+#puzzle-overlay{position:fixed;inset:0;background:#00000011;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(12px);}
+#puzzle-wrap{background:#00000088;border:1px solid #00e5ff22;padding:clamp(20px,4vw,50px);max-width:680px;width:100%;box-shadow:0 0 80px #00e5ff11,inset 0 0 60px #00000044;}
+#puzzle-topic{font-size:clamp(8px,1vw,11px);color:#00e5ff55;letter-spacing:.4em;margin-bottom:10px;}
+#puzzle-title{font-family:'Cinzel',serif;font-size:clamp(16px,3vw,30px);color:#00e5ff;letter-spacing:.2em;margin-bottom:8px;text-shadow:0 0 30px #00e5ff;}
+#puzzle-inst{font-size:clamp(10px,1.5vw,14px);color:#ffffffaa;margin-bottom:28px;line-height:1.6;letter-spacing:.05em;}
+#puzzle-options{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.p-btn{font-family:'Share Tech Mono',monospace;font-size:clamp(12px,2vw,18px);padding:12px 24px;background:transparent;border:1px solid #00e5ff22;color:#ffffffbb;cursor:pointer;letter-spacing:.1em;transition:all .18s;position:relative;overflow:hidden;}
+.p-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#00e5ff11,transparent);opacity:0;transition:opacity .18s;}
+.p-btn:hover,.p-btn.active{border-color:#00e5ff;color:#00e5ff;text-shadow:0 0 15px #00e5ff;box-shadow:0 0 30px #00e5ff22;}
+.p-btn:hover::before,.p-btn.active::before{opacity:1;}
+.p-btn.wrong{border-color:#ff336655;color:#ff3366aa;}
+#puzzle-fb{margin-top:22px;font-size:clamp(11px,1.6vw,15px);text-align:center;min-height:24px;letter-spacing:.08em;}
+.fb-ok{color:#00ff99;text-shadow:0 0 20px #00ff99;}
+.fb-no{color:#ff3366;text-shadow:0 0 20px #ff3366;}
+#puzzle-esc{font-size:9px;color:#ffffff22;letter-spacing:.3em;margin-top:16px;text-align:right;}
+
+#mobile-controls{position:fixed;bottom:0;left:0;width:100%;height:140px;z-index:30;pointer-events:all;display:none;}
+.m-btn{position:absolute;background:#00e5ff08;border:1px solid #00e5ff22;color:#00e5ff77;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:none;font-size:20px;}
+.m-btn:active{background:#00e5ff22;border-color:#00e5ff66;}
+#mb-left{width:58px;height:58px;left:18px;bottom:44px;}
+#mb-right{width:58px;height:58px;left:88px;bottom:44px;}
+#mb-jump{width:68px;height:68px;right:18px;bottom:54px;font-size:24px;}
+#mb-dash{width:52px;height:52px;right:100px;bottom:44px;font-size:13px;border-radius:8px;}
+
+#scanlines{position:fixed;inset:0;pointer-events:none;z-index:195;background:repeating-linear-gradient(0deg,transparent,transparent 2px,#00000008 2px,#00000008 4px);animation:scanMove 8s linear infinite;}
+#vignette{position:fixed;inset:0;pointer-events:none;z-index:196;background:radial-gradient(ellipse at center,transparent 55%,#000000cc 100%);}
+#chromatic{position:fixed;inset:0;pointer-events:none;z-index:197;opacity:0;mix-blend-mode:screen;background:radial-gradient(ellipse at center,transparent 70%,#ff003308 100%);transition:opacity .5s;}
+#grain{position:fixed;inset:0;pointer-events:none;z-index:198;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");animation:grainAnim .12s steps(1) infinite;}
+
+@keyframes logoPulse{0%,100%{text-shadow:0 0 60px #00e5ff,0 0 120px #00e5ff44;}50%{text-shadow:0 0 90px #00e5ff,0 0 180px #00e5ffaa,0 0 300px #00e5ff22;}}
+@keyframes blink{0%,100%{opacity:.15;}50%{opacity:.85;}}
+@keyframes ipaFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+@keyframes scanMove{0%{background-position:0 0;}100%{background-position:0 100px;}}
+@keyframes grainAnim{0%{transform:translate(0,0);}25%{transform:translate(-3px,2px);}50%{transform:translate(2px,-3px);}75%{transform:translate(3px,2px);}100%{transform:translate(-2px,3px);}}
 </style>
 </head>
 <body>
 
-<div id="grain-overlay"></div>
+<div id="grain"></div>
+<div id="scanlines"></div>
+<div id="vignette"></div>
 <div id="chromatic"></div>
 
+<!-- TITLE SCREEN -->
 <div id="title-screen">
-  <div class="title-ipa">
-    <span>/ə/</span><span>/ɪ/</span><span>/æ/</span><span>/ʃ/</span><span>/θ/</span>
+  <canvas id="title-bg" style="position:absolute;inset:0;"></canvas>
+  <div class="t-wrap">
+    <div class="t-eyebrow">phonetics · stress · articulation</div>
+    <div class="t-logo">THE <em>STRESS</em> TOWER</div>
+    <div class="t-sub">/ ðə stres taʊər / — a phonetics nightmare</div>
+    <div class="t-ipa">
+      <span>/ə/</span><span>/ɪ/</span><span>/æ/</span><span>/ʃ/</span><span>/θ/</span><span>/ð/</span>
+    </div>
+    <div class="t-prompt">— tap or click to enter the tower —</div>
   </div>
-  <div class="title-logo">THE STRESS TOWER</div>
-  <div class="title-sub">A Phonetics Nightmare</div>
-  <div class="title-prompt">— tap or click to enter —</div>
 </div>
 
 <canvas id="gameCanvas"></canvas>
 
-<div id="hud">
-  <div class="zone-label" id="zone-label">ENTRANCE HALL</div>
+<!-- HUD -->
+<div id="hud-zone">
+  <div id="zone-name">ENTRANCE HALL</div>
+  <div id="zone-ipa">/entrəns hɔ:l/</div>
 </div>
-
-<div id="stress-meter">
-  <div class="stress-label">STRESS LEVEL</div>
-  <div class="stress-bar-bg"><div class="stress-bar-fill" id="stress-bar" style="width:0%"></div></div>
+<div id="stress-hud">
+  <div id="stress-label">STRESS LEVEL</div>
+  <div id="stress-track"><div id="stress-fill" style="width:0%"></div></div>
+  <div id="jumps-display">
+    <div class="jump-dot active" id="jd0"></div>
+    <div class="jump-dot active" id="jd1"></div>
+  </div>
 </div>
+<div id="prompt-box"><div id="prompt-inner"></div></div>
 
-<div id="prompt-box" style="display:none">
-  <div class="prompt-text" id="prompt-text"></div>
-</div>
-
+<!-- PUZZLE -->
 <div id="puzzle-overlay">
-  <div class="puzzle-title" id="puzzle-title">STRESS PATTERN</div>
-  <div class="puzzle-inst" id="puzzle-inst">Choose the correct stressed syllable:</div>
-  <div class="puzzle-options" id="puzzle-options"></div>
-  <div class="puzzle-feedback" id="puzzle-feedback"></div>
+  <div id="puzzle-wrap">
+    <div id="puzzle-topic"></div>
+    <div id="puzzle-title"></div>
+    <div id="puzzle-inst"></div>
+    <div id="puzzle-options"></div>
+    <div id="puzzle-fb"></div>
+    <div id="puzzle-esc">ESC to cancel</div>
+  </div>
 </div>
 
+<!-- MOBILE -->
 <div id="mobile-controls">
-  <div class="ctrl-btn" id="btn-left">◀</div>
-  <div class="ctrl-btn" id="btn-right">▶</div>
-  <div class="ctrl-btn" id="btn-jump">↑</div>
-  <div class="ctrl-btn" id="btn-dash">⚡</div>
+  <div class="m-btn" id="mb-left">◀</div>
+  <div class="m-btn" id="mb-right">▶</div>
+  <div class="m-btn" id="mb-jump">↑</div>
+  <div class="m-btn" id="mb-dash">DASH</div>
 </div>
 
 <script>
-// ============================================================
-// THE STRESS TOWER — Phonetics Atmospheric Platformer
-// Based on: Phonetics Second Year Course, Dr. Rewaa Ahmed Anwer
-// ============================================================
+// ═══════════════════════════════════════════════════════════
+//  THE STRESS TOWER — v2  |  Fixed Platforming + Epic Visuals
+// ═══════════════════════════════════════════════════════════
 
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
+const ctx    = canvas.getContext('2d');
 let W, H;
-function resize() {
-  W = canvas.width = window.innerWidth;
+function resize(){
+  W = canvas.width  = window.innerWidth;
   H = canvas.height = window.innerHeight;
-  if ('ontouchstart' in window) {
-    document.getElementById('mobile-controls').style.display = 'block';
-  }
+  if('ontouchstart' in window)
+    document.getElementById('mobile-controls').style.display='block';
 }
 resize();
 window.addEventListener('resize', resize);
 
-// ---- AUDIO ENGINE ----
-let audioCtx = null;
-function getAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-function playTone(freq, dur, type='sine', vol=0.08, detune=0) {
-  try {
-    const ac = getAudio();
-    const o = ac.createOscillator();
-    const g = ac.createGain();
+// ─── TITLE CANVAS ANIMATION ───────────────────────────────
+(function titleAnim(){
+  const tc = document.getElementById('title-bg');
+  const tx = tc.getContext('2d');
+  const pts = Array.from({length:80},()=>({
+    x:Math.random()*window.innerWidth,
+    y:Math.random()*window.innerHeight,
+    vx:(Math.random()-.5)*.4,
+    vy:(Math.random()-.5)*.4,
+    r:Math.random()*1.5+.5,
+    col:`hsl(${185+Math.random()*30},100%,${50+Math.random()*30}%)`,
+    life:Math.random()*Math.PI*2
+  }));
+  function tloop(){
+    if(!document.getElementById('title-screen').style.display||document.getElementById('title-screen').style.display!='none'){
+      tc.width=window.innerWidth; tc.height=window.innerHeight;
+      tx.fillStyle='#000000cc';
+      tx.fillRect(0,0,tc.width,tc.height);
+      pts.forEach(p=>{
+        p.life+=.02; p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=tc.width; if(p.x>tc.width)p.x=0;
+        if(p.y<0)p.y=tc.height; if(p.y>tc.height)p.y=0;
+        const a=(.5+.5*Math.sin(p.life))*.7;
+        tx.beginPath(); tx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        tx.fillStyle=p.col; tx.globalAlpha=a; tx.fill();
+        tx.globalAlpha=1;
+      });
+      // draw connection lines
+      for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){
+          tx.beginPath(); tx.moveTo(pts[i].x,pts[i].y); tx.lineTo(pts[j].x,pts[j].y);
+          tx.strokeStyle=`rgba(0,229,255,${(1-d/120)*.15})`; tx.lineWidth=.5; tx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(tloop);
+  }
+  tloop();
+})();
+
+// ─── AUDIO ────────────────────────────────────────────────
+let AC=null;
+const getAC=()=>{ if(!AC) AC=new(window.AudioContext||window.webkitAudioContext)(); return AC; };
+function tone(f,d,type='sine',vol=.07,detune=0){
+  try{
+    const ac=getAC(),o=ac.createOscillator(),g=ac.createGain(),rev=ac.createConvolver();
     o.connect(g); g.connect(ac.destination);
-    o.type = type; o.frequency.value = freq; o.detune.value = detune;
-    g.gain.setValueAtTime(vol, ac.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
-    o.start(); o.stop(ac.currentTime + dur);
-  } catch(e) {}
+    o.type=type; o.frequency.value=f; o.detune.value=detune;
+    g.gain.setValueAtTime(vol,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);
+    o.start(); o.stop(ac.currentTime+d);
+  }catch(e){}
 }
-function playDroneNote(freq, dur) {
-  try {
-    const ac = getAudio();
-    const o = ac.createOscillator();
-    const g = ac.createGain();
-    const filt = ac.createBiquadFilter();
-    o.connect(filt); filt.connect(g); g.connect(ac.destination);
-    filt.type = 'lowpass'; filt.frequency.value = 400;
-    o.type = 'sawtooth'; o.frequency.value = freq;
-    g.gain.setValueAtTime(0, ac.currentTime);
-    g.gain.linearRampToValueAtTime(0.04, ac.currentTime + 0.5);
-    g.gain.linearRampToValueAtTime(0.04, ac.currentTime + dur - 0.5);
-    g.gain.linearRampToValueAtTime(0, ac.currentTime + dur);
-    o.start(); o.stop(ac.currentTime + dur);
-  } catch(e) {}
-}
-function playCorrect() {
-  playTone(440, 0.15, 'sine', 0.12);
-  setTimeout(()=>playTone(554, 0.15, 'sine', 0.1), 100);
-  setTimeout(()=>playTone(659, 0.3, 'sine', 0.12), 200);
-}
-function playWrong() {
-  playTone(220, 0.08, 'square', 0.08);
-  setTimeout(()=>playTone(180, 0.2, 'square', 0.08), 80);
-}
-function playJump() { playTone(330, 0.12, 'sine', 0.07); }
-function playDash() { playTone(660, 0.08, 'sawtooth', 0.06); }
-function playStep() { if(Math.random()<0.3) playTone(80+Math.random()*20, 0.05, 'sine', 0.03); }
-function playUnlock() {
-  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.2,'sine',0.1),i*80));
-}
-function playWhisper() {
-  playTone(80+Math.random()*40, 1.5+Math.random(), 'sine', 0.015, (Math.random()-0.5)*20);
-}
-
-// Atmospheric drone
-function startAmbience() {
-  function loopDrone() {
-    const notes = [55, 65.4, 49, 73.4];
-    const n = notes[Math.floor(Math.random()*notes.length)];
-    playDroneNote(n, 8 + Math.random()*4);
-    setTimeout(loopDrone, (8+Math.random()*6)*1000);
+function playCorrect(){tone(440,.12,'sine',.12);setTimeout(()=>tone(554,.12,'sine',.1),90);setTimeout(()=>tone(659,.25,'sine',.12),180);}
+function playWrong(){tone(220,.07,'square',.08);setTimeout(()=>tone(170,.2,'square',.07),70);}
+function playJump(){tone(330,.1,'sine',.06);tone(440,.08,'sine',.03);}
+function playDash(){tone(660,.07,'sawtooth',.05);tone(880,.05,'sine',.03);}
+function playUnlock(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.2,'sine',.1),i*75));}
+function playDie(){tone(150,.4,'sawtooth',.12);setTimeout(()=>tone(100,.6,'sine',.09),200);}
+function playStep(){if(Math.random()<.25)tone(70+Math.random()*20,.04,'sine',.025);}
+function startDrone(){
+  function d(){
+    const ns=[55,65.4,49,82.4];
+    const n=ns[Math.floor(Math.random()*ns.length)];
+    try{
+      const ac=getAC(),o=ac.createOscillator(),g=ac.createGain(),fi=ac.createBiquadFilter();
+      o.connect(fi); fi.connect(g); g.connect(ac.destination);
+      fi.type='lowpass'; fi.frequency.value=350;
+      o.type='sawtooth'; o.frequency.value=n;
+      g.gain.setValueAtTime(0,ac.currentTime);
+      g.gain.linearRampToValueAtTime(.035,ac.currentTime+1);
+      g.gain.linearRampToValueAtTime(.035,ac.currentTime+9);
+      g.gain.linearRampToValueAtTime(0,ac.currentTime+11);
+      o.start(); o.stop(ac.currentTime+11);
+    }catch(e){}
+    setTimeout(d,(9+Math.random()*5)*1000);
   }
-  loopDrone();
-  setInterval(()=>{ if(Math.random()<0.3) playWhisper(); }, 4000);
+  d();
+  setInterval(()=>{if(Math.random()<.25)tone(80+Math.random()*40,2+Math.random()*2,'sine',.012,(Math.random()-.5)*15);},3500);
 }
 
-// ---- PHONETICS DATA (from PDF) ----
-const ZONES = [
-  'ENTRANCE HALL',
-  'STRESS CORRIDOR',
-  'IPA CHAMBER',
-  'SYLLABLE BRIDGE',
-  'ECHO ROOM',
-  'FINAL TOWER CLIMB'
+// ─── PHONETICS DATA ───────────────────────────────────────
+const IPA=['/ə/','/ɪ/','/æ/','/ʃ/','/θ/','/ð/','/ʒ/','/tʃ/','/dʒ/',
+  '/p/','/b/','/t/','/d/','/k/','/g/','/f/','/v/','/s/','/z/','/m/','/n/',
+  '/l/','/r/','/w/','/j/','/h/','/i:/','/u:/','/ɔ:/','/ɑ:/','/ɜ:/',
+  '/eɪ/','/aɪ/','/ɔɪ/','/əʊ/','/aʊ/','/ɪə/','/eə/','/ʊə/'];
+
+const ZONES=[
+  {name:'ENTRANCE HALL',    ipa:'/entrəns hɔ:l/'},
+  {name:'STRESS CORRIDOR',  ipa:'/stres kɔrɪdɔ:/'},
+  {name:'IPA CHAMBER',      ipa:'/aɪ pi: eɪ tʃeɪmbər/'},
+  {name:'SYLLABLE BRIDGE',  ipa:'/sɪləbəl brɪdʒ/'},
+  {name:'ECHO ROOM',        ipa:'/ekəʊ ru:m/'},
+  {name:'SUMMIT TOWER',     ipa:'/sʌmɪt taʊər/'}
 ];
 
-const IPA_SYMBOLS = [
-  '/ə/', '/ɪ/', '/æ/', '/ʃ/', '/θ/', '/ð/', '/ʒ/', '/tʃ/', '/dʒ/',
-  '/p/', '/b/', '/t/', '/d/', '/k/', '/g/', '/f/', '/v/', '/s/', '/z/',
-  '/m/', '/n/', '/l/', '/r/', '/w/', '/j/', '/h/',
-  '/i:/', '/u:/', '/ɔ:/', '/ɑ:/', '/ɜ:/',
-  '/eɪ/', '/aɪ/', '/ɔɪ/', '/əʊ/', '/aʊ/', '/ɪə/', '/eə/', '/ʊə/'
+const STRESS_Q=[
+  {word:'photograph',   syls:['PHO','to','graph'],   ans:0, hint:'PHOtograph — stress on first syllable', topic:'Word Stress'},
+  {word:'photographer', syls:['pho','TO','gra','pher'],ans:1,hint:'phoTOgrapher — stress shifts to second', topic:'Stress Shift'},
+  {word:'photographic', syls:['pho','to','GRAPH','ic'],ans:2,hint:'photoGRAPHic — third syllable stressed', topic:'Stress Shift'},
+  {word:'communication',syls:['com','mu','ni','CA','tion'],ans:3,hint:'communicCA — fourth syllable',topic:'Polysyllabic Stress'},
+  {word:'phonology',    syls:['pho','NOL','o','gy'],  ans:1, hint:'phoNOLogy — second syllable', topic:'Phonology'},
+  {word:'linguistics',  syls:['lin','GUIS','tics'],   ans:1, hint:'linGUIStics — nucleus stressed', topic:'Linguistics'},
+  {word:'education',    syls:['ed','u','CA','tion'],  ans:2, hint:'eduCAtion — third syllable', topic:'Word Stress'},
+  {word:'university',   syls:['u','ni','VER','si','ty'],ans:2,hint:'uniVERsity — third syllable',topic:'Complex Stress'},
+  {word:'vocabulary',   syls:['vo','CAB','u','lar','y'],ans:1,hint:'voCABulary — second syllable',topic:'Word Stress'},
+  {word:'pronunciation',syls:['pro','nun','ci','A','tion'],ans:3,hint:'pronunciA — fourth syllable',topic:'Meta-Phonetics'},
+  {word:'articulation', syls:['ar','tic','u','LA','tion'],ans:3,hint:'articulaLA — fourth syllable',topic:'Articulation'},
+  {word:'assimilation', syls:['as','sim','i','LA','tion'],ans:3,hint:'assimilaLA — fourth syllable',topic:'Assimilation'}
+];
+const IPA_Q=[
+  {q:'Which IPA symbol represents the sound in "SHEEP"?',opts:['/ʃ/','/s/','/tʃ/','/θ/'],ans:0,topic:'Fricatives'},
+  {q:'The word "THEY" begins with which phoneme?',opts:['/t/','/ð/','/θ/','/d/'],ans:1,topic:'Voiced/Voiceless'},
+  {q:'Which symbol is the SCHWA — unstressed central vowel?',opts:['/æ/','/ɪ/','/ə/','/ʌ/'],ans:2,topic:'Central Vowels'},
+  {q:'"MEASURE" contains which medial consonant?',opts:['/s/','/z/','/ʒ/','/ʃ/'],ans:2,topic:'Fricatives'},
+  {q:'How many phonemes does English have?',opts:['26','36','44','52'],ans:2,topic:'Introduction'},
+  {q:'Which is a BILABIAL consonant?',opts:['/f/','/p/','/s/','/k/'],ans:1,topic:'Place of Articulation'},
+  {q:'Which vowel is produced with the tongue at its HIGHEST position?',opts:['/æ/','/ɑ:/','/i:/','/ɔ:/'],ans:2,topic:'Vowel Height'}
+];
+const SYLL_Q=[
+  {q:'Which word has exactly 3 syllables?',opts:['cat','table','beautiful','university'],ans:1,topic:'Syllable Counting'},
+  {q:'A syllable ending in a VOWEL (e.g. "go") is called:',opts:['Closed','Open','Complex','Syllabic'],ans:1,topic:'Syllable Types'},
+  {q:'In a CVC syllable (e.g. "cat"), what type is it?',opts:['Open','Closed','Reduced','Nuclear'],ans:1,topic:'Syllable Structure'},
+  {q:'Which is a DIPHTHONG — a two-vowel glide?',opts:['/i:/','/æ/','/eɪ/','/ʌ/'],ans:2,topic:'Diphthongs'}
 ];
 
-// Word stress puzzles from PDF (real examples)
-const STRESS_PUZZLES = [
-  {
-    word: 'photograph', syllables: ['PHO','to','graph'], answer: 0,
-    hint: 'Primary stress falls on the first syllable in "PHOtograph"',
-    topic: 'Word Stress: Simple Words'
-  },
-  {
-    word: 'photographer', syllables: ['pho','TO','gra','pher'], answer: 1,
-    hint: 'Stress shifts to second syllable in "phoTOgrapher"',
-    topic: 'Complex Word Stress'
-  },
-  {
-    word: 'photographic', syllables: ['pho','to','GRAPH','ic'], answer: 2,
-    hint: 'In "photoGRAPHic" stress lands on the third syllable',
-    topic: 'Complex Word Stress'
-  },
-  {
-    word: 'communication', syllables: ['com','mu','ni','CA','tion'], answer: 3,
-    hint: 'Stress falls on "CA" — fourth syllable',
-    topic: 'Sentence Stress'
-  },
-  {
-    word: 'articulation', syllables: ['ar','tic','u','LA','tion'], answer: 3,
-    hint: '"LA" carries primary stress in articulatory phonetics',
-    topic: 'Articulatory Phonetics'
-  },
-  {
-    word: 'pronunciation', syllables: ['pro','nun','ci','A','tion'], answer: 3,
-    hint: 'Stress on "A" — the nucleus of the stressed syllable',
-    topic: 'Pronunciation'
-  },
-  {
-    word: 'phonology', syllables: ['pho','NOL','o','gy'], answer: 1,
-    hint: 'phoNOLogy — stress on the second syllable',
-    topic: 'Phonology'
-  },
-  {
-    word: 'linguistics', syllables: ['lin','GUIS','tics'], answer: 1,
-    hint: 'linGUIStics — the nucleus is stressed',
-    topic: 'Linguistics'
-  },
-  {
-    word: 'assimilation', syllables: ['as','sim','i','LA','tion'], answer: 3,
-    hint: 'assimilaLA — stress on the fourth syllable',
-    topic: 'Allophonic Variations'
-  },
-  {
-    word: 'education', syllables: ['ed','u','CA','tion'], answer: 2,
-    hint: 'eduCAtion — third syllable stressed',
-    topic: 'Word Stress'
-  },
-  {
-    word: 'university', syllables: ['u','ni','VER','si','ty'], answer: 2,
-    hint: 'uniVERsity — stress on third syllable',
-    topic: 'Complex Word Stress'
-  },
-  {
-    word: 'vocabulary', syllables: ['vo','CAB','u','lar','y'], answer: 1,
-    hint: 'voCABulary — second syllable stressed',
-    topic: 'Word Stress'
+// ─── GAME STATE ───────────────────────────────────────────
+const keys={}, inp={L:false,R:false,J:false,D:false};
+let running=false, animF=0, lastT=0;
+let camX=0, camY=0, camTX=0, camTY=0, camShake=0;
+let stressLv=0, curZone=0;
+let puzzleOpen=false, activeDoor=null;
+let particles=[], floatLetters=[], lightBeams=[];
+
+// World dimensions
+const WW=1600, WH=6400;
+
+// ─── PLAYER ───────────────────────────────────────────────
+const P={
+  x:800, y:WH-160,
+  vx:0, vy:0,
+  w:26, h:44,
+  onGround:false,
+  jumps:0, maxJumps:2,
+  dashing:false, dashT:0, dashCD:0,
+  facing:1,
+  walkF:0, walkT:0,
+  glowing:false, glowT:0,
+  dead:false, deadT:0,
+  inv:0,
+  _jHeld:false
+};
+const SPAWN={x:800, y:WH-160};
+
+// ─── WORLD ────────────────────────────────────────────────
+let plats=[], movPlats=[], doors=[], enemies=[], trigZones=[], fLetters=[];
+
+/*
+  PLATFORM DESIGN RULES (v2 — no dead ends):
+  • Max horizontal gap between reachable platforms: 220px  (dash = 14*10=140px + walk)
+  • Max vertical step up: 200px  (jump = ~240px height)
+  • Every floor has a CONTINUOUS path from left wall to right wall
+  • Moving platforms always fill critical gaps
+  • Staircase pattern guaranteed on every floor
+*/
+function buildWorld(){
+  plats=[]; movPlats=[]; doors=[]; enemies=[]; trigZones=[]; fLetters=[];
+
+  const GND=WH-40;
+
+  // ── FLOOR 0 — Ground / Entrance Hall ─────────────────────
+  // Full ground
+  plats.push({x:0,      y:GND,    w:WW,  h:40,  t:'ground'});
+  // Step platforms — guaranteed path up
+  plats.push({x:80,     y:GND-160,w:200, h:16,  t:'stone'});
+  plats.push({x:360,    y:GND-260,w:200, h:16,  t:'stone'});
+  plats.push({x:640,    y:GND-180,w:200, h:16,  t:'stone'});
+  plats.push({x:900,    y:GND-300,w:200, h:16,  t:'stone'});
+  plats.push({x:1200,   y:GND-200,w:240, h:16,  t:'stone'});
+  plats.push({x:1350,   y:GND-360,w:220, h:16,  t:'stone'});
+
+  // ── FLOOR 1 — Stress Corridor ─────────────────────────────
+  const F1=WH-900;
+  plats.push({x:0,    y:F1+220, w:WW, h:20, t:'f1'});
+  // Staircase LEFT→RIGHT
+  plats.push({x:60,   y:F1+140, w:180,h:14, t:'stress'});
+  plats.push({x:300,  y:F1+100, w:180,h:14, t:'stress'});
+  plats.push({x:540,  y:F1+60,  w:180,h:14, t:'stress'});
+  plats.push({x:780,  y:F1+20,  w:180,h:14, t:'stress'});
+  // Bridge across right side
+  plats.push({x:1020, y:F1+80,  w:180,h:14, t:'stress'});
+  plats.push({x:1260, y:F1+120, w:200,h:14, t:'stone'});
+  // Extra hops
+  plats.push({x:200,  y:F1+180, w:120,h:14, t:'stone'});
+  plats.push({x:950,  y:F1+160, w:100,h:14, t:'stone'});
+  // Moving platform bridges the biggest gap
+  movPlats.push({x:680,y:F1+180,w:120,h:14,dx:1.2,range:220,ox:680,t:'moving'});
+
+  // ── FLOOR 2 — IPA Chamber ────────────────────────────────
+  const F2=WH-1900;
+  plats.push({x:0,    y:F2+240, w:WW, h:20, t:'f2'});
+  // Wide solid sections + islands
+  plats.push({x:0,    y:F2+140, w:280,h:14, t:'ipa'});
+  plats.push({x:340,  y:F2+100, w:200,h:14, t:'ipa'});
+  plats.push({x:600,  y:F2+60,  w:200,h:14, t:'ipa'});
+  plats.push({x:860,  y:F2+100, w:200,h:14, t:'ipa'});
+  plats.push({x:1100, y:F2+140, w:200,h:14, t:'ipa'});
+  plats.push({x:1350, y:F2+80,  w:220,h:14, t:'stone'});
+  // Upper tier
+  plats.push({x:160,  y:F2+30,  w:160,h:14, t:'stone'});
+  plats.push({x:460,  y:F2-10,  w:160,h:14, t:'ipa'});
+  plats.push({x:760,  y:F2+10,  w:160,h:14, t:'ipa'});
+  plats.push({x:1060, y:F2-10,  w:200,h:14, t:'ipa'});
+  movPlats.push({x:300,y:F2+170,w:110,h:14,dx:-1.1,range:180,ox:300,t:'moving'});
+  movPlats.push({x:960,y:F2+170,w:110,h:14,dx:1.3,range:180,ox:960,t:'moving'});
+
+  // ── FLOOR 3 — Syllable Bridge ─────────────────────────────
+  const F3=WH-2900;
+  plats.push({x:0,    y:F3+260, w:WW, h:20, t:'f3'});
+  // Dense syllable stepping stones — never more than 180px gap
+  for(let i=0;i<9;i++){
+    plats.push({x:60+i*160, y:F3+180-i*12, w:140,h:14, t:'syll'});
   }
-];
+  // Upper islands
+  plats.push({x:100,  y:F3+80,  w:180,h:14, t:'stone'});
+  plats.push({x:380,  y:F3+50,  w:180,h:14, t:'syll'});
+  plats.push({x:660,  y:F3+20,  w:180,h:14, t:'syll'});
+  plats.push({x:940,  y:F3+40,  w:180,h:14, t:'syll'});
+  plats.push({x:1220, y:F3+20,  w:220,h:14, t:'stone'});
+  movPlats.push({x:550,y:F3+220,w:130,h:14,dx:1.4,range:200,ox:550,t:'moving'});
+  movPlats.push({x:1100,y:F3+200,w:120,h:14,dx:-1.2,range:180,ox:1100,t:'moving'});
 
-const IPA_DOOR_PUZZLES = [
-  {
-    question: 'Which IPA symbol represents the sound in "SHEEP"?',
-    options: ['/ʃ/', '/s/', '/tʃ/', '/θ/'], answer: 0,
-    topic: 'Letter-Sound Correspondence'
-  },
-  {
-    question: 'The word "THEY" begins with which phoneme?',
-    options: ['/t/', '/ð/', '/θ/', '/d/'], answer: 1,
-    topic: 'Voiced/Voiceless Distinction'
-  },
-  {
-    question: 'Which symbol is the SCHWA — the unstressed central vowel?',
-    options: ['/æ/', '/ɪ/', '/ə/', '/ʌ/'], answer: 2,
-    topic: 'Central Vowels'
-  },
-  {
-    question: '"MEASURE" contains which medial consonant sound?',
-    options: ['/s/', '/z/', '/ʒ/', '/ʃ/'], answer: 2,
-    topic: 'Digraph-Phoneme Correspondence'
-  },
-  {
-    question: 'The word "CHURCH" contains which affricates?',
-    options: ['/tʃ/ and /ʃ/', '/tʃ/ and /tʃ/', '/dʒ/ and /dʒ/', '/ʃ/ and /ʒ/'], answer: 1,
-    topic: 'Manner of Articulation'
-  },
-  {
-    question: 'How many phonemes does English have?',
-    options: ['26', '36', '44', '52'], answer: 2,
-    topic: 'Introduction to Phonetics'
+  // ── FLOOR 4 — Echo Room ───────────────────────────────────
+  const F4=WH-3900;
+  plats.push({x:0,    y:F4+280, w:WW, h:22, t:'f4'});
+  plats.push({x:80,   y:F4+200, w:200,h:14, t:'echo'});
+  plats.push({x:340,  y:F4+160, w:200,h:14, t:'echo'});
+  plats.push({x:600,  y:F4+120, w:200,h:14, t:'echo'});
+  plats.push({x:860,  y:F4+80,  w:200,h:14, t:'echo'});
+  plats.push({x:1120, y:F4+120, w:200,h:14, t:'echo'});
+  plats.push({x:1360, y:F4+160, w:220,h:14, t:'stone'});
+  // Upper
+  plats.push({x:200,  y:F4+60,  w:160,h:14, t:'echo'});
+  plats.push({x:480,  y:F4+20,  w:160,h:14, t:'echo'});
+  plats.push({x:760,  y:F4,     w:200,h:14, t:'echo'});
+  plats.push({x:1040, y:F4+20,  w:200,h:14, t:'stone'});
+  movPlats.push({x:700,y:F4+220,w:120,h:14,dx:-1.3,range:220,ox:700,t:'moving'});
+
+  // ── FLOOR 5 — Final Tower ─────────────────────────────────
+  const F5=WH-5000;
+  plats.push({x:0,    y:F5+340, w:WW, h:22, t:'f5'});
+  // Spiral-style path up
+  plats.push({x:100,  y:F5+260, w:180,h:14, t:'final'});
+  plats.push({x:360,  y:F5+210, w:180,h:14, t:'final'});
+  plats.push({x:620,  y:F5+160, w:180,h:14, t:'final'});
+  plats.push({x:880,  y:F5+110, w:180,h:14, t:'final'});
+  plats.push({x:1140, y:F5+60,  w:180,h:14, t:'final'});
+  plats.push({x:880,  y:F5+10,  w:200,h:14, t:'final'});
+  plats.push({x:620,  y:F5-40,  w:200,h:14, t:'final'});
+  plats.push({x:360,  y:F5-90,  w:200,h:14, t:'final'});
+  plats.push({x:620,  y:F5-140, w:200,h:14, t:'final'});
+  // Summit platform
+  plats.push({x:680,  y:F5-220, w:240,h:20, t:'summit'});
+  movPlats.push({x:200,y:F5+290,w:130,h:14,dx:1.5,range:200,ox:200,t:'moving'});
+  movPlats.push({x:500,y:F5+250,w:120,h:14,dx:-1.2,range:160,ox:500,t:'moving'});
+  movPlats.push({x:1000,y:F5+200,w:120,h:14,dx:1.3,range:180,ox:1000,t:'moving'});
+
+  // ── DOORS ─────────────────────────────────────────────────
+  doors=[
+    {x:1300,y:GND-400,  w:46,h:76,solved:false,qt:'stress',qi:0,zone:0,lbl:'STRESS GATE I'},
+    {x:740, y:F1+30,   w:46,h:76,solved:false,qt:'stress',qi:1,zone:1,lbl:'STRESS GATE II'},
+    {x:1280,y:F1+30,   w:46,h:76,solved:false,qt:'ipa',   qi:0,zone:1,lbl:'IPA LOCK I'},
+    {x:320, y:F2-60,   w:46,h:76,solved:false,qt:'stress',qi:2,zone:2,lbl:'STRESS GATE III'},
+    {x:1020,y:F2-60,   w:46,h:76,solved:false,qt:'ipa',   qi:1,zone:2,lbl:'IPA LOCK II'},
+    {x:200, y:F3-20,   w:46,h:76,solved:false,qt:'syll',  qi:0,zone:3,lbl:'SYLLABLE LOCK'},
+    {x:900, y:F3-20,   w:46,h:76,solved:false,qt:'stress',qi:3,zone:3,lbl:'STRESS GATE IV'},
+    {x:440, y:F4-40,   w:46,h:76,solved:false,qt:'ipa',   qi:2,zone:4,lbl:'ECHO GATE'},
+    {x:1000,y:F4-40,   w:46,h:76,solved:false,qt:'syll',  qi:1,zone:4,lbl:'SYLL GATE II'},
+    {x:600, y:F5-200,  w:46,h:76,solved:false,qt:'stress',qi:4,zone:5,lbl:'FINAL SEAL I'},
+    {x:750, y:F5-280,  w:46,h:76,solved:false,qt:'ipa',   qi:3,zone:5,lbl:'SUMMIT GATE'}
+  ];
+
+  // ── ENEMIES ───────────────────────────────────────────────
+  enemies=[
+    {x:600, y:GND-196,    w:34,h:46,vx:.7, t:'shadow',fr:0,alive:true},
+    {x:1100,y:GND-196,    w:34,h:46,vx:-.8,t:'glitch',fr:0,alive:true},
+    {x:200, y:F1+166,     w:34,h:46,vx:.9, t:'shadow',fr:0,alive:true},
+    {x:900, y:F1+166,     w:34,h:46,vx:-1, t:'phoneme',fr:0,alive:true},
+    {x:1300,y:F1+166,     w:34,h:46,vx:.8, t:'glitch',fr:0,alive:true},
+    {x:350, y:F2+186,     w:34,h:46,vx:-.7,t:'shadow',fr:0,alive:true},
+    {x:850, y:F2+186,     w:34,h:46,vx:.9, t:'phoneme',fr:0,alive:true},
+    {x:1250,y:F2+186,     w:34,h:46,vx:-.8,t:'glitch',fr:0,alive:true},
+    {x:300, y:F3+206,     w:34,h:46,vx:1.1,t:'shadow',fr:0,alive:true},
+    {x:750, y:F3+206,     w:34,h:46,vx:-.9,t:'phoneme',fr:0,alive:true},
+    {x:1200,y:F3+206,     w:34,h:46,vx:1.0,t:'glitch',fr:0,alive:true},
+    {x:400, y:F4+226,     w:34,h:46,vx:-.8,t:'shadow',fr:0,alive:true},
+    {x:900, y:F4+226,     w:34,h:46,vx:1.2,t:'phoneme',fr:0,alive:true},
+    {x:500, y:F5+286,     w:34,h:46,vx:1.1,t:'glitch',fr:0,alive:true},
+    {x:1000,y:F5+286,     w:34,h:46,vx:-1.2,t:'phoneme',fr:0,alive:true}
+  ];
+
+  // ── TRIGGER ZONES for zone detection ──────────────────────
+  trigZones=[
+    {x:0,y:WH-900, w:WW,h:900,  zone:0},
+    {x:0,y:WH-1900,w:WW,h:1000, zone:1},
+    {x:0,y:WH-2900,w:WW,h:1000, zone:2},
+    {x:0,y:WH-3900,w:WW,h:1000, zone:3},
+    {x:0,y:WH-5000,w:WW,h:1100, zone:4},
+    {x:0,y:0,      w:WW,h:WH-5000,zone:5}
+  ];
+
+  // ── FLOATING IPA LETTERS ───────────────────────────────────
+  for(let i=0;i<120;i++){
+    fLetters.push({
+      x:50+Math.random()*(WW-100),
+      y:80+Math.random()*(WH-160),
+      sym:IPA[Math.floor(Math.random()*IPA.length)],
+      spd:.15+Math.random()*.35,
+      amp:15+Math.random()*45,
+      phase:Math.random()*Math.PI*2,
+      op:.03+Math.random()*.08,
+      sz:10+Math.random()*18,
+      glow:Math.random()<.15,
+      drift:(Math.random()-.5)*.04
+    });
   }
-];
 
-const SYLLABLE_PUZZLES = [
-  {
-    question: 'Which word has 3 syllables?',
-    options: ['cat', 'table', 'beautiful', 'university'], answer: 1,
-    topic: 'Syllable Counting'
-  },
-  {
-    question: 'In a CVC syllable (e.g., "cat"), how is it classified?',
-    options: ['Open', 'Closed', 'Complex', 'Syllabic'], answer: 1,
-    topic: 'Syllable Structure'
-  },
-  {
-    question: 'A syllable ending in a vowel (e.g., "go") is called:',
-    options: ['Closed', 'Open', 'Reduced', 'Nuclear'], answer: 1,
-    topic: 'Types of Syllables'
-  },
-  {
-    question: 'Which is a DIPHTHONG — a two-vowel glide?',
-    options: ['/i:/', '/æ/', '/eɪ/', '/ʌ/'], answer: 2,
-    topic: 'Diphthongs'
+  // ── LIGHT BEAMS ───────────────────────────────────────────
+  lightBeams=[];
+  for(let i=0;i<12;i++){
+    lightBeams.push({
+      x:100+Math.random()*(WW-200),
+      y:Math.random()*WH,
+      angle:-Math.PI/2+(Math.random()-.5)*.6,
+      len:200+Math.random()*400,
+      width:30+Math.random()*80,
+      alpha:.015+Math.random()*.025,
+      color:Math.random()<.5?'#00e5ff':'#8833ff',
+      phase:Math.random()*Math.PI*2,
+      spd:.003+Math.random()*.004
+    });
   }
-];
+}
 
-// ---- GAME STATE ----
-const keys = {};
-const input = { left:false, right:false, jump:false, dash:false };
+// ─── PARTICLES ────────────────────────────────────────────
+function spawnParts(x,y,col,n=10,spread=3){
+  for(let i=0;i<n;i++){
+    const angle=Math.random()*Math.PI*2;
+    const spd=.5+Math.random()*spread;
+    particles.push({
+      x,y,
+      vx:Math.cos(angle)*spd,
+      vy:Math.sin(angle)*spd-1,
+      life:1, decay:.018+Math.random()*.025,
+      sz:1.5+Math.random()*4,
+      col, text:null
+    });
+  }
+}
+function spawnIPA(x,y){
+  particles.push({
+    x,y,
+    vx:(Math.random()-.5)*1.2,
+    vy:-1.5-Math.random()*2,
+    life:1, decay:.007+Math.random()*.008,
+    sz:13+Math.random()*10,
+    col:'#00e5ff',
+    text:IPA[Math.floor(Math.random()*IPA.length)]
+  });
+}
+function updateParticles(){
+  particles=particles.filter(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=.035; p.life-=p.decay;
+    return p.life>0;
+  });
+}
+function drawParticles(){
+  particles.forEach(p=>{
+    ctx.save();
+    ctx.globalAlpha=p.life*.85;
+    if(p.text){
+      ctx.font=`${p.sz}px 'Share Tech Mono'`;
+      ctx.fillStyle=p.col;
+      ctx.shadowBlur=18; ctx.shadowColor=p.col;
+      ctx.fillText(p.text,p.x-camX,p.y-camY);
+    } else {
+      ctx.fillStyle=p.col;
+      ctx.shadowBlur=10; ctx.shadowColor=p.col;
+      ctx.beginPath();
+      ctx.arc(p.x-camX,p.y-camY,p.sz*p.life,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore();
+  });
+}
 
-let gameRunning = false;
-let currentZone = 0;
-let stressLevel = 0;
-let puzzleSolved = [false,false,false,false,false,false,false,false,false,false,false,false];
-let puzzleQueue = [];
-let currentPuzzleIdx = 0;
-let puzzleActive = false;
-let camX = 0, camY = 0, camTargetX = 0, camTargetY = 0;
-let camShake = 0;
-let particles = [];
-let floatingLetters = [];
-let enemies = [];
-let doors = [];
-let platforms = [];
-let movingPlatforms = [];
-let worldH = 6000;
-let worldW = 1600;
-let playerSpawn = { x: 800, y: worldH - 150 };
-let animFrame = 0;
-let lastTime = 0;
-let triggerZones = [];
-
-// Player
-const player = {
-  x: 800, y: worldH - 150,
-  vx: 0, vy: 0,
-  w: 28, h: 48,
-  onGround: false,
-  jumps: 0,
-  maxJumps: 2,
-  dashing: false,
-  dashTimer: 0,
-  dashCooldown: 0,
-  facing: 1,
-  walkFrame: 0,
-  walkTimer: 0,
-  glowing: false,
-  dead: false,
-  deathTimer: 0,
-  invincible: 0,
-  crouching: false
+// ─── PLATFORM COLORS ──────────────────────────────────────
+const PCOL={
+  ground:{f:'#060610',s:'#1a1a2e'},
+  stone: {f:'#080814',s:'#1a1a30'},
+  f1:    {f:'#080818',s:'#14143a'},
+  f2:    {f:'#060c16',s:'#0f1e40'},
+  f3:    {f:'#06100a',s:'#0e2018'},
+  f4:    {f:'#100806',s:'#281410'},
+  f5:    {f:'#0a0606',s:'#200a0a'},
+  stress:{f:'#0d0620',s:'#4400aa',glow:'#7722ff'},
+  ipa:   {f:'#001820',s:'#006688',glow:'#00e5ff'},
+  syll:  {f:'#001a0c',s:'#005533',glow:'#00cc77'},
+  echo:  {f:'#1a0a00',s:'#663300',glow:'#ff7700'},
+  final: {f:'#1a0008',s:'#660022',glow:'#ff0055'},
+  summit:{f:'#1a1000',s:'#664400',glow:'#ffaa00'},
+  moving:{f:'#081830',s:'#006688',glow:'#00e5ff'}
 };
 
-// ---- BUILD WORLD ----
-function buildWorld() {
-  platforms = [];
-  doors = [];
-  enemies = [];
-  triggerZones = [];
-  movingPlatforms = [];
-  floatingLetters = [];
-
-  // Ground and floors
-  const groundY = worldH - 40;
-  // Main floor sections
-  platforms.push({ x:0, y:groundY, w:worldW, h:40, type:'ground' });
-
-  // ZONE 0 - Entrance Hall (bottom)
-  const z0y = worldH - 300;
-  platforms.push({ x:200, y:z0y, w:250, h:16, type:'stone' });
-  platforms.push({ x:600, y:z0y-80, w:200, h:16, type:'stone' });
-  platforms.push({ x:1000, y:z0y-20, w:220, h:16, type:'stone' });
-
-  // Floor 2
-  const f2 = worldH - 700;
-  platforms.push({ x:0, y:f2+200, w:700, h:16, type:'floor2' });
-  platforms.push({ x:900, y:f2+180, w:700, h:16, type:'floor2' });
-  platforms.push({ x:100, y:f2+100, w:300, h:16, type:'stone' });
-  platforms.push({ x:500, y:f2+50, w:200, h:16, type:'stress' });
-  platforms.push({ x:800, y:f2+80, w:260, h:16, type:'stone' });
-  platforms.push({ x:1150, y:f2+40, w:200, h:16, type:'stone' });
-
-  // Floor 3 — Stress Corridor
-  const f3 = worldH - 1400;
-  platforms.push({ x:0, y:f3+300, w:1600, h:20, type:'floor3' });
-  platforms.push({ x:80, y:f3+180, w:180, h:14, type:'stress' });
-  platforms.push({ x:340, y:f3+150, w:180, h:14, type:'stress' });
-  platforms.push({ x:600, y:f3+130, w:180, h:14, type:'stress' });
-  platforms.push({ x:860, y:f3+110, w:180, h:14, type:'stress' });
-  platforms.push({ x:1100, y:f3+90, w:200, h:14, type:'stress' });
-  platforms.push({ x:1350, y:f3+70, w:200, h:14, type:'stone' });
-  platforms.push({ x:200, y:f3+60, w:140, h:14, type:'stone' });
-  platforms.push({ x:500, y:f3+30, w:160, h:14, type:'stone' });
-  platforms.push({ x:780, y:f3, w:160, h:14, type:'stone' });
-
-  // Floor 4 — IPA Chamber
-  const f4 = worldH - 2300;
-  platforms.push({ x:0, y:f4+300, w:1600, h:22, type:'floor4' });
-  platforms.push({ x:100, y:f4+180, w:200, h:14, type:'ipa' });
-  platforms.push({ x:400, y:f4+150, w:200, h:14, type:'ipa' });
-  platforms.push({ x:700, y:f4+120, w:200, h:14, type:'ipa' });
-  platforms.push({ x:1000, y:f4+90, w:220, h:14, type:'ipa' });
-  platforms.push({ x:300, y:f4+60, w:180, h:14, type:'ipa' });
-  platforms.push({ x:620, y:f4+30, w:160, h:14, type:'stone' });
-  platforms.push({ x:880, y:f4, w:200, h:14, type:'stone' });
-  platforms.push({ x:1200, y:f4-20, w:200, h:14, type:'ipa' });
-
-  // Floor 5 — Syllable Bridge
-  const f5 = worldH - 3200;
-  platforms.push({ x:0, y:f5+350, w:1600, h:20, type:'floor5' });
-  for (let i=0;i<8;i++) {
-    platforms.push({ x:80+i*180, y:f5+200-i*15, w:130, h:14, type:'syll' });
-  }
-  platforms.push({ x:200, y:f5+100, w:200, h:14, type:'stone' });
-  platforms.push({ x:550, y:f5+70, w:200, h:14, type:'stone' });
-  platforms.push({ x:900, y:f5+50, w:200, h:14, type:'stone' });
-  platforms.push({ x:1200, y:f5+30, w:200, h:14, type:'stone' });
-
-  // Floor 6 — Echo Room
-  const f6 = worldH - 4100;
-  platforms.push({ x:0, y:f6+300, w:1600, h:22, type:'floor6' });
-  platforms.push({ x:150, y:f6+180, w:180, h:14, type:'echo' });
-  platforms.push({ x:450, y:f6+140, w:180, h:14, type:'echo' });
-  platforms.push({ x:750, y:f6+100, w:180, h:14, type:'echo' });
-  platforms.push({ x:1050, y:f6+60, w:180, h:14, type:'echo' });
-  platforms.push({ x:320, y:f6+30, w:200, h:14, type:'echo' });
-  platforms.push({ x:700, y:f6, w:180, h:14, type:'stone' });
-  platforms.push({ x:1000, y:f6-30, w:200, h:14, type:'stone' });
-
-  // Floor 7 — Final Tower
-  const f7 = worldH - 5000;
-  platforms.push({ x:0, y:f7+400, w:1600, h:22, type:'floor7' });
-  platforms.push({ x:200, y:f7+300, w:160, h:14, type:'final' });
-  platforms.push({ x:480, y:f7+240, w:160, h:14, type:'final' });
-  platforms.push({ x:760, y:f7+180, w:160, h:14, type:'final' });
-  platforms.push({ x:1040, y:f7+120, w:160, h:14, type:'final' });
-  platforms.push({ x:700, y:f7+60, w:200, h:14, type:'final' });
-  platforms.push({ x:700, y:f7, w:200, h:14, type:'final' });
-
-  // Moving platforms
-  movingPlatforms = [
-    { x:400, y:f2+30, w:120, h:14, dx:1.2, range:200, ox:400, type:'moving' },
-    { x:700, y:f3+200, w:120, h:14, dx:-1.0, range:250, ox:700, type:'moving' },
-    { x:250, y:f4+200, w:110, h:14, dx:1.5, range:200, ox:250, type:'moving' },
-    { x:500, y:f5+260, w:120, h:14, dx:-1.3, range:220, ox:500, type:'moving' },
-    { x:600, y:f6+220, w:110, h:14, dx:1.1, range:200, ox:600, type:'moving' },
-    { x:400, y:f7+340, w:120, h:14, dx:-1.4, range:180, ox:400, type:'moving' }
-  ];
-
-  // Doors (trigger puzzles)
-  doors = [
-    { x:750, y:f2+150, w:50, h:80, solved:false, puzzleType:'stress', puzzleIdx:0, zone:1, label:'STRESS GATE I' },
-    { x:1300, y:f3+250, w:50, h:80, solved:false, puzzleType:'stress', puzzleIdx:1, zone:2, label:'STRESS GATE II' },
-    { x:750, y:f3+250, w:50, h:80, solved:false, puzzleType:'ipa', puzzleIdx:0, zone:2, label:'IPA LOCK' },
-    { x:1400, y:f4+250, w:50, h:80, solved:false, puzzleType:'ipa', puzzleIdx:1, zone:3, label:'PHONEME GATE' },
-    { x:400, y:f4+250, w:50, h:80, solved:false, puzzleType:'stress', puzzleIdx:2, zone:3, label:'STRESS GATE III' },
-    { x:1400, y:f5+300, w:50, h:80, solved:false, puzzleType:'syll', puzzleIdx:0, zone:4, label:'SYLLABLE LOCK' },
-    { x:700, y:f5+300, w:50, h:80, solved:false, puzzleType:'ipa', puzzleIdx:2, zone:4, label:'IPA GATE II' },
-    { x:1300, y:f6+250, w:50, h:80, solved:false, puzzleType:'stress', puzzleIdx:3, zone:5, label:'ECHO GATE' },
-    { x:600, y:f6+250, w:50, h:80, solved:false, puzzleType:'syll', puzzleIdx:1, zone:5, label:'SYLL BRIDGE' },
-    { x:750, y:f7+350, w:50, h:80, solved:false, puzzleType:'stress', puzzleIdx:4, zone:5, label:'FINAL SEAL I' },
-    { x:750, y:f7+50, w:50, h:80, solved:false, puzzleType:'ipa', puzzleIdx:3, zone:5, label:'SUMMIT GATE' }
-  ];
-
-  // Enemies
-  enemies = [
-    { x:900, y:f2+160, w:36, h:48, vx:-0.8, type:'shadow', frame:0, hp:1, alive:true },
-    { x:400, y:f3+260, w:36, h:50, vx:1.0, type:'glitch', frame:0, hp:1, alive:true },
-    { x:1100, y:f3+260, w:36, h:50, vx:-0.9, type:'shadow', frame:0, hp:1, alive:true },
-    { x:200, y:f4+260, w:36, h:50, vx:0.7, type:'glitch', frame:0, hp:1, alive:true },
-    { x:900, y:f4+260, w:36, h:50, vx:-1.1, type:'shadow', frame:0, hp:1, alive:true },
-    { x:600, y:f5+310, w:36, h:50, vx:0.9, type:'phoneme', frame:0, hp:1, alive:true },
-    { x:1100, y:f5+310, w:36, h:50, vx:-0.8, type:'phoneme', frame:0, hp:1, alive:true },
-    { x:300, y:f6+260, w:36, h:50, vx:1.0, type:'glitch', frame:0, hp:1, alive:true },
-    { x:900, y:f6+260, w:36, h:50, vx:-1.2, type:'shadow', frame:0, hp:1, alive:true },
-    { x:500, y:f7+360, w:36, h:50, vx:1.3, type:'phoneme', frame:0, hp:1, alive:true },
-    { x:1000, y:f7+360, w:36, h:50, vx:-1.4, type:'phoneme', frame:0, hp:1, alive:true }
-  ];
-
-  // Trigger zones for zone detection
-  triggerZones = [
-    { x:0, y:worldH-700, w:worldW, h:700, zone:0 },
-    { x:0, y:worldH-1400, w:worldW, h:700, zone:1 },
-    { x:0, y:worldH-2300, w:worldW, h:900, zone:2 },
-    { x:0, y:worldH-3200, w:worldW, h:900, zone:3 },
-    { x:0, y:worldH-4100, w:worldW, h:900, zone:4 },
-    { x:0, y:0, w:worldW, h:worldH-4100, zone:5 }
-  ];
-
-  // Floating IPA letters
-  const symbols = [...IPA_SYMBOLS];
-  for(let i=0;i<80;i++) {
-    floatingLetters.push({
-      x: 50 + Math.random() * (worldW-100),
-      y: 100 + Math.random() * (worldH-200),
-      sym: symbols[Math.floor(Math.random()*symbols.length)],
-      speed: 0.2 + Math.random()*0.4,
-      amp: 20 + Math.random()*40,
-      phase: Math.random()*Math.PI*2,
-      opacity: 0.04 + Math.random()*0.1,
-      size: 12 + Math.random()*20,
-      glowing: Math.random() < 0.2
-    });
-  }
+// ─── DRAW BACKGROUND ──────────────────────────────────────
+function drawBG(){
+  const frac=Math.max(0,Math.min(1,(camY+H/2)/WH));
+  // Deep space gradient
+  const grd=ctx.createLinearGradient(0,0,0,H);
+  const r=Math.floor(frac*4), g=Math.floor(frac*2), b=Math.floor(8+frac*12);
+  grd.addColorStop(0,`rgb(${r},${g},${b})`);
+  grd.addColorStop(1,`rgb(${r+2},${g+1},${b+4})`);
+  ctx.fillStyle=grd; ctx.fillRect(0,0,W,H);
 }
 
-// ---- PARTICLES ----
-function spawnParticles(x, y, col, count=8, spread=40) {
-  for(let i=0;i<count;i++){
-    particles.push({
-      x, y,
-      vx: (Math.random()-0.5)*spread*0.1,
-      vy: -Math.random()*2.5-0.5,
-      life: 1, decay: 0.02+Math.random()*0.03,
-      size: 2+Math.random()*5,
-      color: col
-    });
-  }
-}
-function spawnIpaParticle(x, y) {
-  const sym = IPA_SYMBOLS[Math.floor(Math.random()*IPA_SYMBOLS.length)];
-  particles.push({
-    x, y, vx:(Math.random()-0.5)*1.5, vy:-1-Math.random()*2,
-    life:1, decay:0.008+Math.random()*0.01,
-    size:14+Math.random()*10,
-    color:'#00e5ff', text:sym
-  });
-}
-
-function updateParticles() {
-  particles = particles.filter(p => {
-    p.x += p.vx; p.y += p.vy;
-    p.vy += 0.04;
-    p.life -= p.decay;
-    return p.life > 0;
-  });
-}
-
-function drawParticles() {
-  particles.forEach(p => {
-    ctx.save();
-    ctx.globalAlpha = p.life * 0.9;
-    if(p.text) {
-      ctx.font = `${p.size}px 'Courier New'`;
-      ctx.fillStyle = p.color;
-      ctx.shadowBlur = 15; ctx.shadowColor = p.color;
-      ctx.fillText(p.text, p.x - camX, p.y - camY);
-    } else {
-      ctx.fillStyle = p.color;
-      ctx.shadowBlur = 8; ctx.shadowColor = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x-camX, p.y-camY, p.size*p.life, 0, Math.PI*2);
-      ctx.fill();
-    }
-    ctx.restore();
-  });
-}
-
-// ---- PLATFORM COLORS ----
-function getPlatformColor(type) {
-  switch(type) {
-    case 'ground': return { fill:'#0a0a12', stroke:'#1a1a2e' };
-    case 'floor2': return { fill:'#080c1a', stroke:'#1a2040' };
-    case 'floor3': return { fill:'#0a0818', stroke:'#1a1030' };
-    case 'floor4': return { fill:'#050e18', stroke:'#0a2040' };
-    case 'floor5': return { fill:'#080a18', stroke:'#141828' };
-    case 'floor6': return { fill:'#060810', stroke:'#101520' };
-    case 'floor7': return { fill:'#040408', stroke:'#0a0a18' };
-    case 'stress': return { fill:'#0d0620', stroke:'#6600cc44', glow:'#6600cc' };
-    case 'ipa': return { fill:'#001820', stroke:'#00e5ff44', glow:'#00e5ff' };
-    case 'syll': return { fill:'#001a10', stroke:'#00cc6644', glow:'#00cc66' };
-    case 'echo': return { fill:'#1a0a00', stroke:'#ff660044', glow:'#ff6600' };
-    case 'final': return { fill:'#1a0000', stroke:'#ff003355', glow:'#ff0033' };
-    case 'moving': return { fill:'#0d1020', stroke:'#00e5ff55', glow:'#00e5ff' };
-    default: return { fill:'#080810', stroke:'#1a1a2a' };
-  }
-}
-
-// ---- DRAW WORLD ----
-function drawBackground() {
-  // Deep dark gradient based on camera Y
-  const skyFrac = Math.max(0, Math.min(1, (camY - 0) / worldH));
-  const r = Math.floor(skyFrac * 2);
-  const g = Math.floor(skyFrac * 3);
-  const b = Math.floor(8 + skyFrac * 15);
-  ctx.fillStyle = `rgb(${r},${g},${b})`;
-  ctx.fillRect(0, 0, W, H);
-
-  // Far background columns/architecture
-  ctx.save();
-  ctx.globalAlpha = 0.07;
-  for(let c=0;c<8;c++) {
-    const cx = (c*(worldW/7) - camX*0.05 + worldW*10) % (W+200) - 100;
-    const colH = 300 + Math.sin(c*1.3)*100;
-    ctx.fillStyle = '#002233';
-    ctx.fillRect(cx-20, H-colH, 40, colH);
+function drawParallaxBG(){
+  // Distant architecture pillars
+  ctx.save(); ctx.globalAlpha=.055;
+  for(let i=0;i<10;i++){
+    const bx=((i*180-camX*.04+5000)%( W+300))-150;
+    const bh=180+Math.sin(i*1.7)*80;
+    ctx.fillStyle='#001830';
+    ctx.fillRect(bx-15,H-bh,30,bh);
+    // Pillar detail
+    ctx.fillStyle='#002244';
+    ctx.fillRect(bx-18,H-bh-8,36,8);
   }
   ctx.restore();
 
-  // Fog layers
-  drawFog();
-}
-
-function drawFog() {
-  ctx.save();
-  ctx.globalAlpha = 0.06;
-  for(let f=0;f<4;f++){
-    const fogX = ((-camX * (0.02+f*0.01) + animFrame*(0.2+f*0.1)) % (W+400)) - 200;
-    const grad = ctx.createRadialGradient(fogX+W/2, H/2, 50, fogX+W/2, H/2, 400);
-    grad.addColorStop(0, '#00e5ff');
-    grad.addColorStop(1, 'transparent');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
+  // Mid-layer geometric shapes
+  ctx.save(); ctx.globalAlpha=.03;
+  for(let i=0;i<6;i++){
+    const mx=((i*280-camX*.12+8000)%(W+400))-200;
+    const my=H/2+Math.sin(i*2.1)*80-camY*.06;
+    ctx.strokeStyle='#00e5ff';
+    ctx.lineWidth=.5;
+    ctx.beginPath();
+    ctx.arc(mx,my,40+i*10,0,Math.PI*2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(mx,my,20+i*5,0,Math.PI*2);
+    ctx.stroke();
   }
   ctx.restore();
 }
 
-function drawFloatingLetters() {
-  floatingLetters.forEach(fl => {
-    const sx = fl.x - camX;
-    const sy = fl.y - camY + Math.sin(animFrame*0.02*fl.speed + fl.phase)*fl.amp;
-    if(sx < -50 || sx > W+50 || sy < -50 || sy > H+50) return;
+function drawLightBeams(){
+  lightBeams.forEach(b=>{
+    const sx=b.x-camX*.3;
+    const sy=b.y-camY*.3;
+    if(sx<-b.len || sx>W+b.len) return;
+    const pulse=.7+.3*Math.sin(animF*b.spd+b.phase);
     ctx.save();
-    ctx.globalAlpha = fl.opacity * (fl.glowing ? (0.7+0.3*Math.sin(animFrame*0.05)) : 1);
-    ctx.font = `${fl.size}px 'Courier New'`;
-    ctx.fillStyle = fl.glowing ? '#00e5ff' : '#ffffff';
-    if(fl.glowing) { ctx.shadowBlur = 20; ctx.shadowColor = '#00e5ff'; }
-    ctx.fillText(fl.sym, sx, sy);
+    ctx.globalAlpha=b.alpha*pulse;
+    ctx.translate(sx,sy);
+    ctx.rotate(b.angle);
+    const grad=ctx.createLinearGradient(0,0,0,b.len);
+    grad.addColorStop(0,b.color+'00');
+    grad.addColorStop(.3,b.color+'88');
+    grad.addColorStop(.7,b.color+'44');
+    grad.addColorStop(1,b.color+'00');
+    ctx.fillStyle=grad;
+    ctx.fillRect(-b.width/2,0,b.width,b.len);
     ctx.restore();
   });
 }
 
-function drawPlatforms() {
-  const allPlats = [...platforms, ...movingPlatforms];
-  allPlats.forEach(p => {
-    const sx = p.x - camX, sy = p.y - camY;
-    if(sx+p.w < 0 || sx > W || sy+p.h < 0 || sy > H) return;
-    const col = getPlatformColor(p.type);
+function drawFloatLetters(){
+  fLetters.forEach(fl=>{
+    const sx=fl.x-camX*.85;
+    const sy=fl.y-camY+Math.sin(animF*.018*fl.spd+fl.phase)*fl.amp;
+    fl.x+=fl.drift;
+    if(fl.x<0) fl.x=WW; if(fl.x>WW) fl.x=0;
+    if(sx<-40||sx>W+40||sy<-40||sy>H+40) return;
     ctx.save();
-    if(col.glow) {
-      ctx.shadowBlur = 12; ctx.shadowColor = col.glow;
-    }
-    ctx.fillStyle = col.fill;
-    ctx.fillRect(sx, sy, p.w, p.h);
-    ctx.strokeStyle = col.stroke;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(sx, sy, p.w, p.h);
-
-    // Stress platform pulse effect
-    if(p.type==='stress') {
-      ctx.globalAlpha = 0.3 + 0.2*Math.sin(animFrame*0.08);
-      ctx.fillStyle = '#6600cc';
-      ctx.fillRect(sx, sy, p.w, 2);
-    }
-    if(p.type==='ipa') {
-      ctx.globalAlpha = 0.3 + 0.2*Math.sin(animFrame*0.06+1);
-      ctx.fillStyle = '#00e5ff';
-      ctx.fillRect(sx, sy, p.w, 2);
-    }
-    if(p.type==='moving') {
-      ctx.globalAlpha = 0.4+0.2*Math.sin(animFrame*0.1);
-      ctx.fillStyle = '#00e5ff';
-      ctx.fillRect(sx, sy, p.w, 2);
-    }
+    ctx.globalAlpha=fl.op*(fl.glow?(.6+.4*Math.sin(animF*.04)):1);
+    ctx.font=`${fl.sz}px 'Share Tech Mono'`;
+    ctx.fillStyle=fl.glow?'#00e5ff':'#ffffff';
+    if(fl.glow){ctx.shadowBlur=25;ctx.shadowColor='#00e5ff';}
+    ctx.fillText(fl.sym,sx,sy);
     ctx.restore();
   });
 }
 
-function drawDoors() {
-  doors.forEach(d => {
-    const sx = d.x - camX, sy = d.y - camY;
-    if(sx+d.w < -20 || sx > W+20 || sy+d.h < -20 || sy > H+20) return;
-    ctx.save();
-    if(!d.solved) {
-      const glow = 0.7 + 0.3*Math.sin(animFrame*0.07);
-      ctx.shadowBlur = 20*glow; ctx.shadowColor = '#00e5ff';
-      ctx.strokeStyle = `rgba(0,229,255,${glow*0.8})`;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(sx, sy, d.w, d.h);
-      ctx.fillStyle = '#001020';
-      ctx.fillRect(sx+2, sy+2, d.w-4, d.h-4);
-      // Door glyph
-      ctx.fillStyle = `rgba(0,229,255,${glow*0.6})`;
-      ctx.font = `16px 'Courier New'`;
-      ctx.textAlign = 'center';
-      ctx.fillText('▣', sx+d.w/2, sy+d.h/2+6);
-      ctx.font = `7px 'Courier New'`;
-      ctx.fillStyle = '#00e5ff88';
-      ctx.fillText(d.label, sx+d.w/2, sy+d.h+14);
-    } else {
-      ctx.strokeStyle = '#00ff4422';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(sx, sy, d.w, d.h);
-      ctx.fillStyle = '#001a08';
-      ctx.fillRect(sx+2, sy+2, d.w-4, d.h-4);
-      ctx.fillStyle = '#00ff4455';
-      ctx.font = `14px 'Courier New'`;
-      ctx.textAlign = 'center';
-      ctx.fillText('✓', sx+d.w/2, sy+d.h/2+5);
-    }
-    ctx.restore();
-  });
+function drawFog(){
+  ctx.save();
+  for(let i=0;i<3;i++){
+    const fx=((animF*(1.2+i*.4)-camX*(0.015+i*.008)+WW*20)%(W+600))-300;
+    const fy=H*(.3+i*.2);
+    ctx.globalAlpha=.04-i*.008;
+    const grad=ctx.createRadialGradient(fx,fy,20,fx,fy,320+i*60);
+    grad.addColorStop(0,'#00e5ff');
+    grad.addColorStop(1,'transparent');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,W,H);
+  }
+  ctx.restore();
 }
 
-function drawEnemies() {
-  enemies.forEach(e => {
-    if(!e.alive) return;
-    const sx = e.x - camX, sy = e.y - camY;
-    if(sx < -100 || sx > W+100 || sy < -100 || sy > H+100) return;
+function drawPlatforms(){
+  const all=[...plats,...movPlats];
+  all.forEach(p=>{
+    const sx=p.x-camX, sy=p.y-camY;
+    if(sx+p.w<-10||sx>W+10||sy+p.h<-10||sy>H+10) return;
+    const c=PCOL[p.t]||PCOL.stone;
     ctx.save();
-    e.frame = (e.frame + 0.08) % (Math.PI*2);
-    const wobble = Math.sin(e.frame*3)*3;
-    const flicker = 0.6 + 0.4*Math.sin(e.frame*7);
+    if(c.glow){ctx.shadowBlur=14;ctx.shadowColor=c.glow;}
+    ctx.fillStyle=c.f;
+    ctx.fillRect(sx,sy,p.w,p.h);
+    ctx.strokeStyle=c.s;
+    ctx.lineWidth=1;
+    ctx.strokeRect(sx,sy,p.w,p.h);
 
-    if(e.type==='shadow') {
-      ctx.globalAlpha = flicker*0.85;
-      ctx.shadowBlur = 15; ctx.shadowColor = '#000044';
-      ctx.fillStyle = '#0a0a18';
-      ctx.beginPath();
-      ctx.ellipse(sx+e.w/2, sy+e.h/2+wobble, e.w/2, e.h/2, 0, 0, Math.PI*2);
-      ctx.fill();
-      // glowing eyes
-      ctx.fillStyle = `rgba(0,229,255,${flicker})`;
-      ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 10;
-      ctx.beginPath(); ctx.arc(sx+10, sy+16, 3, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(sx+26, sy+16, 3, 0, Math.PI*2); ctx.fill();
-      // broken IPA above
-      if(Math.random()<0.02) spawnIpaParticle(e.x+e.w/2, e.y);
-    } else if(e.type==='glitch') {
-      ctx.globalAlpha = flicker*0.9;
-      // Glitch body
-      for(let g=0;g<3;g++){
-        ctx.fillStyle = g===0?'#110011':g===1?'#001122':'#221100';
-        ctx.fillRect(sx+Math.sin(e.frame*5+g)*4, sy+g*14, e.w, e.h/3);
+    // Animated top edge glow
+    if(c.glow){
+      const pulse=.3+.2*Math.sin(animF*.07+(p.x*.003));
+      ctx.globalAlpha=pulse;
+      ctx.fillStyle=c.glow;
+      ctx.fillRect(sx,sy,p.w,2);
+      // Tiny sparkles on top
+      if(Math.random()<.01){
+        spawnParts(p.x+Math.random()*p.w,p.y,c.glow,2,.8);
       }
-      ctx.fillStyle = `rgba(255,0,50,${flicker*0.7})`;
-      ctx.shadowColor='#ff0033'; ctx.shadowBlur=8;
-      ctx.beginPath(); ctx.arc(sx+8, sy+15, 4, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(sx+28, sy+15, 4, 0, Math.PI*2); ctx.fill();
-    } else { // phoneme
-      ctx.globalAlpha = flicker*0.75;
-      ctx.fillStyle = '#050510';
-      ctx.beginPath();
-      ctx.arc(sx+e.w/2, sy+e.h/2+wobble, e.w/2, 0, Math.PI*2);
-      ctx.fill();
-      const sym = IPA_SYMBOLS[Math.floor(e.frame*2)%IPA_SYMBOLS.length];
-      ctx.font = `bold 14px 'Courier New'`;
-      ctx.fillStyle = `rgba(180,0,255,${flicker})`;
-      ctx.shadowColor='#8800ff'; ctx.shadowBlur=15;
-      ctx.textAlign='center';
-      ctx.fillText(sym, sx+e.w/2, sy+e.h/2+5+wobble);
+    }
+
+    // Moving platform trail effect
+    if(p.t==='moving'){
+      ctx.globalAlpha=.25+.15*Math.sin(animF*.1);
+      ctx.fillStyle='#00e5ff';
+      ctx.fillRect(sx,sy,p.w,2);
     }
     ctx.restore();
   });
 }
 
-function drawPlayer() {
-  ctx.save();
-  const sx = player.x - camX, sy = player.y - camY;
-  const crouchH = player.crouching ? 0.6 : 1;
+function drawDoors(){
+  doors.forEach(d=>{
+    const sx=d.x-camX, sy=d.y-camY;
+    if(sx+d.w<-20||sx>W+20||sy+d.h<-20||sy>H+20) return;
+    ctx.save();
+    if(!d.solved){
+      const pulse=.65+.35*Math.sin(animF*.08);
+      // Door body
+      ctx.fillStyle='#000a18';
+      ctx.fillRect(sx,sy,d.w,d.h);
+      // Border glow
+      ctx.shadowBlur=22*pulse; ctx.shadowColor='#00e5ff';
+      ctx.strokeStyle=`rgba(0,229,255,${pulse*.85})`;
+      ctx.lineWidth=1.5;
+      ctx.strokeRect(sx,sy,d.w,d.h);
+      // Rune glyph
+      ctx.font=`18px 'Share Tech Mono'`;
+      ctx.fillStyle=`rgba(0,229,255,${pulse*.7})`;
+      ctx.textAlign='center';
+      ctx.shadowBlur=20; ctx.shadowColor='#00e5ff';
+      ctx.fillText('⬡',sx+d.w/2,sy+d.h/2+6);
+      // Label
+      ctx.font=`6px 'Share Tech Mono'`;
+      ctx.fillStyle='#00e5ff77';
+      ctx.shadowBlur=0;
+      ctx.fillText(d.lbl,sx+d.w/2,sy+d.h+12);
+      // Horizontal scan line
+      const scan=((animF*1.5)%d.h);
+      ctx.globalAlpha=.15;
+      ctx.fillStyle='#00e5ff';
+      ctx.fillRect(sx+2,sy+scan,d.w-4,2);
+    } else {
+      ctx.strokeStyle='#00ff6622';
+      ctx.lineWidth=1;
+      ctx.strokeRect(sx,sy,d.w,d.h);
+      ctx.fillStyle='#00180a';
+      ctx.fillRect(sx+1,sy+1,d.w-2,d.h-2);
+      ctx.font=`14px 'Share Tech Mono'`;
+      ctx.fillStyle='#00ff6644';
+      ctx.textAlign='center';
+      ctx.fillText('✓',sx+d.w/2,sy+d.h/2+5);
+    }
+    ctx.restore();
+  });
+}
 
-  // Shadow
-  ctx.globalAlpha = 0.3;
-  ctx.fillStyle = '#000';
+function drawEnemies(){
+  enemies.forEach(e=>{
+    if(!e.alive) return;
+    const sx=e.x-camX, sy=e.y-camY;
+    if(sx<-80||sx>W+80||sy<-80||sy>H+80) return;
+    ctx.save();
+    e.fr=(e.fr+.06)%(Math.PI*2);
+    const flick=.55+.45*Math.sin(e.fr*6);
+    const bob=Math.sin(e.fr*2.5)*4;
+
+    if(e.t==='shadow'){
+      ctx.globalAlpha=flick*.8;
+      // body
+      ctx.fillStyle='#080816';
+      ctx.shadowBlur=20; ctx.shadowColor='#000044';
+      ctx.beginPath();
+      ctx.ellipse(sx+e.w/2,sy+e.h/2+bob,e.w/2,e.h/2,0,0,Math.PI*2);
+      ctx.fill();
+      // eyes
+      ctx.fillStyle=`rgba(0,229,255,${flick})`;
+      ctx.shadowColor='#00e5ff'; ctx.shadowBlur=12;
+      ctx.beginPath(); ctx.arc(sx+9,sy+16+bob,3,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(sx+25,sy+16+bob,3,0,Math.PI*2); ctx.fill();
+      // occasional IPA emission
+      if(Math.random()<.015) spawnIPA(e.x+e.w/2,e.y+bob);
+
+    } else if(e.t==='glitch'){
+      ctx.globalAlpha=flick*.85;
+      for(let g=0;g<4;g++){
+        ctx.fillStyle=g%2===0?'#110011':'#001133';
+        const off=Math.sin(e.fr*8+g*1.2)*5;
+        ctx.fillRect(sx+off,sy+g*11,e.w,11);
+      }
+      ctx.fillStyle=`rgba(255,30,80,${flick*.8})`;
+      ctx.shadowColor='#ff1050'; ctx.shadowBlur=10;
+      ctx.beginPath(); ctx.arc(sx+8,sy+14+bob,3.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(sx+26,sy+14+bob,3.5,0,Math.PI*2); ctx.fill();
+
+    } else { // phoneme
+      ctx.globalAlpha=flick*.7;
+      ctx.fillStyle='#040412';
+      ctx.shadowColor='#8800ff'; ctx.shadowBlur=18;
+      ctx.beginPath(); ctx.arc(sx+e.w/2,sy+e.h/2+bob,e.w/2,0,Math.PI*2); ctx.fill();
+      const sym=IPA[Math.floor(e.fr*2.5)%IPA.length];
+      ctx.font=`bold 13px 'Share Tech Mono'`;
+      ctx.fillStyle=`rgba(200,80,255,${flick})`;
+      ctx.textAlign='center';
+      ctx.fillText(sym,sx+e.w/2,sy+e.h/2+5+bob);
+    }
+    ctx.restore();
+  });
+}
+
+function drawPlayer(){
+  ctx.save();
+  const sx=P.x-camX, sy=P.y-camY;
+
+  // Shadow puddle
+  ctx.globalAlpha=.25;
+  ctx.fillStyle='#000';
   ctx.beginPath();
-  ctx.ellipse(sx+player.w/2, sy+player.h*crouchH+2, player.w*0.4, 4, 0, 0, Math.PI*2);
+  ctx.ellipse(sx+P.w/2,sy+P.h+3,P.w*.38,4,0,0,Math.PI*2);
   ctx.fill();
 
-  ctx.globalAlpha = player.invincible > 0 ? (0.4+0.6*Math.sin(animFrame*0.3)) : 1;
+  ctx.globalAlpha=P.inv>0?(0.35+0.65*Math.sin(animF*.25)):1;
 
-  // Body silhouette
-  if(player.dashing) {
-    ctx.shadowBlur = 30; ctx.shadowColor = '#00e5ff';
-    ctx.fillStyle = '#00e5ff';
-  } else if(player.glowing) {
-    ctx.shadowBlur = 20; ctx.shadowColor = '#00e5ff88';
-    ctx.fillStyle = '#d0eeff';
-  } else {
-    ctx.fillStyle = '#e8e8f0';
+  // Dash afterimage
+  if(P.dashing){
+    for(let t=1;t<=5;t++){
+      ctx.globalAlpha=(.08-t*.012)*Math.max(0,1-P.inv/60);
+      ctx.fillStyle='#00e5ff';
+      ctx.fillRect(sx-P.facing*t*11,sy+6,P.w-4,P.h-14);
+    }
+    ctx.globalAlpha=1;
   }
-
-  const bodyH = player.h * crouchH;
-  // Legs (walk anim)
-  const legSwing = player.onGround ? Math.sin(player.walkFrame*0.3)*8 : 0;
-  ctx.fillStyle = '#1a1a2a';
-  ctx.fillRect(sx+6, sy+bodyH-14, 8, 14);
-  ctx.fillRect(sx+player.w-14, sy+bodyH-14, 8, 14);
 
   // Body
-  if(player.dashing) ctx.fillStyle = '#00e5ff';
-  else if(player.glowing) ctx.fillStyle = '#b0d8ef';
-  else ctx.fillStyle = '#c8c8d8';
-  ctx.fillRect(sx+2, sy+4, player.w-4, bodyH-16);
+  const bodyCol=P.dashing?'#00e5ff':P.glowing?'#a0d8f0':'#c0c0d0';
+  if(P.dashing){ctx.shadowBlur=35;ctx.shadowColor='#00e5ff';}
+  else if(P.glowing){ctx.shadowBlur=18;ctx.shadowColor='#00e5ff88';}
+
+  // Legs with walk animation
+  const leg=P.onGround?Math.sin(P.walkF*.28)*7:0;
+  ctx.fillStyle='#141428';
+  ctx.fillRect(sx+4,sy+P.h-16,9,16);
+  ctx.fillRect(sx+P.w-13,sy+P.h-16,9,16);
+  ctx.fillStyle='#1a1a3a';
+  ctx.fillRect(sx+4+leg*.5,sy+P.h-6,9,6);
+  ctx.fillRect(sx+P.w-13-leg*.5,sy+P.h-6,9,6);
+
+  // Torso
+  ctx.fillStyle=bodyCol;
+  ctx.fillRect(sx+2,sy+10,P.w-4,P.h-24);
+  // Chest detail
+  ctx.globalAlpha*=.4;
+  ctx.fillStyle='#00e5ff';
+  ctx.fillRect(sx+P.w/2-4,sy+14,8,2);
+  ctx.globalAlpha=P.inv>0?(0.35+0.65*Math.sin(animF*.25)):1;
 
   // Head
-  ctx.fillStyle = '#e8e8f0';
+  ctx.fillStyle='#d8d8e8';
+  if(P.dashing){ctx.shadowBlur=30;ctx.shadowColor='#00e5ff';}
   ctx.beginPath();
-  ctx.arc(sx+player.w/2, sy+10, 11, 0, Math.PI*2);
+  ctx.arc(sx+P.w/2,sy+9,10,0,Math.PI*2);
   ctx.fill();
 
-  // Eyes glow cyan
-  ctx.fillStyle = '#00e5ff';
-  ctx.shadowBlur = 8; ctx.shadowColor = '#00e5ff';
-  ctx.beginPath();
-  ctx.arc(sx+player.w/2+(player.facing*3)-2, sy+9, 2.5, 0, Math.PI*2);
-  ctx.fill();
-  if(player.facing>0) {
-    ctx.beginPath(); ctx.arc(sx+player.w/2+5, sy+9, 2.5, 0, Math.PI*2); ctx.fill();
-  } else {
-    ctx.beginPath(); ctx.arc(sx+player.w/2-5, sy+9, 2.5, 0, Math.PI*2); ctx.fill();
+  // Eyes — cyan glow
+  ctx.fillStyle='#00e5ff';
+  ctx.shadowBlur=12; ctx.shadowColor='#00e5ff';
+  const ex=P.facing>0?[sx+P.w/2+2,sx+P.w/2+7]:[sx+P.w/2-7,sx+P.w/2-2];
+  ctx.beginPath(); ctx.arc(ex[0],sy+8,2.5,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(ex[1],sy+8,2.5,0,Math.PI*2); ctx.fill();
+
+  // Glowing aura
+  if(P.glowing&&P.glowT>0){
+    const at=(P.glowT/180);
+    ctx.globalAlpha=at*.25;
+    ctx.strokeStyle='#00e5ff';
+    ctx.lineWidth=1.5;
+    ctx.shadowBlur=20; ctx.shadowColor='#00e5ff';
+    ctx.beginPath();
+    ctx.arc(sx+P.w/2,sy+P.h/2,P.h*.7+Math.sin(animF*.12)*5,0,Math.PI*2);
+    ctx.stroke();
+    if(Math.random()<.08) spawnIPA(P.x+P.w/2,P.y+Math.random()*P.h);
   }
 
-  // Dash trail
-  if(player.dashing) {
-    for(let t=1;t<=4;t++){
-      ctx.globalAlpha = (0.1+t*0.05) * 0.7;
-      ctx.fillStyle = '#00e5ff';
-      ctx.fillRect(sx - player.facing*t*12, sy+4, player.w-4, bodyH-16);
-    }
-  }
   ctx.restore();
 }
 
-// ---- ZONE SECTIONS LABELS ----
-const ZONE_LABELS_TEXT = [
-  ['ENTRANCE HALL', '/entrəns hɔ:l/', 'Where phonetics begins...'],
-  ['STRESS CORRIDOR', '/stres kɔrɪdɔ:/', 'Primary vs Secondary stress...'],
-  ['IPA CHAMBER', '/aɪ pi: eɪ tʃeɪmbər/', 'The symbols hold power...'],
-  ['SYLLABLE BRIDGE', '/sɪləbəl brɪdʒ/', 'Open and closed pathways...'],
-  ['ECHO ROOM', '/ekəʊ ru:m/', 'Assimilation and elision...'],
-  ['FINAL TOWER CLIMB', '/faɪnəl taʊər klaɪm/', 'Escape the stress...']
-];
-
-function drawZoneSignage() {
-  for(let z=0;z<triggerZones.length;z++){
-    const tz = triggerZones[z];
-    const sx = tz.x + tz.w/2 - camX;
-    const sy = tz.y + 60 - camY;
-    if(sy < -50 || sy > H+50) continue;
+function drawZoneLabels(){
+  ZONES.forEach((z,i)=>{
+    const tz=trigZones[i]; if(!tz) return;
+    const sx=tz.x+tz.w/2-camX;
+    const sy=tz.y+80-camY;
+    if(sy<-60||sy>H+60) return;
     ctx.save();
-    ctx.globalAlpha = 0.18;
-    ctx.font = `bold ${clamp(24,4*(W/800),60)}px 'Georgia'`;
-    ctx.fillStyle = '#00e5ff';
-    ctx.shadowBlur = 40; ctx.shadowColor = '#00e5ff';
-    ctx.textAlign = 'center';
-    ctx.fillText(ZONE_LABELS_TEXT[z][0], sx, sy);
-    ctx.font = `${clamp(12,2*(W/800),22)}px 'Courier New'`;
-    ctx.fillStyle = '#00e5ff';
-    ctx.globalAlpha = 0.1;
-    ctx.fillText(ZONE_LABELS_TEXT[z][1], sx, sy+36);
+    ctx.globalAlpha=.12;
+    ctx.font=`bold ${clamp(20,3.5*(W/900),56)}px 'Cinzel'`;
+    ctx.fillStyle='#00e5ff';
+    ctx.shadowBlur=50; ctx.shadowColor='#00e5ff';
+    ctx.textAlign='center';
+    ctx.fillText(z.name,sx,sy);
+    ctx.font=`${clamp(10,1.5*(W/900),20)}px 'Share Tech Mono'`;
+    ctx.fillStyle='#00e5ff'; ctx.globalAlpha=.07;
+    ctx.fillText(z.ipa,sx,sy+32);
     ctx.restore();
-  }
-}
-
-function clamp(min,v,max){return Math.max(min,Math.min(max,v));}
-
-// ---- PHYSICS & COLLISION ----
-function rectOverlap(ax,ay,aw,ah,bx,by,bw,bh){
-  return ax<bx+bw && ax+aw>bx && ay<by+bh && ay+ah>by;
-}
-
-function resolvePlayerPlatform(p) {
-  const px = p.x, py = p.y;
-  if(!rectOverlap(player.x, player.y, player.w, player.h, px, py, p.w, p.h)) return false;
-  const overlapX = Math.min(player.x+player.w,px+p.w) - Math.max(player.x,px);
-  const overlapY = Math.min(player.y+player.h,py+p.h) - Math.max(player.y,py);
-  if(overlapX < overlapY) {
-    if(player.x < px) { player.x = px - player.w; player.vx = 0; }
-    else { player.x = px + p.w; player.vx = 0; }
-  } else {
-    if(player.vy > 0) {
-      player.y = py - player.h;
-      player.vy = 0;
-      player.onGround = true;
-      player.jumps = player.maxJumps;
-    } else if(player.vy < 0) {
-      player.y = py + p.h;
-      player.vy = 0;
-    }
-  }
-  return true;
-}
-
-function updateMovingPlatforms() {
-  movingPlatforms.forEach(mp => {
-    mp.x += mp.dx;
-    if(Math.abs(mp.x - mp.ox) > mp.range) mp.dx *= -1;
-    // Carry player
-    if(rectOverlap(player.x, player.y+player.h-4, player.w, 6, mp.x, mp.y, mp.w, mp.h)) {
-      player.x += mp.dx;
-    }
   });
 }
 
-function updateEnemies() {
-  enemies.forEach(e => {
+// ─── PHYSICS ──────────────────────────────────────────────
+function clamp(mn,v,mx){return Math.max(mn,Math.min(mx,v));}
+function overlap(ax,ay,aw,ah,bx,by,bw,bh){
+  return ax<bx+bw&&ax+aw>bx&&ay<by+bh&&ay+ah>by;
+}
+function resolveP(p){
+  if(!overlap(P.x,P.y,P.w,P.h,p.x,p.y,p.w,p.h)) return;
+  const ox=Math.min(P.x+P.w,p.x+p.w)-Math.max(P.x,p.x);
+  const oy=Math.min(P.y+P.h,p.y+p.h)-Math.max(P.y,p.y);
+  if(ox<oy){
+    if(P.x<p.x){P.x=p.x-P.w;} else {P.x=p.x+p.w;}
+    P.vx=0;
+  } else {
+    if(P.vy>0){P.y=p.y-P.h; P.vy=0; P.onGround=true; P.jumps=P.maxJumps;}
+    else{P.y=p.y+p.h; P.vy=0;}
+  }
+}
+
+function updateMovPlats(){
+  movPlats.forEach(mp=>{
+    mp.x+=mp.dx;
+    if(Math.abs(mp.x-mp.ox)>mp.range) mp.dx*=-1;
+    if(overlap(P.x,P.y+P.h-5,P.w,8,mp.x,mp.y,mp.w,mp.h)) P.x+=mp.dx;
+  });
+}
+
+function updateEnemies(){
+  enemies.forEach(e=>{
     if(!e.alive) return;
-    e.x += e.vx;
-    // bounce off platforms
-    let onFloor = false;
-    [...platforms, ...movingPlatforms].forEach(p => {
-      if(e.x+e.w > p.x && e.x < p.x+p.w && e.y+e.h >= p.y && e.y+e.h <= p.y+p.h+5) {
-        onFloor = true;
+    e.x+=e.vx;
+    if(e.x<0) e.vx=Math.abs(e.vx);
+    if(e.x+e.w>WW) e.vx=-Math.abs(e.vx);
+    // Platform boundary bounce
+    [...plats,...movPlats].forEach(p=>{
+      if(e.y+e.h>=p.y&&e.y+e.h<=p.y+p.h+4&&e.x+e.w>p.x&&e.x<p.x+p.w){
+        // on this platform
       }
-      if(e.x < p.x && e.x+e.w > p.x) e.vx = Math.abs(e.vx);
-      if(e.x+e.w > p.x+p.w && e.x < p.x+p.w) e.vx = -Math.abs(e.vx);
+      if(e.x<=p.x+p.w&&e.x>=p.x+p.w-4&&e.y+e.h>p.y) e.vx=Math.abs(e.vx);
+      if(e.x+e.w>=p.x&&e.x+e.w<=p.x+4&&e.y+e.h>p.y) e.vx=-Math.abs(e.vx);
     });
-    if(e.x < 0) e.vx = Math.abs(e.vx);
-    if(e.x+e.w > worldW) e.vx = -Math.abs(e.vx);
-
-    // Touch player
-    if(player.invincible <= 0 && rectOverlap(player.x,player.y,player.w,player.h,e.x,e.y,e.w,e.h)) {
-      player.invincible = 90;
-      stressLevel = Math.min(100, stressLevel + 20);
-      camShake = 10;
-      spawnParticles(player.x+player.w/2, player.y+player.h/2, '#ff3333', 12);
-      playTone(150, 0.3, 'sawtooth', 0.1);
+    // Stomp
+    if(P.vy>0&&P.y+P.h>e.y&&P.y+P.h<e.y+e.h*.5&&
+       P.x+P.w>e.x+4&&P.x<e.x+e.w-4){
+      e.alive=false;
+      spawnParts(e.x+e.w/2,e.y+e.h/2,'#00e5ff',18,2.5);
+      spawnIPA(e.x+e.w/2,e.y);
+      P.vy=-9; stressLv=Math.max(0,stressLv-5);
+      playDash();
     }
-
-    // Player stomps enemy
-    if(player.vy > 0 &&
-       player.y+player.h > e.y && player.y+player.h < e.y+e.h*0.4 &&
-       player.x+player.w > e.x+4 && player.x < e.x+e.w-4) {
-      e.alive = false;
-      spawnParticles(e.x+e.w/2, e.y+e.h/2, '#00e5ff', 16);
-      spawnIpaParticle(e.x+e.w/2, e.y);
-      player.vy = -8;
-      playTone(220, 0.15, 'square', 0.09);
-      stressLevel = Math.max(0, stressLevel - 5);
+    // Touch
+    if(P.inv<=0&&overlap(P.x,P.y,P.w,P.h,e.x,e.y,e.w,e.h)){
+      P.inv=100; stressLv=Math.min(100,stressLv+18);
+      camShake=12; spawnParts(P.x+P.w/2,P.y+P.h/2,'#ff3366',14,2);
+      tone(140,.3,'sawtooth',.1);
     }
   });
 }
 
-let nearDoor = null;
-function checkDoorProximity() {
-  nearDoor = null;
-  let prompt = '';
-  doors.forEach(d => {
-    if(!d.solved && rectOverlap(player.x-30, player.y-10, player.w+60, player.h+20, d.x, d.y, d.w, d.h)) {
-      nearDoor = d;
-      prompt = `[E / TAP] ${d.label}`;
+let nearDoor=null;
+function checkDoors(){
+  nearDoor=null;
+  doors.forEach(d=>{
+    if(!d.solved&&overlap(P.x-28,P.y-8,P.w+56,P.h+16,d.x,d.y,d.w,d.h)){
+      nearDoor=d;
     }
   });
-  const pb = document.getElementById('prompt-box');
-  const pt = document.getElementById('prompt-text');
-  if(nearDoor) {
-    pb.style.display = 'block';
-    pt.textContent = prompt;
+  const pb=document.getElementById('prompt-box');
+  const pi=document.getElementById('prompt-inner');
+  if(nearDoor){
+    pb.style.display='block';
+    pi.textContent=`[E] ${nearDoor.lbl}`;
   } else {
-    pb.style.display = 'none';
+    pb.style.display='none';
   }
 }
 
-function updateCamera() {
-  const targetX = player.x - W/2 + player.w/2;
-  const targetY = player.y - H/2;
-  camTargetX = clamp(0, targetX, worldW - W);
-  camTargetY = clamp(0, targetY, worldH - H);
-  camX += (camTargetX - camX) * 0.08;
-  camY += (camTargetY - camY) * 0.08;
-  if(camShake > 0) {
-    camX += (Math.random()-0.5)*camShake;
-    camY += (Math.random()-0.5)*camShake;
-    camShake *= 0.85;
-    if(camShake < 0.5) camShake = 0;
-  }
-}
-
-function updateZone() {
-  triggerZones.forEach(tz => {
-    if(rectOverlap(player.x,player.y,player.w,player.h,tz.x,tz.y,tz.w,tz.h)){
-      if(tz.zone !== currentZone) {
-        currentZone = tz.zone;
-        document.getElementById('zone-label').textContent = ZONES[currentZone];
-      }
-    }
-  });
-}
-
-// ---- PLAYER UPDATE ----
-const GRAVITY = 0.5;
-const MAX_FALL = 16;
-const WALK_SPEED = 4.5;
-const JUMP_FORCE = -13;
-const DASH_SPEED = 14;
-
-function updatePlayer(dt) {
-  if(player.dead) {
-    player.deathTimer--;
-    if(player.deathTimer <= 0) respawn();
-    return;
-  }
-  if(puzzleActive) return;
-
-  player.crouching = keys['KeyS'] || keys['ArrowDown'];
-  const speed = player.crouching ? WALK_SPEED*0.4 : WALK_SPEED;
-
-  if((input.left || keys['ArrowLeft'] || keys['KeyA']) && !player.dashing) {
-    player.vx = -speed; player.facing = -1;
-  } else if((input.right || keys['ArrowRight'] || keys['KeyD']) && !player.dashing) {
-    player.vx = speed; player.facing = 1;
-  } else if(!player.dashing) {
-    player.vx *= 0.75;
-  }
-
-  if(player.dashing) {
-    player.dashTimer--;
-    player.vx = player.facing * DASH_SPEED;
-    if(player.dashTimer <= 0) { player.dashing = false; }
-  }
-
-  // Jump
-  if((input.jump || keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player._jumpHeld) {
-    player._jumpHeld = true;
-    if(player.jumps > 0) {
-      player.vy = JUMP_FORCE;
-      player.jumps--;
-      playJump();
-      spawnParticles(player.x+player.w/2, player.y+player.h, '#00e5ff44', 5);
-    }
-  }
-  if(!input.jump && !keys['Space'] && !keys['ArrowUp'] && !keys['KeyW']) {
-    player._jumpHeld = false;
-  }
-
-  // Dash
-  if((input.dash || keys['ShiftLeft'] || keys['ShiftRight']) && !player.dashing && player.dashCooldown <= 0) {
-    player.dashing = true;
-    player.dashTimer = 10;
-    player.dashCooldown = 40;
-    playDash();
-    spawnParticles(player.x+player.w/2, player.y+player.h/2, '#00e5ff', 10);
-  }
-  if(player.dashCooldown > 0) player.dashCooldown--;
-  if(player.invincible > 0) player.invincible--;
-
-  player.vy = Math.min(player.vy + GRAVITY, MAX_FALL);
-  player.x += player.vx;
-  player.y += player.vy;
-
-  player.onGround = false;
-  const allPlats = [...platforms, ...movingPlatforms];
-  allPlats.forEach(p => resolvePlayerPlatform(p));
-
-  // Walk animation
-  if(player.onGround && Math.abs(player.vx) > 0.5) {
-    player.walkTimer++;
-    if(player.walkTimer % 8 === 0) {
-      player.walkFrame++;
-      playStep();
-    }
-  }
-
-  // Bounds
-  player.x = clamp(0, player.x, worldW - player.w);
-  if(player.y > worldH + 100) die();
-
-  // Door interact
-  if((keys['KeyE'] || keys['Enter']) && nearDoor && !puzzleActive) {
-    openPuzzle(nearDoor);
-    keys['KeyE'] = false; keys['Enter'] = false;
-  }
-
-  // Stress decay
-  stressLevel = Math.max(0, stressLevel - 0.02);
-  document.getElementById('stress-bar').style.width = stressLevel + '%';
-
-  // IPA particles from player when solving
-  if(player.glowing && Math.random() < 0.05) {
-    spawnIpaParticle(player.x+player.w/2, player.y);
-  }
-}
-
-function die() {
-  if(player.dead) return;
-  player.dead = true;
-  player.deathTimer = 80;
-  stressLevel = Math.min(100, stressLevel + 30);
-  camShake = 20;
-  spawnParticles(player.x+player.w/2, player.y+player.h/2, '#ff3333', 20);
-  playTone(110, 0.5, 'sawtooth', 0.15);
-  setTimeout(()=>playTone(80, 0.8, 'sine', 0.1), 300);
-}
-
-function respawn() {
-  player.dead = false;
-  player.x = playerSpawn.x; player.y = playerSpawn.y;
-  player.vx = 0; player.vy = 0;
-  player.onGround = false; player.jumps = player.maxJumps;
-  player.dashing = false; player.invincible = 60;
-}
-
-// ---- PUZZLES ----
-let activeDoor = null;
-function openPuzzle(door) {
-  if(puzzleActive) return;
-  puzzleActive = true;
-  activeDoor = door;
-  const overlay = document.getElementById('puzzle-overlay');
-  overlay.style.display = 'flex';
-  
-  let puzzles, idx;
-  if(door.puzzleType==='stress') {
-    puzzles = STRESS_PUZZLES;
-    idx = door.puzzleIdx % STRESS_PUZZLES.length;
-    renderStressPuzzle(puzzles[idx]);
-  } else if(door.puzzleType==='ipa') {
-    puzzles = IPA_DOOR_PUZZLES;
-    idx = door.puzzleIdx % IPA_DOOR_PUZZLES.length;
-    renderMultiPuzzle(puzzles[idx]);
-  } else {
-    puzzles = SYLLABLE_PUZZLES;
-    idx = door.puzzleIdx % SYLLABLE_PUZZLES.length;
-    renderMultiPuzzle(puzzles[idx]);
-  }
-}
-
-function renderStressPuzzle(pz) {
-  document.getElementById('puzzle-title').textContent = pz.topic.toUpperCase();
-  document.getElementById('puzzle-inst').textContent = 
-    `Choose the STRESSED syllable in: "${pz.word}"`;
-  const opts = document.getElementById('puzzle-options');
-  opts.innerHTML = '';
-  document.getElementById('puzzle-feedback').textContent = '';
-  pz.syllables.forEach((syl, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'puzzle-btn';
-    btn.innerHTML = syl;
-    btn.onclick = () => handleStressAnswer(i, pz, btn);
-    opts.appendChild(btn);
-  });
-}
-
-function renderMultiPuzzle(pz) {
-  document.getElementById('puzzle-title').textContent = pz.topic.toUpperCase();
-  document.getElementById('puzzle-inst').textContent = pz.question;
-  const opts = document.getElementById('puzzle-options');
-  opts.innerHTML = '';
-  document.getElementById('puzzle-feedback').textContent = '';
-  pz.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'puzzle-btn';
-    btn.textContent = opt;
-    btn.onclick = () => handleMultiAnswer(i, pz, btn);
-    opts.appendChild(btn);
-  });
-}
-
-function handleStressAnswer(chosen, pz, btn) {
-  const fb = document.getElementById('puzzle-feedback');
-  if(chosen === pz.answer) {
-    fb.textContent = `✓ Correct! ${pz.hint}`;
-    fb.className = 'puzzle-feedback feedback-correct';
-    btn.classList.add('active');
-    playCorrect();
-    setTimeout(()=>closePuzzle(true), 1200);
-  } else {
-    fb.textContent = `✗ Wrong. ${pz.hint}`;
-    fb.className = 'puzzle-feedback feedback-wrong';
-    playWrong();
-    stressLevel = Math.min(100, stressLevel + 10);
-    btn.style.borderColor = '#ff333377';
-  }
-}
-
-function handleMultiAnswer(chosen, pz, btn) {
-  const fb = document.getElementById('puzzle-feedback');
-  if(chosen === pz.answer) {
-    fb.textContent = '✓ Correct! The phonetic seal breaks...';
-    fb.className = 'puzzle-feedback feedback-correct';
-    btn.classList.add('active');
-    playCorrect();
-    setTimeout(()=>closePuzzle(true), 1200);
-  } else {
-    fb.textContent = '✗ Wrong. The tower resists...';
-    fb.className = 'puzzle-feedback feedback-wrong';
-    playWrong();
-    stressLevel = Math.min(100, stressLevel + 12);
-    btn.style.borderColor = '#ff333377';
-  }
-}
-
-function closePuzzle(solved) {
-  puzzleActive = false;
-  document.getElementById('puzzle-overlay').style.display = 'none';
-  if(solved && activeDoor) {
-    activeDoor.solved = true;
-    player.glowing = true;
-    setTimeout(()=>player.glowing = false, 3000);
-    playUnlock();
-    spawnParticles(activeDoor.x+activeDoor.w/2, activeDoor.y+activeDoor.h/2, '#00e5ff', 20);
-    for(let i=0;i<5;i++) setTimeout(()=>spawnIpaParticle(activeDoor.x+Math.random()*activeDoor.w, activeDoor.y), i*100);
-    camShake = 6;
-    stressLevel = Math.max(0, stressLevel - 15);
-  }
-  activeDoor = null;
-}
-
-// Mobile puzzle tap close
-document.addEventListener('keydown', e => {
-  if(e.code==='Escape' && puzzleActive) closePuzzle(false);
-  keys[e.code] = true;
-});
-document.addEventListener('keyup', e => { keys[e.code] = false; });
-
-// ---- MOBILE CONTROLS ----
-function setupMobile() {
-  const btnL = document.getElementById('btn-left');
-  const btnR = document.getElementById('btn-right');
-  const btnJ = document.getElementById('btn-jump');
-  const btnD = document.getElementById('btn-dash');
-
-  btnL.addEventListener('touchstart',e=>{e.preventDefault();input.left=true;},{passive:false});
-  btnL.addEventListener('touchend',e=>{e.preventDefault();input.left=false;},{passive:false});
-  btnR.addEventListener('touchstart',e=>{e.preventDefault();input.right=true;},{passive:false});
-  btnR.addEventListener('touchend',e=>{e.preventDefault();input.right=false;},{passive:false});
-  btnJ.addEventListener('touchstart',e=>{e.preventDefault();input.jump=true;},{passive:false});
-  btnJ.addEventListener('touchend',e=>{e.preventDefault();input.jump=false;},{passive:false});
-  btnD.addEventListener('touchstart',e=>{e.preventDefault();input.dash=true;},{passive:false});
-  btnD.addEventListener('touchend',e=>{e.preventDefault();input.dash=false;},{passive:false});
-
-  // Tap door on mobile
-  canvas.addEventListener('touchstart', e=>{
-    if(nearDoor && !puzzleActive) {
-      const t = e.touches[0];
-      const dx = t.clientX - (nearDoor.x - camX + nearDoor.w/2);
-      const dy = t.clientY - (nearDoor.y - camY + nearDoor.h/2);
-      if(Math.sqrt(dx*dx+dy*dy) < 100) openPuzzle(nearDoor);
-    }
-  },{passive:true});
-}
-
-// ---- MAIN RENDER ----
-function drawCinematicBars() {
-  const barH = Math.floor(H * 0.06);
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, W, barH);
-  ctx.fillRect(0, H-barH, W, barH);
-}
-
-function drawVignetteOverlay() {
-  const grad = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.85);
-  grad.addColorStop(0, 'transparent');
-  grad.addColorStop(1, 'rgba(0,0,0,0.65)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
-}
-
-function drawDeathOverlay() {
-  if(!player.dead) return;
-  ctx.save();
-  const frac = 1 - player.deathTimer/80;
-  ctx.fillStyle = `rgba(20,0,0,${frac*0.7})`;
-  ctx.fillRect(0,0,W,H);
-  ctx.globalAlpha = frac;
-  ctx.font = `${clamp(16,3*(W/800),36)}px 'Georgia'`;
-  ctx.fillStyle = '#ff3333';
-  ctx.textAlign = 'center';
-  ctx.shadowBlur = 20; ctx.shadowColor = '#ff0000';
-  ctx.fillText('STRESS OVERWHELMS', W/2, H/2);
-  ctx.font = `${clamp(10,1.5*(W/800),18)}px 'Courier New'`;
-  ctx.fillStyle = '#ff333377';
-  ctx.fillText('returning to last position...', W/2, H/2+40);
-  ctx.restore();
-}
-
-// ---- LOOP ----
-function gameLoop(ts) {
-  if(!gameRunning) return;
-  const dt = Math.min((ts - lastTime)/16, 3);
-  lastTime = ts;
-  animFrame++;
-
-  // Ambient IPA particles
-  if(Math.random() < 0.015) spawnIpaParticle(
-    camX + Math.random()*W, camY + Math.random()*H
-  );
-
-  updateMovingPlatforms();
-  updatePlayer(dt);
-  updateEnemies();
-  updateParticles();
-  updateCamera();
-  updateZone();
-  checkDoorProximity();
-
-  // --- DRAW ---
-  ctx.clearRect(0, 0, W, H);
-  drawBackground();
-  drawZoneSignage();
-  drawFloatingLetters();
-  drawPlatforms();
-  drawDoors();
-  drawEnemies();
-  drawParticles();
-  drawPlayer();
-  drawVignetteOverlay();
-  drawCinematicBars();
-  drawDeathOverlay();
-
-  requestAnimationFrame(gameLoop);
-}
-
-// ---- TITLE SCREEN ----
-function startGame() {
-  const ts = document.getElementById('title-screen');
-  ts.style.transition = 'opacity 1.5s';
-  ts.style.opacity = '0';
-  setTimeout(()=>{ ts.style.display='none'; }, 1500);
-  gameRunning = true;
-  getAudio(); // unlock audio context
-  startAmbience();
-  buildWorld();
-  player.x = playerSpawn.x;
-  player.y = playerSpawn.y;
-  setupMobile();
-  requestAnimationFrame(t=>{ lastTime=t; gameLoop(t); });
-}
-
-document.getElementById('title-screen').addEventListener('click', startGame);
-document.getElementById('title-screen').addEventListener('touchstart', e=>{
-  e.preventDefault(); startGame();
-},{passive:false});
-</script>
-</body>
-</html>
+function updateCamera(){
+  camTX=clamp(0,P.x-W/2+P.w/2,WW-W);
+  camTY=clamp(0,P.y-H/2,WH-
